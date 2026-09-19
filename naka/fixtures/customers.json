@@ -8,6 +8,18 @@
     "email": "anil.rao@example.com",
     "address": "Flat 4B, Nandini Residency, 12 Sarjapur Cross Road, Bengaluru, Karnataka 560102",
     "dob": "14/08/1987",
+    "tax": {
+      "customer_id": "cust_8814",
+      "gstin": "29AZKPR0000M1ZP"
+    },
+    "bank": {
+      "customer_id": "cust_8814",
+      "ifsc": "HDFC0001234"
+    },
+    "voter": {
+      "customer_id": "cust_8814",
+      "voter_id": "XYZ1234567"
+    },
     "kyc": {
       "aadhaar": "0482 7391 5604",
       "name": "Anil Kumar Rao",

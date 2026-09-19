@@ -73,6 +73,11 @@ class HopOutcome:
     # count a shadow row as a prevented disclosure.
     enforce: bool = True
     would_mask: dict[str, int] = field(default_factory=dict)
+    # Detector tiers that could not run for this hop. Non-empty means the
+    # content was scanned by a NARROWER pipeline than usual; the audit row
+    # and the UI both surface it so "checksum only" can never be read as
+    # "fully scanned, nothing found".
+    tiers_unavailable: list[str] = field(default_factory=list)
 
 
 class DisclosureGuard(InterventionHandler):
@@ -89,7 +94,16 @@ class DisclosureGuard(InterventionHandler):
         policy,  # policy.PolicyBundle
         cfg: Config,
         enforce: bool = True,
+        degraded_ok: bool = False,
     ) -> None:
+        # degraded_ok=True lets the hop proceed on the tiers that CAN run
+        # when tier 2 is unreachable, instead of withholding everything.
+        # Off by default, because "the scanner was down so we released it"
+        # is the fail-open this system exists to prevent. What makes the
+        # opt-in honest rather than a bypass is that the unavailable tier is
+        # named in the audit row and rendered in the UI, so the result reads
+        # "scanned by checksum only", never "scanned clean".
+        self.degraded_ok = degraded_ok
         # enforce=False is shadow mode: authorize exactly as usual, record
         # every decision, substitute nothing. It exists for the reason every
         # blocking control eventually needs it -- nobody turns one on in
@@ -286,6 +300,7 @@ class DisclosureGuard(InterventionHandler):
                 image=image_bytes,
                 image_fmt=image_fmt,
                 indic_enabled=self.cfg.indic_enabled,
+                degraded_ok=self.degraded_ok,
             )
         except detect.DetectorUnavailable as exc:
             # Same `except ... as exc` lifetime trap as the normalize branch
@@ -431,6 +446,7 @@ class DisclosureGuard(InterventionHandler):
             latency_ms=ms,
             enforce=self.enforce,
             would_mask=dict(would_mask or {}),
+            tiers_unavailable=list(det.tiers_unavailable),
         )
 
     def _record_withheld(self, subject, outcome, media_type, ms, *, tool_use_id):

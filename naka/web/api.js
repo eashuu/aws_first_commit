@@ -103,4 +103,19 @@ export const api = {
     });
     return asJson(resp);
   },
+
+  // Scripted scenario: the same guardrail, driven by a fixed call sequence
+  // instead of by the model. Used while Bedrock is gated on this account —
+  // every decision it returns is real, only the choice of which tool to
+  // call next is scripted. See demo.py.
+  async demo({ scenario, session_id, user, role }) {
+    const agentUrl = getAgentUrl();
+    if (!agentUrl) throw new Error("Set the agent Function URL first");
+    const resp = await fetch(agentUrl.replace(/\/$/, "") + "/demo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ scenario, session_id, user, role }),
+    });
+    return asJson(resp);
+  },
 };

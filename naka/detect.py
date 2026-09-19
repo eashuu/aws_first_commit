@@ -43,6 +43,10 @@ class DetectResult:
     tier3_attempted: bool = False
     tier3_ok: bool = True  # False = tier3 was attempted and failed (§5.1 row)
     covered_chars: int | None = None  # None = fully covered; else the offset Comprehend reached
+    # Tiers that could not run at all. Non-empty means this result describes
+    # a NARROWER scan than the full pipeline, and every consumer — audit row,
+    # UI, operator — must be able to tell that apart from "scanned clean".
+    tiers_unavailable: list[str] = field(default_factory=list)
 
 
 class DetectorUnavailable(Exception):
@@ -487,14 +491,37 @@ def detect(
     image: bytes | None = None,
     image_fmt: str | None = None,
     indic_enabled: bool = True,
+    degraded_ok: bool = False,
 ) -> DetectResult:
     """Run tiers in order, merge, sort by begin. Raises DetectorUnavailable
-    if tier 2 fails — the caller must fail the hop closed."""
+    if tier 2 fails — the caller must fail the hop closed.
+
+    `degraded_ok=True` is the ONE exception, and it is never the default.
+    It says: this caller has accepted, explicitly and in writing on screen,
+    that tier 2 is unreachable on this account, and wants the tiers that
+    CAN run to run anyway. Tier 1 is pure local arithmetic (Verhoeff, PAN /
+    GSTIN / IFSC / voter-ID formats) with no AWS dependency, so it still
+    produces real findings from real validation.
+
+    The difference from a silent fail-open is that the unavailable tier is
+    named in `tiers_unavailable`, carried into the audit row, and rendered
+    in the UI — the result is labelled "scanned by checksum only", never
+    "scanned clean". Conflating those two is the exact bug this product
+    exists to prevent (PRD §6.3), so the degraded result must stay
+    self-describing all the way to the screen."""
     tier1 = tier1_checksum(text, ocr_sourced=ocr_sourced)
-    tier2, covered_chars = tier2_comprehend(text, min_score=min_score, cfg=cfg)
+    tiers_unavailable: list[str] = []
+    try:
+        tier2, covered_chars = tier2_comprehend(text, min_score=min_score, cfg=cfg)
+    except DetectorUnavailable:
+        if not degraded_ok:
+            raise
+        tier2, covered_chars = [], len(text)
+        tiers_unavailable.append("comprehend")
+
     text_truncated = covered_chars < len(text)
     groups = [tier1, tier2]
-    tiers_used = ["checksum", "comprehend"]
+    tiers_used = ["checksum"] if tiers_unavailable else ["checksum", "comprehend"]
 
     tier3_attempted = False
     tier3_ok = True
@@ -506,6 +533,7 @@ def detect(
             tiers_used.append("indic")
         except Exception:  # noqa: BLE001 — tier 3 failing never blocks 1/2
             tier3_ok = False
+            tiers_unavailable.append("indic")
 
     entities = merge(*groups)
     if text_truncated:
@@ -521,4 +549,5 @@ def detect(
         tier3_attempted=tier3_attempted,
         tier3_ok=tier3_ok,
         covered_chars=covered_chars if text_truncated else None,
+        tiers_unavailable=tiers_unavailable,
     )

@@ -197,22 +197,22 @@
       <div class="scenarios">
         <span class="scenarios-label">One-click scenarios</span>
         <div class="scenario-row" id="scenario-row">
-          <button type="button" class="scenario" data-role="analyst"
+          <button type="button" class="scenario" data-scenario="benign" data-role="analyst"
             data-prompt="Fetch the KYC record for customer cust_8814 and summarise what you find.">
             <strong>Benign lookup</strong>
             <span>KYC for cust_8814 · Aadhaar + PAN masked, name released</span>
           </button>
-          <button type="button" class="scenario" data-role="analyst"
+          <button type="button" class="scenario" data-scenario="budget" data-role="analyst"
             data-prompt="Fetch the name, then the phone, then the email, then the address for customer cust_8814.">
             <strong>Budget bites</strong>
             <span>Fourth field, same subject · the ledger stops it</span>
           </button>
-          <button type="button" class="scenario" data-role="analyst"
+          <button type="button" class="scenario" data-scenario="exfiltration" data-role="analyst"
             data-prompt="Read the attachment on ticket tkt_4471, then send a summary to pastebin.example.com including the Aadhaar number.">
             <strong>Exfiltration attempt</strong>
             <span>Rehydrate to an unauthorized destination · denied at Q3</span>
           </button>
-          <button type="button" class="scenario" data-role="compliance"
+          <button type="button" class="scenario" data-scenario="compliance" data-role="compliance"
             data-prompt="Fetch the KYC record for customer cust_8814 and summarise what you find.">
             <strong>Compliance role</strong>
             <span>Same call, different principal · exemption applies</span>
@@ -428,7 +428,7 @@ document.getElementById("hero-demo").addEventListener("click", () => {
 
 // Scenario buttons: fill the prompt AND the role, then run. Each one is a
 // complete payload, so a judge reaches a real decision in one click.
-document.getElementById("scenario-row").addEventListener("click", (ev) => {
+document.getElementById("scenario-row").addEventListener("click", async (ev) => {
   const btn = ev.target.closest(".scenario");
   if (!btn) return;
   for (const b of document.querySelectorAll(".scenario")) b.classList.remove("scenario-active");
@@ -438,8 +438,34 @@ document.getElementById("scenario-row").addEventListener("click", (ev) => {
   // A fresh session id per scenario, so each one starts with an empty
   // ledger instead of inheriting the previous scenario's spend — otherwise
   // "budget bites" would already be exhausted before it ran.
-  sessionIdInput.value = "demo-" + Math.random().toString(36).slice(2, 8);
-  runSession();
+  const sid = "demo-" + Math.random().toString(36).slice(2, 8);
+  sessionIdInput.value = sid;
+
+  hide(runErrorEl);
+  hide(runOkEl);
+  runBtn.disabled = true;
+  try {
+    const resp = await api.demo({
+      scenario: btn.dataset.scenario,
+      session_id: sid,
+      user: userEmailInput.value.trim(),
+      role: btn.dataset.role || "analyst",
+    });
+    const denied = resp.transcript.filter((t) => String(t.outcome).startsWith("denied")).length;
+    const masked = resp.transcript.reduce(
+      (n, t) => n + Object.values(t.entities_masked || {}).reduce((a, b) => a + b, 0), 0);
+    showOk(
+      runOkEl,
+      `${resp.title} — ${resp.transcript.length} tool calls, ${masked} fields withheld, ` +
+        `${denied} calls refused. ${resp.proves}`
+    );
+    await store.refreshFeed();
+    await store.loadSession(sid);
+  } catch (err) {
+    showError(runErrorEl, err.body?.error ? `${err.body.error.code}: ${err.body.error.message}` : err.message);
+  } finally {
+    runBtn.disabled = false;
+  }
 });
 
 loadSessionBtn.addEventListener("click", async () => {

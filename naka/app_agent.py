@@ -154,6 +154,64 @@ def _call_summary(row: "audit.AuditRow") -> dict:
     }
 
 
+def _route_demo(body: dict, trace_id: str) -> dict:
+    """Run a scripted scenario through the real guardrail. No model, so this
+    works while Bedrock is gated — see demo.py for exactly what stays real.
+
+    Unauthenticated on purpose: it runs a fixed sequence against fixture
+    data and cannot be pointed at anything else, so there is nothing here an
+    arbitrary caller could use that `POST /` would not already allow them.
+    The scenario name is checked against a whitelist rather than used to
+    look anything up."""
+    import demo
+
+    scenario = body.get("scenario")
+    if scenario not in demo.SCENARIOS:
+        return _error(
+            400, "BAD_REQUEST", f"unknown scenario; expected one of {sorted(demo.SCENARIOS)}", trace_id
+        )
+
+    role = body.get("role", "analyst")
+    if role not in VALID_ROLES:
+        return _error(400, "BAD_REQUEST", f"unknown role '{role}'", trace_id)
+
+    session_id = body.get("session_id") or str(uuid.uuid4())
+    principal = body.get("user") or "anonymous@example.com"
+    if not isinstance(principal, str) or '"' in principal:
+        return _error(400, "BAD_REQUEST", "'user' must not contain a double-quote character", trace_id)
+
+    try:
+        policy_bundle = policy.refresh(cfg=CFG)
+    except Exception as exc:  # noqa: BLE001
+        return _error(503, "POLICY_UNAVAILABLE", type(exc).__name__, trace_id)
+
+    try:
+        ledger = ledger_mod.load(
+            session_id,
+            cfg=CFG,
+            budget=policy_bundle.budget_for(role),
+            session_ceiling=policy_bundle.session_ceiling,
+        )
+    except ledger_mod.LedgerUnavailable as exc:
+        return _error(503, "LEDGER_UNAVAILABLE", str(exc), trace_id)
+
+    try:
+        out = demo.run_scenario(
+            scenario,
+            session_id=session_id,
+            principal=principal,
+            role=role,
+            policy_bundle=policy_bundle,
+            ledger=ledger,
+            invocation_id=trace_id,
+        )
+    except Exception as exc:  # noqa: BLE001
+        return _error(500, "INTERNAL", f"{type(exc).__name__}: {exc}", trace_id)
+
+    out.update({"session_id": session_id, "policy_version": policy_bundle.version, "trace_id": trace_id})
+    return _response(200, out)
+
+
 def lambda_handler(event: dict, context: Any) -> dict:
     trace_id = _now_trace_id(context)
 
@@ -172,6 +230,9 @@ def lambda_handler(event: dict, context: Any) -> dict:
     raw_body_len = len(event.get("body") or "")
     if raw_body_len > CFG.max_request_bytes:
         return _error(413, "PAYLOAD_TOO_LARGE", "request exceeds MAX_REQUEST_BYTES", trace_id)
+
+    if event.get("rawPath", "/") == "/demo":
+        return _route_demo(body, trace_id)
 
     prompt = body.get("prompt")
     if not prompt or not isinstance(prompt, str):

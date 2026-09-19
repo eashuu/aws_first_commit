@@ -67,6 +67,10 @@ class AuditRow:
     # valid and an enforced row reads exactly as it did before.
     enforce: bool = True
     would_mask: dict[str, int] = field(default_factory=dict)
+    # Detector tiers that could not run for this call. An empty list means
+    # the full pipeline ran; a non-empty one means this row describes a
+    # NARROWER scan, and no reader may treat its zero-findings as clean.
+    tiers_unavailable: list[str] = field(default_factory=list)
 
 
 def _now_iso() -> str:
@@ -197,6 +201,7 @@ class AuditHook(HookProvider):
             policy_version=self.policy.version,
             enforce=hop.enforce,
             would_mask=hop.would_mask,
+            tiers_unavailable=hop.tiers_unavailable,
         )
         self.rows.append(row)
         put_row(row, cfg=self.cfg)
@@ -275,6 +280,7 @@ def _row_to_item(row: AuditRow, *, cfg: Config) -> dict:
         # written by an older build.
         "enforce": {"BOOL": row.enforce},
         "would_mask": _to_ddb_map(row.would_mask),
+        "tiers_unavailable": {"SS": row.tiers_unavailable} if row.tiers_unavailable else {"L": []},
         "expires_at": {"N": str(expires_at)},
     }
     if row.deny_policy:

@@ -22,7 +22,13 @@ with open(os.path.join(_FIXTURES, "customers.json"), encoding="utf-8") as f:
 with open(os.path.join(_FIXTURES, "tickets.json"), encoding="utf-8") as f:
     _TICKETS = json.load(f)
 
-_CUSTOMER_FIELDS = ("name", "phone", "email", "address", "kyc")
+_CUSTOMER_FIELDS = ("name", "phone", "email", "address", "kyc", "tax", "bank", "voter")
+
+# Fields whose value is a nested record rather than a scalar. They are
+# returned flattened (the record's own keys at the top level) so the
+# normalizer produces one `key: value` line per field and entity offsets
+# land predictably, exactly as they do for "kyc".
+_RECORD_FIELDS = ("kyc", "tax", "bank", "voter")
 
 
 def _error(message: str) -> dict:
@@ -39,8 +45,10 @@ def fetch_customer(customer_id: str, field: str) -> dict:
 
     Args:
         customer_id: The customer's id, e.g. "cust_8814".
-        field: Which field to return — one of name, phone, email, address, kyc.
-            "kyc" returns the full KYC record (Aadhaar, name, phone, PAN).
+        field: Which field to return — one of name, phone, email, address,
+            kyc, tax, bank, voter. "kyc" returns the KYC record (Aadhaar,
+            name, phone, PAN); "tax" returns the GSTIN; "bank" the IFSC;
+            "voter" the voter ID.
     """
     if field not in _CUSTOMER_FIELDS:
         return _error(f"Unknown field '{field}'. Valid fields: {', '.join(_CUSTOMER_FIELDS)}")
@@ -48,8 +56,9 @@ def fetch_customer(customer_id: str, field: str) -> dict:
     if record is None:
         return _error(f"No such customer '{customer_id}'")
 
-    if field == "kyc":
-        payload = {"customer_id": customer_id, **record["kyc"]}
+    if field in _RECORD_FIELDS:
+        nested = record.get(field) or {}
+        payload = {"customer_id": customer_id, **{k: v for k, v in nested.items() if k != "customer_id"}}
     else:
         payload = {"customer_id": customer_id, field: record.get(field)}
     return _json_result(payload)

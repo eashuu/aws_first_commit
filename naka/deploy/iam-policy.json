@@ -1,0 +1,84 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "BedrockInvokeNovaInferenceProfiles",
+      "Effect": "Allow",
+      "Action": ["bedrock:InvokeModel", "bedrock:Converse"],
+      "Resource": [
+        "arn:aws:bedrock:__REGION__:__ACCOUNT_ID__:inference-profile/apac.amazon.nova-lite-v1:0",
+        "arn:aws:bedrock:__REGION__:__ACCOUNT_ID__:inference-profile/apac.amazon.nova-pro-v1:0"
+      ]
+    },
+    {
+      "Sid": "BedrockInvokeUnderlyingFoundationModelsAcrossApac",
+      "Effect": "Allow",
+      "Action": ["bedrock:InvokeModel", "bedrock:Converse"],
+      "Resource": [
+        "arn:aws:bedrock:*::foundation-model/amazon.nova-lite-v1:0",
+        "arn:aws:bedrock:*::foundation-model/amazon.nova-pro-v1:0"
+      ]
+    },
+    {
+      "Sid": "ComprehendDetectPiiEntities",
+      "Effect": "Allow",
+      "Action": "comprehend:DetectPiiEntities",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ControlPlaneDetectorCoverageProbe",
+      "Effect": "Allow",
+      "Action": ["comprehend:DetectPiiEntities", "textract:DetectDocumentText"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "TextractDetectDocumentText",
+      "Effect": "Allow",
+      "Action": "textract:DetectDocumentText",
+      "Resource": "*"
+    },
+    {
+      "Sid": "DynamoDbAuditTableAndFeedIndex",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Query",
+        "dynamodb:DescribeTable"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:__REGION__:__ACCOUNT_ID__:table/__TABLE_NAME__",
+        "arn:aws:dynamodb:__REGION__:__ACCOUNT_ID__:table/__TABLE_NAME__/index/gsi1"
+      ]
+    },
+    {
+      "Sid": "S3SessionBucketObjectReadWrite",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": "arn:aws:s3:::__SESSION_BUCKET__/sessions/*"
+    },
+    {
+      "Sid": "S3SessionBucketListUnderSessionsPrefix",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::__SESSION_BUCKET__",
+      "Condition": {
+        "StringLike": { "s3:prefix": ["sessions/*"] }
+      }
+    },
+    {
+      "Sid": "CloudWatchLogsForBothFunctions",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": [
+        "arn:aws:logs:__REGION__:__ACCOUNT_ID__:log-group:/aws/lambda/__AGENT_FN__:*",
+        "arn:aws:logs:__REGION__:__ACCOUNT_ID__:log-group:/aws/lambda/__CONTROL_FN__:*"
+      ]
+    }
+  ]
+}

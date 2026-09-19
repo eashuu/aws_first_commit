@@ -268,7 +268,7 @@ All of it in **ap-south-1 (Mumbai)**, which is both the right latency and the ri
 
 | Role | Service | Decision notes |
 |---|---|---|
-| Compute | **Lambda, arm64, Python 3.12** | Prebuilt layer `arn:aws:lambda:ap-south-1:856699698935:layer:strands-agents-py3.12-arm64:<v>` |
+| Compute | **Lambda, arm64, Python 3.12** | Layer is `arn:aws:lambda:ap-south-1:856699698935:layer:strands-agents-py3_12-aarch64:<v>` — **underscore, and `aarch64`**, not `py3.12-arm64`. ⚠️ **Verified during the build: layer v2 ships strands-agents 1.40.0, which does not contain `strands.vended_interventions`.** `CedarAuthorization` needs ≥1.44, so the managed layer cannot supply it and the deployment zip must bundle it. Check what a layer contains, not what its name implies |
 | Public URL | **Function URL, `AuthType=NONE`** | 15-min ceiling. API Gateway HTTP API caps at 30s and the agent loop will exceed it |
 | Model | **`apac.amazon.nova-lite-v1:0`** for the agent loop, **`apac.amazon.nova-pro-v1:0`** only for the Tier 3 image call | Lite is ~13× cheaper ($0.071/M in vs $0.94/M) and the loop does not need Pro. Both stay in APAC; Claude in Mumbai is `global.*` only. Nova Pro has **no in-region option** in ap-south-1 either — `apac.` is the only path, not a preference |
 | Text PII | **Comprehend `DetectPiiEntities`** | Offsets + confidence. 100 KB limit. Batch per hop — 300-char minimum per request |
@@ -295,6 +295,8 @@ aws lambda add-permission --action lambda:InvokeFunction \
 ```
 
 **The two `add-permission` calls are not optional.** Since October 2025 a new function URL requires both `lambda:InvokeFunctionUrl` *and* `lambda:InvokeFunction`. Creating the URL without them yields a 403 that looks like a code problem and is not. This is §11.1 step 1 — the highest-risk step in the build, failing for a reason that has nothing to do with the project.
+
+⚠️ **Correction, found during the build: the two calls are not symmetrical.** `--function-url-auth-type` is valid **only** on `lambda:InvokeFunctionUrl`. Passing it alongside `lambda:InvokeFunction` is rejected outright — so a script that passes the same flags to both silently adds one statement, the second call fails, and the URL 403s forever while the log shows a successful deploy. Drop `--function-url-auth-type` from the `InvokeFunction` call, and check the exit status of both.
 
 `cedarpy` 4.12.0 ships the `manylinux2014_aarch64` wheel, so `--only-binary=:all:` resolves. No abi3 — pin Python 3.12.
 

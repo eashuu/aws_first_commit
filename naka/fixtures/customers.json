@@ -1,0 +1,64 @@
+{
+  "_SAFETY": "SYNTHETIC DATA. Every Aadhaar begins with 0 or 1 - a range UIDAI never issues - and satisfies the Verhoeff check digit, so it is valid to any detector and belongs to nobody. Every PAN uses sequence 0000, which is never allocated. Every phone is a 10-digit national number beginning with 5, which India never allocates to mobile. Emails and domains are RFC 2606 / IANA reserved.",
+
+  "cust_8814": {
+    "customer_id": "cust_8814",
+    "name": "Anil Kumar Rao",
+    "phone": "+91 55501 84412",
+    "email": "anil.rao@example.com",
+    "address": "Flat 4B, Nandini Residency, 12 Sarjapur Cross Road, Bengaluru, Karnataka 560102",
+    "dob": "14/08/1987",
+    "kyc": {
+      "aadhaar": "0482 7391 5604",
+      "name": "Anil Kumar Rao",
+      "phone": "+91 55501 84412",
+      "pan": "AZKPR0000M"
+    }
+  },
+
+  "cust_7326": {
+    "customer_id": "cust_7326",
+    "name": "Meera Nair",
+    "phone": "+91 55502 37169",
+    "email": "meera.nair@example.com",
+    "address": "27/3 Kadavanthra Lane, Panampilly Nagar, Kochi, Kerala 682036",
+    "dob": "02/11/1992",
+    "kyc": {
+      "aadhaar": "1639 4058 2713",
+      "name": "Meera Nair",
+      "phone": "+91 55502 37169",
+      "pan": "BQTPN0000K"
+    }
+  },
+
+  "cust_5501": {
+    "customer_id": "cust_5501",
+    "name": "Farhan Qureshi",
+    "phone": "+91 55503 66057",
+    "email": "farhan.qureshi@example.com",
+    "address": "H.No. 8-2-119, Tulip Enclave, Road No. 5, Banjara Hills, Hyderabad, Telangana 500034",
+    "dob": "30/05/1984",
+    "kyc": {
+      "aadhaar": "0957 1360 4829",
+      "name": "Farhan Qureshi",
+      "phone": "+91 55503 66057",
+      "pan": "CLMPQ0000J"
+    }
+  },
+
+  "cust_2280": {
+    "customer_id": "cust_2280",
+    "name": "Sunita Deshpande",
+    "phone": "+91 55504 91283",
+    "email": "sunita.deshpande@example.com",
+    "address": "Plot 61, Aster Society, Baner Road, Pune, Maharashtra 411045",
+    "dob": "19/03/1979",
+    "kyc": {
+      "aadhaar": "1374 6029 8151",
+      "policy_ref": "1639 4058 2714",
+      "name": "Sunita Deshpande",
+      "phone": "+91 55504 91283",
+      "pan": "DXVPD0000F"
+    }
+  }
+}

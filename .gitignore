@@ -1,0 +1,29 @@
+# BMad Method tool scaffolding (agent personas, installer config) -- not
+# part of the Naka submission, and several of its files embed the local
+# installer's username in output explicitly marked "regenerated on every
+# install" / "scoped to YOU personally". Kept out of what has to be a
+# public repo entirely, same as .agent/.agents/.claude below.
+.bmad-loop/
+_bmad/
+_bmad-output/
+
+# Naka build artifacts
+# build/ is deploy/build.sh's staging dir: the full vendored dependency
+# tree (boto3, botocore, cedarpy's compiled .so, ~4100 files, ~80MB) it
+# installs before zipping. Not naka/pkg/ -- that path doesn't exist; the
+# real one is naka/build/pkg/, and the stale pattern let the whole tree
+# through untracked-but-stageable until this was scanned for.
+naka/build/
+naka/dist/
+naka/**/__pycache__/
+naka/.venv/
+
+# OS/editor junk, wherever it turns up
+**/.DS_Store
+**/Thumbs.db
+**/desktop.ini
+
+.agents/
+.claude/
+.agent/
+prompt_optimizer/

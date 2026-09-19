@@ -7,6 +7,30 @@
 
 ---
 
+## ⚠️ Superseded in part by the shipped build · 19 September 2026
+
+**Read this before citing any part of this document as a description of what exists.** Three decisions in here were overridden during implementation, deliberately and with the call put to the team explicitly. The spec is retained as written because the reasoning is still sound and the argument is worth having on the record — but `naka/web` is the product, and where the two disagree, the code is what a judge sees.
+
+| §  | What this document specifies | What shipped | Why |
+|---|---|---|---|
+| **10.1** | Vite + React + TypeScript | **Plain HTML, CSS and ES modules** — `index.html`, `app.css`, `render.js`, `store.js`, `api.js`, `motion.js` | Six components did not justify a build step inside a Lambda zip. This one strengthens 10.1's own argument rather than contradicting it. |
+| **10.1** | "No animation library" | **GSAP + ScrollTrigger + anime.js + Lottie + Lenis**, all deferred from CDN | The spec conflict was put to the team directly and the full motion treatment was chosen knowing what §7 says. Recorded here rather than quietly deleted. |
+| **7, rule one** | "Nothing loops" | A looping Lottie in the hero | Same decision. §7's reasoning — that a looping element steals attention eight times across a three-minute video — still stands as the argument against it. |
+
+**What did *not* change, and should not:** §7's distinction between motion that shows what changed and motion that decorates. The functional motion the spec asks for is all present and is the part to defend on camera — redaction bars wiping in, ledger slots filling left to right, the budget trip inverting the card. If anything is cut for time, the decorative layer goes first: hero glow, then the scroll cue.
+
+**Two implementation findings that §7 and §10.1 could not have predicted, both verified on the deployed page:**
+
+1. **Lenis suppresses native scroll events on `window` entirely.** Measured: `window.scrollY` advances to 1600 while a `window` `'scroll'` listener fires exactly zero times. This broke ScrollTrigger, then IntersectionObserver, then a plain scroll handler, in sequence — three mechanisms all waiting for a signal that never arrives. The fix is a rAF poll re-armed on `visibilitychange`, `scroll` and `resize`. **This is the concrete cost of the override**, and it is a better argument for §10.1 than §10.1 made for itself.
+2. **The graceful-degradation claim was tested rather than asserted, and it holds.** With all five globals deleted and every external script tag stripped — so `motion.js` genuinely reads undefined for gsap, ScrollTrigger, Lenis, anime and lottie — the page renders 12/12 reveals visible, hero intact, four scenario buttons, sticky nav, four detector-tier rows, policy textarea loaded, agent URL prefilled and the correct empty-state copy. **The console is fully usable with zero animation libraries.** This is the answer to §10.1's CDN objection: the dependency is real but it is not load-bearing, and reveals are authored visible-by-default with the hiding class applied only once a working trigger exists.
+3. **A token rename silently broke every status pill.** `render.js` still referenced `var(--ok)`, `var(--warn)` and `var(--muted)` after a stylesheet rewrite renamed them, so every pill rendered with an undefined colour and no error anywhere. Found only by auditing the colour semantics (§6.2). Custom properties fail silently; there is no build-time check for this in a no-build stack.
+
+**One addition to §6.2's colour semantics, adopted 19 September**, after checking how AWS's own consoles encode state: **red is reserved for failure, not for denial.** Across the Cedar playground, the Verified Permissions console, Bedrock Guardrails and CloudWatch GenAI Observability, green means allowed or no action taken, amber means intervened — content modified but not fatal — and red means an error. A successful block is amber, because the system worked as designed. Shipped mapping: `--deny` is now amber `#e8913a`; a new `--fault` `#e0495f` is the **only** red in the product and is reserved for `withheld_detector`, `withheld_ledger` and `withheld_internal_error` — the states where Naka could not reach a decision at all.
+
+**And one component this document does not contain**, added because the judging format demands it: **one-click scenario buttons**. Four, above the prompt, each carrying a complete payload and role, each minting a fresh session id so one scenario cannot inherit another's spent ledger. The judge never types. See §0 — it is the same constraint this document opens with, followed further than the original draft followed it.
+
+---
+
 ## 0. The one constraint that decides everything below
 
 Judges see a public repo, a written submission, and **a YouTube video of three minutes or less**. There is no live demo, no walkthrough call, no hover, no click from the judge. The interface is judged as a **moving image at 1080p, after YouTube's encoder has had it**.

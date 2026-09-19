@@ -1,12 +1,41 @@
-# Seven things in the AWS docs that will change how you build an agent guardrail
-
-*Bedrock Guardrails, Comprehend, Textract and Lambda Function URLs — and one contradiction I could not resolve. Written from a build in ap-south-1 over Indian personal data.*
+> **Editorial note — not part of the post. Delete before publishing.**
+>
+> **Where this goes: AWS Builder Center, in the WeMakeDevs Space.** Not dev.to, not Hashnode, not Medium. The prize card says, verbatim: *"Write up what you built: the problem, the stack, what fought back. Publish it on AWS Builder Center and link it in your submission."*
+>
+> - Publish at `builder.aws.com/create/content`, on the **same Builder Center profile the hackathon entry is checked against** — they are matched.
+> - **It must be live before the submission form is filled in**, because the link is a field on that form.
+> - Prize is five keyboards **to five people, not five teams** — a second team member writing a different post is not wasted effort.
+> - Tags in use across the space: `#BharatBuilds` `#FirstCommit` `#AWS` `#WeMakeDevs` `#Hackathon` `#BuildInPublic`. None is required. Use them anyway.
+> - Structure below follows the prize's own three beats **in its order**: the problem, the stack, what fought back. The seven findings are the third beat; the two sections added above them are the first two.
+> - Of roughly 570 posts in that space, about 25–30 are genuine build posts and most of those are day-one filler. This one is well past that bar. Cross-posting to dev.to afterwards is fine; the prize is not there.
 
 ---
 
+# Seven things in the AWS docs that will change how you build an agent guardrail
+
+*Bedrock Guardrails, Comprehend, Textract and Lambda Function URLs — and one I had to settle from two documents that disagree. Written from a build in ap-south-1 over Indian personal data.*
+
+---
+
+## The problem
+
+An AI agent does not leak a database. It leaks one field at a time.
+
+Call one returns a customer's name, and the policy allows it, because a name is not sensitive. Call two returns a phone number, and that is allowed too. Call three returns a PIN code, call four a date of birth. Every single decision was correct in isolation. By call four the agent is holding a re-identifiable person, and no per-call check anywhere in the stack was ever in a position to notice — because each one only ever saw its own call.
+
+That is the failure we set out to control: not a forbidden field, but an accumulating one. The control has to be a property of *the person the data is about*, carried across calls, and it has to sit where the data actually enters the model — on what the tool **returns**, not on what the agent asks for.
+
+## The stack
+
+Python 3.12 on Lambda, arm64, behind a Function URL, in `ap-south-1`. Strands Agents for the agent loop, with the guardrail installed as interventions on the tool boundary. Cedar — embedded via `cedarpy`, not the managed service — answers three separate authorization questions per call: may this call happen, may this principal learn this field about this person given what the session already gave away, and may a redacted value be restored into this outbound argument. DynamoDB holds the disclosure ledger, keyed per subject, with atomic `ADD` on a string set so concurrent Lambdas cannot lose a write. Detection is tiered and unions rather than defers: local checksum validators for Aadhaar, PAN, GSTIN and IFSC, then Amazon Comprehend, then a multimodal pass for Indic-script documents. Amazon Bedrock runs Nova Lite for the agent loop. Textract normalises PDFs and images. S3 versions the policy bundle so it hot-reloads.
+
+Roughly a weekend. The list below is what that weekend cost, and most of it was documented before I started.
+
+## What fought back
+
 If you are about to put a PII control in front of an AI agent's tool calls on AWS, this is the list I wish someone had handed me before I opened an editor. Every item is documented. That is the problem: each one is documented on the page you read *after* you have already built the thing that needed it.
 
-I found these across two research passes done before writing any code. Four of them changed the architecture. One of them is still open, and it takes ten minutes to settle if you have an AWS account in front of you.
+I found these across two research passes done before writing any code, and the rest during the build. Four of them changed the architecture. One of them I expected to settle with a single CLI call and could not, for a reason that turned out to be worth more than the answer.
 
 Nothing below is a criticism of any service. Several of these are AWS being unusually explicit about a boundary, and the exclusion notes are better than most vendors publish. They are just easy to miss.
 
@@ -82,13 +111,17 @@ We made deploying a hello-world function behind a working URL step one of the bu
 
 ---
 
-## 5. Comprehend's API accepts `hi`. The developer guide says English and Spanish. (Unresolved.)
+## 5. Comprehend's API accepts `hi`. The developer guide says English and Spanish. Only one of them is about this feature.
 
 **The contradiction:** the `DetectPiiEntities` [API reference](https://docs.aws.amazon.com/comprehend/latest/APIReference/API_DetectPiiEntities.html) lists `hi` among the valid values for `LanguageCode`. The [PII developer guide](https://docs.aws.amazon.com/comprehend/latest/dg/how-pii.html) says PII detection supports English and Spanish.
 
 Both statements are on AWS's own documentation site. They cannot both be describing the same behaviour.
 
-**I have not resolved it**, and I am writing this down rather than guessing, because the guess is load-bearing. One `detect-pii-entities` call with `--language-code hi` settles it:
+**I could not settle this by running it**, which is its own lesson and I will come back to that. Here is what the documents actually support.
+
+The `LanguageCode` enum is shared across Comprehend's APIs — the same twelve values appear on operations that genuinely are multilingual. The PII developer guide is specific to this feature and it opens by naming two languages. A shared enum is a weaker signal than a feature-specific support statement, so the working conclusion is: **`--language-code hi` will be accepted and will not detect what you want.** An API that takes your parameter without complaint is not the same as an API that supports it.
+
+One `detect-pii-entities` call settles it for you if your account can make one:
 
 ```bash
 aws comprehend detect-pii-entities \
@@ -96,9 +129,13 @@ aws comprehend detect-pii-entities \
   --region ap-south-1
 ```
 
-The payoff is large enough to justify being the first thing you run. If `hi` works, you get real character offsets and confidence scores for Hindi text. If it does not, the only remaining path for Indic-script PII is a multimodal model returning matched substrings — which means putting a generative model inside an enforcement path, with everything that implies. (If you do that: discard any returned substring that is not literally present in the source, via `str.find()`. Never trust a model's character offsets, and never let one tier clear another tier's findings — a document can contain text instructing the detector to report nothing.)
+**Here is the part I did not expect, and it changed the design.** Bedrock Guardrails' sensitive-information filter *does* support Hindi — one of seventeen languages, all listed as optimised and supported. And as §2 covers, Guardrails has **no Indian entity types at all.** So the service with `IN_AADHAAR` and `IN_PERMANENT_ACCOUNT_NUMBER` cannot read Hindi, and the service that reads Hindi does not know what an Aadhaar number is. Each has precisely what the other lacks, and neither closes the case alone.
 
-There is a related detail worth knowing: there is no `en-IN` parameter value, though Comprehend's AI Service Card lists en-IN among the locales it was trained on.
+That is why our detector tiers **union** instead of deferring: local checksum validators catch the Indian identifiers by structure regardless of surrounding script, Comprehend handles English free text, and a multimodal pass covers Indic-script documents. No tier is allowed to clear another tier's findings, because a document can contain text instructing a detector to report nothing. If you do route through a generative model, discard any returned substring not literally present in the source via `str.find()` — never trust a model's character offsets.
+
+**Why I could not just run the command.** On a new AWS account, `comprehend:DetectPiiEntities` returned `SubscriptionRequiredException`. So did `textract:DetectDocumentText`. Bedrock returned `AccessDeniedException` — "your account is currently being verified" — in one region and `ValidationException` in another, and the Lambda concurrency limit sat at 10 instead of 1000. Same credentials, and DynamoDB, S3, Lambda and IAM all worked fine, so it was neither IAM nor region: the AI services are gated together while an account is verified, and they announce it three different ways. If you are starting an account for a deadline, make that the first call you make, not the last.
+
+One related detail: there is no `en-IN` parameter value, though Comprehend's AI Service Card lists en-IN among the locales it was trained on.
 
 ---
 

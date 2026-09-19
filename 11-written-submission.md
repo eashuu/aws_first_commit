@@ -85,6 +85,30 @@ Deployment is a plain zip and the AWS CLI, not CDK. Cost at demo scale — 500 i
 
 Two AWS paths we rejected: **AgentCore Runtime**, because `InvokeAgentRuntime` is SigV4 or JWT only with no public URL and this submission needs a link a judge can open; and **Bedrock Data Automation**, which returns markdown and bounding boxes in one call but bills $0.010/page with no free tier and a cross-region hop.
 
+## What is running, and what is provisioned but gated
+
+We would rather state this plainly than have it discovered.
+
+**Both Lambdas are deployed and healthy in ap-south-1**, `/health` returns 200 on each, and a real request traverses the entire stack — Cedar policy load from S3, DynamoDB ledger read, agent assembly with all three interventions installed. `selfcheck.py` is green. **`livecheck.py`, which exercises real AWS rather than mocks, is 24 passed, 0 failed, 6 skipped** — and all six skips are the same three services.
+
+**Three AWS AI services are gated on this account pending verification**, which is an account-provisioning state and not a defect in the build:
+
+| | |
+|---|---|
+| Bedrock Converse (`ap-south-1`) | `AccessDeniedException` — "your account is currently being verified" |
+| Comprehend `DetectPiiEntities` | `SubscriptionRequiredException` |
+| Textract `DetectDocumentText` | `SubscriptionRequiredException` |
+| Lambda concurrency | 10 rather than 1000 |
+| DynamoDB · S3 · Lambda · IAM | all working, same credentials |
+
+This is [documented AWS behaviour](https://repost.aws/knowledge-center/bedrock-invokemodel-api-error) for a new account without billing history — AWS states that such restrictions "don't appear in the Amazon Bedrock console and can't be resolved through IAM permissions or model access settings," and that the only route is a support case.
+
+**The configuration is correct and waiting, not wrong.** `aws bedrock list-inference-profiles --region ap-south-1` returns `apac.amazon.nova-lite-v1:0` and `apac.amazon.nova-pro-v1:0` — our `MODEL_ID` and `INDIC_MODEL_ID` — both **ACTIVE**. That call needs no model entitlement, so it succeeds while the account is gated, which is precisely what makes it evidence: the profiles exist, the IDs are right, and the only thing between this and a live model call is account verification.
+
+The console reports this itself rather than claiming it. A `GET /diag` route probes each service server-side and renders a per-tier state, with gated services shown as **not run**, in neutral grey, never as a failure — because a provisioning state is not a defect. What you see on the tier table is a live answer about this account at the moment you load the page, not a claim baked into the HTML.
+
+**What this does and does not cost us.** Tier 1 — the local checksum detectors for Aadhaar, PAN, GSTIN, IFSC and voter ID — is ours and runs regardless. Cedar authorization, the per-subject ledger, placeholder substitution and the rehydration check are all deterministic and none of them calls a model. **The enforcement path is intact.** What is unavailable is tier-2 and tier-3 detection breadth, document OCR, and the agent's own narration.
+
 ## What this does not do
 
 - **The principal is asserted, not authenticated.** `AuthType=NONE` on the Function URL is what makes the demo openable, and the entire policy model is principal-based. The production answer is JWT or AgentCore Identity.
@@ -104,6 +128,24 @@ India's DPDP Act 2023 and the DPDP Rules 2025 (notified November 2025) set a pha
 **No real personal data appears anywhere.** Every Aadhaar number, PAN, name, phone number and document in the repository, the video and the deployed demo is synthetic fixture data generated for this project.
 
 **AI assistance.** We would rather over-disclose than under-disclose. An AI assistant (Claude) was used for three things: the research passes behind the prior-art section and the AWS findings in our blog post; drafting and editing the planning documents and this submission; and code generation and review during the build. What to build, the architecture, and every judgement about what could honestly be claimed are the team's. Every external claim here was checked against the primary source linked beside it — including the pass that falsified our own original novelty claim, which is why the prior-art section reads the way it does. The repository was created for this event, and the Verhoeff check-digit implementation was written from the published D₅ dihedral-group tables rather than copied from an existing one.
+
+## What we learned
+
+Five things we did not know on Thursday. Each one changed the build.
+
+**1. The service that has Indian identifier types cannot read Hindi, and the service that reads Hindi has no Indian identifier types.** We assumed Amazon Comprehend would carry the detector. Its `DetectPiiEntities` API accepts `LanguageCode="hi"` — the enum lists it — but the developer guide says English and Spanish only, so the call succeeds and does not do what you want. Bedrock Guardrails' sensitive-information filter *does* support Hindi, one of seventeen languages, and has no `IN_AADHAAR` or `IN_PERMANENT_ACCOUNT_NUMBER` at all; Indian identifiers there mean hand-written regex, and lookarounds are unsupported. Neither service covers the case on its own. That is why tier 1 is our own checksum layer and why the tiers union rather than defer to each other — an architecture we arrived at by being wrong first.
+
+**2. A published API enum is not a support matrix, and an exclusion note three paragraphs down is where the real boundary lives.** The Guardrails page states plainly that the filter does not evaluate `toolUse.input`, `toolResult` or `toolSpec` — the three fields that *are* an agent's data surface. We had already built toward that boundary; finding AWS documenting it in its own words was the moment the project stopped being a guess. The general lesson, which cost us hours before it saved us more: read the limitations section before the feature section.
+
+**3. Deployment failures impersonate code failures.** A Lambda Function URL needs both `lambda:InvokeFunctionUrl` and `lambda:InvokeFunction` granted; the console adds both, the CLI adds neither. The resulting 403 reads exactly like an application bug. Worse, `--function-url-auth-type` is only valid on `InvokeFunctionUrl` — pass it to both in one script and the second call is rejected outright, so you silently add one statement and the URL 403s forever. We lost real time to this before reading the rejection instead of the symptom.
+
+**4. A published layer ARN is not a version guarantee.** The AWS-managed Strands layer is `strands-agents-py3_12-aarch64` — underscore, and `aarch64`, not the `py3.12-arm64` form we first wrote. Version 2 of that layer ships strands-agents 1.40.0, which does **not** contain `strands.vended_interventions`; `CedarAuthorization` needs ≥1.44. So the managed layer cannot supply the one class the design depends on, and the deployment zip has to bundle it. Check what a layer actually contains, not what its name implies.
+
+**5. On a new AWS account, the AI services are gated together and the failure modes are not alike.** With identical credentials, DynamoDB, S3, Lambda and IAM all worked while Bedrock returned `AccessDeniedException` ("your account is currently being verified") in one region and `ValidationException` in another, and Comprehend and Textract both returned `SubscriptionRequiredException`. A Lambda concurrency limit of 10 instead of 1000 is the tell that it is account verification, not IAM and not region. The design lesson we took from it is the one we would keep in production: every model-dependent step needs a deterministic fallback behind a flag, and the enforcement path should never be the part that depends on a model. Ours does not — Cedar and the checksum tier decide; the model only narrates.
+
+**6. A smooth-scroll library can silently starve three unrelated mechanisms at once.** Lenis suppresses native scroll events on `window` entirely — measured on the deployed page, `window.scrollY` advances to 1600 while a `window` `'scroll'` listener fires exactly zero times. That broke GSAP ScrollTrigger, then IntersectionObserver, then a hand-written scroll handler, in that order: three fallbacks that all looked independent and were all waiting on the same signal that never arrives. The fix is a requestAnimationFrame poll re-armed on `visibilitychange`, `scroll` and `resize`. The transferable lesson is about fallbacks, not about Lenis — a fallback chain is only as good as its assumption that each link fails for a *different* reason. A related one from the same afternoon: renaming a CSS custom property broke every status pill in the console with no error anywhere, because custom properties fail silently and a no-build stack has nothing to catch it.
+
+**What we would do differently.** We spent the first pass arguing that the mechanism was novel. A research pass falsified that — the concept is published (CAMP, OCELOT), and AWS shipped the policy substrate weeks before we started. Rewriting the claim to the narrow thing that survived took an afternoon and made every other document easier to write. We should have tried to falsify it on day one instead of day two.
 
 ## Links
 

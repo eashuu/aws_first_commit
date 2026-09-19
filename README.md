@@ -40,6 +40,8 @@ Say "cumulative state" instead and you lose the room — see document 01 for why
 | 10 | `chowki-hackathon/10-demo-fixtures.md` | The seeded data and the exact call sequence that produces each demo beat. |
 | 11 | `chowki-hackathon/11-written-submission.md` | Finished prose for the submission form. |
 | 12 | `chowki-hackathon/12-blog-post.md` | For the top-five-blogger prize. The research is the asset. |
+| 13 | `13-depth-pass.md` | **Answers a panel member's "this looks very simple."** Re-orders the video beats and the submission sections so the prior-art concession lands after the demo instead of before it, adds two beats, and documents shipped shadow mode. **Supersedes 06 §A.2's beat order and 11's section order.** |
+| 14 | `14-field-recon.md` | **Who else is in this hackathon, and what the rules and judges actually say.** Contains only what 01–13 do not. Names the one direct thesis collision (AgentShield, deployed and benchmarked), the Cedar projects in the same room, three scored items missing from the package, the operational hazards other teams are hitting right now — **Bedrock returning quota 0 on new accounts** — and the real Best UI bar. **Corrects the README's "GA in Mumbai" and pre-flight item #4.** |
 
 *(The `chowki-hackathon/` folder name predates the rename to Naka. Cosmetic; leave it until after submission.)*
 

@@ -174,8 +174,36 @@ def run_scenario(
 
             tool_use = {"name": tool_name, "input": resolved_kwargs, "toolUseId": tool_use_id}
 
-            # Q1 + the session-ceiling backstop.
             before_ev = _Event(tool_use, agent=agent)
+
+            # Q1 — may this call happen at all?
+            #
+            # On the agent path this is asked by Strands' `CedarAuthorization`
+            # intervention (app_agent.build_agent). There is no intervention
+            # chain here, so it is asked directly against the same policy set.
+            # It was previously NOT asked on this path at all while the
+            # docstring above claimed it was — which meant every q1_* permit
+            # in agent.cedar could have been deleted with no observable effect
+            # on the only path that currently runs.
+            q1_allow, q1_policy = cedar_q2.authorize_call(
+                tool_name,
+                principal=principal,
+                role=role,
+                resource=tool_name,
+                policy=policy_bundle,
+            )
+            if not q1_allow:
+                reason = f"Q1 denied {tool_name}" + (f" ({q1_policy})" if q1_policy else "")
+                before_ev.cancel_tool = f"DENIED: {reason}"
+                hook._on_before_tool_call(before_ev)
+                transcript.append(
+                    {"step": i, "tool": tool_name, "outcome": "denied_call", "reason": reason}
+                )
+                continue
+
+            # The session-ceiling backstop, which is separate from Cedar: it
+            # is the ceiling on total disclosure for the whole session, not a
+            # per-call authorization.
             decision = guard.before_tool_call(before_ev)
             if type(decision).__name__ == "Deny":
                 before_ev.cancel_tool = f"DENIED: {decision.reason}"

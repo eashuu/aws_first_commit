@@ -474,7 +474,26 @@ def merge(*groups: list[Entity]) -> list[Entity]:
             if (outer.begin, outer.end) == (inner.begin, inner.end):
                 continue
             contained = outer.begin <= inner.begin and inner.end <= outer.end
-            if contained and rank_of(outer.type) > rank_of(inner.type):
+            # `inner.type in _RANK_ORDER` is load-bearing, not defensive.
+            # rank_of() returns 0 for anything unlisted, which is the same
+            # rank as OTHER — so without this guard EVERY unranked type
+            # (BANK_ACCOUNT_NUMBER, SSN, PASSPORT_NUMBER, DRIVER_ID, PIN,
+            # PASSWORD, CREDIT_DEBIT_CVV, and even DATE_TIME and AGE, which
+            # ARE in DEFAULT_IDENTIFYING_TYPES) is outranked by a merely
+            # containing ADDRESS and silently dropped.
+            #
+            # That is a subtraction, and it fails open. Measured:
+            #   merge([ADDRESS 6..45], [BANK_ACCOUNT_NUMBER 33..45])
+            # returned [ADDRESS] alone. BANK_ACCOUNT_NUMBER has no reveal
+            # permit so Cedar default-denies it and it would have been
+            # masked; once dropped, the surviving ADDRESS is permitted by
+            # q2_reveal_baseline and the whole span — account number
+            # included — goes out in plaintext.
+            #
+            # An unranked inner type therefore never loses a containment
+            # contest. "Tiers union, never subtract" has to hold here or it
+            # does not hold at all.
+            if contained and inner.type in _RANK_ORDER and rank_of(outer.type) > rank_of(inner.type):
                 dropped.add((inner.begin, inner.end, inner.type))
 
     result = [e for e in deduped if (e.begin, e.end, e.type) not in dropped]

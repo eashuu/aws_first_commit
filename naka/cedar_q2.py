@@ -102,6 +102,41 @@ def authorize_fields(
     return decisions
 
 
+def authorize_call(tool_name: str, *, principal: str, role: str, resource: str, policy):
+    """Q1: may this tool invocation happen at all?
+
+    On the agent path this question is asked by Strands' `CedarAuthorization`
+    intervention, which builds the request itself. The scripted demo driver
+    has no Strands agent and therefore no intervention chain, so it asks the
+    same question here against the same policy set.
+
+    The request shape mirrors what `CedarAuthorization` produces, and it has
+    to keep mirroring it: `Action::"<tool_name>"` with the session role in
+    context is what every `q1_*` permit in agent.cedar matches on. If those
+    two ever drift, the demo path and the agent path stop agreeing about
+    what is allowed — which is a worse failure than either being wrong,
+    because only one of them is the one anybody watches.
+
+    Returns (allow, policy_id).
+    """
+    req = {
+        "principal": f'User::"{_cedar_str(principal)}"',
+        "action": f'Action::"{_cedar_str(tool_name)}"',
+        "resource": f'Resource::"{_cedar_str(resource)}"',
+        "context": {"session": {"role": role}},
+        "correlation_id": tool_name,
+    }
+    results = cedarpy.is_authorized_batch([req], policy.policy_set, [])
+    if not results:
+        # No decision is not an allow. Cedar returning nothing here would be
+        # a library-level surprise, and the fail-closed default is the whole
+        # posture of the product.
+        return False, None
+    result = results[0]
+    allow = result.decision == cedarpy.Decision.Allow and result.allowed
+    return allow, _policy_id(result.diagnostics)
+
+
 def authorize_rehydration(
     entity_types: list[str], *, principal: str, role: str, dest: str, policy
 ) -> dict[str, bool]:

@@ -112,17 +112,33 @@ permit(principal,
        action == Action::"rehydrate_IN_AADHAAR",
        resource == Destination::"kyc-vault.internal");
 
-@id("q3_rehydrate_other_internal")
+// `crm.internal` was a permitted destination here and has been removed.
+//
+// Why: this permit carries no budget condition, and it cannot carry one —
+// the Q3 request context is `{session: {role}}` only (cedar_q2.
+// authorize_rehydration), with no seen_count and no budget in scope. That
+// made it a complete bypass of Q2: a field masked moments earlier for
+// exceeding the per-subject budget could be handed straight back out by
+// naming crm.internal as the destination, and because rehydration does not
+// touch the ledger, the budget never even registered the second release.
+//
+// Two ways to close it: put seen_count/budget into the Q3 context and gate
+// on them, or narrow the destination set. The second needs no code change
+// and is strictly the safer direction, so it is what ships. kyc-vault is
+// the one destination whose whole purpose is holding these values, which
+// is why it survives for the softer fields exactly as it does for Aadhaar
+// above.
+//
+// If crm.internal is ever restored, it MUST come back with a budget
+// condition, which means the context builder has to change first.
+@id("q3_rehydrate_other_kyc_vault_only")
+@advice("Contact fields and PAN may be restored only into the KYC vault. No destination outside it receives a rehydrated value.")
 permit(principal,
        action in [Action::"rehydrate_NAME", Action::"rehydrate_PHONE",
                   Action::"rehydrate_EMAIL", Action::"rehydrate_ADDRESS",
                   Action::"rehydrate_DATE_TIME",
                   Action::"rehydrate_IN_PERMANENT_ACCOUNT_NUMBER"],
-       resource)
-when {
-  resource == Destination::"kyc-vault.internal" ||
-  resource == Destination::"crm.internal"
-};
+       resource == Destination::"kyc-vault.internal");
 
 // --- The compliance exemption --------------------------------------------
 // Scoped to Q1 + Q2 only. Writing this unscoped would also exempt compliance

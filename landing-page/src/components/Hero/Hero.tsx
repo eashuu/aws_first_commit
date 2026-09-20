@@ -8,7 +8,7 @@ import {
 } from 'framer-motion';
 import { Button } from '../Button/Button';
 import { CursorDots } from '../CursorDots/CursorDots';
-import { uiSpring, parallaxSpring, drawSpring } from '../../lib/spring';
+import { uiSpring, parallaxSpring, drawSpring } from '../../lib/motion';
 import './Hero.css';
 
 /* ─── Entrance Variants ───────────────────────────────────────── */

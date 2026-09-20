@@ -1,0 +1,11 @@
+/* ═══════════════════════════════════════════════════════════════
+   tokens/index.css — Import barrel for the full token layer.
+   Import order matters: primitives → alpha → semantic.
+   Only import THIS file in main.tsx, never the individual layers.
+   ═══════════════════════════════════════════════════════════════ */
+
+@import './primitives.css';
+@import './alpha.css';
+
+/* Semantic layer lives in src/tokens.css (root level) and is
+   imported separately in main.tsx for legacy reasons.            */

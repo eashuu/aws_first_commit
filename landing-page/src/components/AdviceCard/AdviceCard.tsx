@@ -1,6 +1,8 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useSpring, useTransform, useMotionValue } from 'framer-motion';
 import { uiSpring, momentumSpring } from '../../lib/spring';
+import { spotlightSpring } from '../../lib/motion';
+import { alpha, durationMs } from '../../lib/design';
 import './AdviceCard.css';
 
 /* ─── Animation Variants ──────────────────────────────────────── */
@@ -110,9 +112,8 @@ export function AdviceCard({
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
 
-  const springConfig = { damping: 20, stiffness: 200, mass: 0.5 };
-  const smoothX = useSpring(mouseX, springConfig);
-  const smoothY = useSpring(mouseY, springConfig);
+  const smoothX = useSpring(mouseX, spotlightSpring);
+  const smoothY = useSpring(mouseY, spotlightSpring);
 
   /* Convert to CSS-ready percentage strings */
   const gradientX = useTransform(smoothX, [0, 1], ['0%', '100%']);
@@ -133,7 +134,7 @@ export function AdviceCard({
 
   const handleDismiss = useCallback(() => {
     setIsVisible(false);
-    setTimeout(() => onDismiss?.(), 350);
+    setTimeout(() => onDismiss?.(), durationMs.slow + durationMs.snap);
   }, [onDismiss]);
 
   return (
@@ -158,9 +159,9 @@ export function AdviceCard({
           <motion.div
             className="advice-card__spotlight"
             style={{
-              background: `radial-gradient(320px circle at ${gradientX} ${gradientY},
-                rgba(222, 161, 147, 0.10) 0%,
-                rgba(222, 161, 147, 0.04) 40%,
+              background: `radial-gradient(var(--card-spotlight-radius) circle at ${gradientX} ${gradientY},
+                ${alpha.rose.a10} 0%,
+                ${alpha.rose.a04} 40%,
                 transparent 70%)`,
             }}
             aria-hidden="true"

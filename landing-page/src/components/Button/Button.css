@@ -2,6 +2,39 @@
    Button.css — All button styles. Scope: .btn only.
    ═══════════════════════════════════════════════════════════════ */
 
+/* ── Button Tokens ────────────────────────────────────────────── */
+.btn {
+  --btn-font-size:          var(--font-size-base);
+  --btn-z:                  var(--z-base);
+  --btn-z-pseudo:           var(--z-raised);
+  --btn-transition:         var(--duration-base) var(--ease-standard);
+  --btn-hover-bg:           rgba(255, 255, 255, 0.09);
+  --btn-active-shadow:
+    inset 0 4px 8px  var(--shadow-press-deep),
+    inset 0 1px 3px  var(--shadow-press-light);
+  --btn-pseudo-before-bg:   linear-gradient(
+                              to left top,
+                              rgba(255, 255, 255, 0.08) 0%,
+                              rgba(255, 255, 255, 0)    50%
+                            );
+  --btn-pseudo-after-bg:    linear-gradient(
+                              to bottom,
+                              rgba(255, 255, 255, 0.05) 0%,
+                              rgba(255, 255, 255, 0)    100%
+                            );
+  /* Primary variant hover shadow */
+  --btn-primary-hover-shadow:
+    0 8px 28px var(--shadow-drop),
+    inset 0 0 0 1px  rgba(222, 161, 147, 0.45),
+    inset 0 0 8px 2px rgba(166, 118, 108, 0.3),
+    inset 0 0 20px 2px rgba(166, 118, 108, 0.18);
+  /* Secondary variant hover shadow */
+  --btn-secondary-hover-shadow:
+    0 8px 28px var(--shadow-drop),
+    inset 0 0 0 1px  var(--border-default),
+    inset 0 0 8px 2px rgba(255, 255, 255, 0.07);
+}
+
 /* ── Base ─────────────────────────────────────────────────────── */
 .btn {
   box-sizing: border-box;
@@ -12,7 +45,7 @@
   padding: 10px 24px;
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: var(--btn-font-size);
   letter-spacing: 0.01em;
   color: var(--text-primary);
   border-radius: var(--radius-full);
@@ -21,7 +54,7 @@
   cursor: pointer;
   white-space: nowrap;
   position: relative;
-  z-index: 1;
+  z-index: var(--btn-z);
   overflow: hidden;
   text-decoration: none;
 
@@ -32,9 +65,9 @@
 
   /* Apple §1 / Material 3: Snappy 200ms interactions on compositor-only properties. */
   transition:
-    transform  0.2s cubic-bezier(0.2, 0, 0, 1),
-    box-shadow 0.2s ease,
-    background 0.2s ease;
+    transform  var(--btn-transition),
+    box-shadow var(--btn-transition),
+    background var(--btn-transition);
 }
 
 /* ── Glass Edge Specular Highlights ──────────────────────────── */
@@ -44,40 +77,30 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 2;
+  z-index: var(--btn-z-pseudo);
   border-radius: inherit;
 }
 
 /* Corner reflection — light from top-left */
 .btn::before {
-  background: linear-gradient(
-    to left top,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 255, 255, 0)    50%
-  );
+  background: var(--btn-pseudo-before-bg);
 }
 
 /* Top sheen — diffuse ambient */
 .btn::after {
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0)    100%
-  );
+  background: var(--btn-pseudo-after-bg);
 }
 
 /* ── States ───────────────────────────────────────────────────── */
 .btn:hover {
-  background: rgba(255, 255, 255, 0.09);
+  background: var(--btn-hover-bg);
   transform: translateY(-2px) scale(1.02);
 }
 
 .btn:active {
   transform: translateY(1px) scale(0.97);
-  box-shadow:
-    inset 0 4px 8px rgba(0, 0, 0, 0.4),
-    inset 0 1px 3px rgba(0, 0, 0, 0.3) !important;
-  transition-duration: 80ms; /* Snap on press, spring on release */
+  box-shadow: var(--btn-active-shadow) !important;
+  transition-duration: var(--duration-snap); /* Snap on press, spring on release */
 }
 
 .btn:focus-visible {
@@ -93,11 +116,7 @@
 }
 
 .btn-primary:hover {
-  box-shadow:
-    0 8px 28px rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px  rgba(222, 161, 147, 0.45),
-    inset 0 0 8px 2px rgba(166, 118, 108, 0.3),
-    inset 0 0 20px 2px rgba(166, 118, 108, 0.18);
+  box-shadow: var(--btn-primary-hover-shadow);
 }
 
 /* Secondary: Pure monochrome rim */
@@ -106,8 +125,5 @@
 }
 
 .btn-secondary:hover {
-  box-shadow:
-    0 8px 28px rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px  rgba(255, 255, 255, 0.20),
-    inset 0 0 8px 2px rgba(255, 255, 255, 0.07);
+  box-shadow: var(--btn-secondary-hover-shadow);
 }

@@ -4,6 +4,30 @@
    from global.css. This file owns only .footer-* classes.
    ───────────────────────────────────────────────────────────────── */
 
+/* ── Footer Tokens ───────────────────────────────────────────────── */
+.footer {
+  --footer-mark-size:      var(--font-size-xl);          /* 1.5rem logotype         */
+  --footer-tag-size:       var(--font-size-base);        /* 0.9375rem position stmt */
+  --footer-desc-size:      var(--font-size-sm);          /* 0.8125rem support copy  */
+  --footer-label-size:     var(--font-size-2xs);         /* 0.625rem mono labels    */
+  --footer-event-size:     var(--font-size-md);          /* 1.0625rem event name    */
+  --footer-org-size:       var(--font-size-sm);          /* 0.8125rem org name      */
+  --footer-track-size:     var(--font-size-xs);          /* 0.75rem track tag       */
+  --footer-date-size:      var(--font-size-xs);          /* 0.75rem date stamp      */
+  --footer-team-label-size:var(--font-size-2xs);         /* 0.625rem team label     */
+  --footer-copy-size:      var(--font-size-xs);          /* 0.75rem copyright       */
+  --footer-chip-size:      var(--font-size-xs);          /* 0.75rem stack chips     */
+  --footer-sep-size:       var(--font-size-lg);          /* ~1.3rem name separator  */
+  --footer-name-size:      clamp(1.8rem, 4vw, 3rem);     /* Editorial name scale    */
+  --mark-flare:            #ffffff;                       /* Center flare in sweep   */
+  --footer-iris-mid:       var(--rose-a65);              /* rgba(222,161,147,0.65)  */
+  --footer-iris-side:      var(--rose-a45);              /* rgba(222,161,147,0.45)  */
+  --footer-name-glow:      var(--rose-a06);              /* rgba(222,161,147,0.06)  */
+  --footer-dim-rule:       var(--white-a04);             /* rgba(255,255,255,0.04)  */
+  --footer-chip-hover-bd:  var(--rose-a40);              /* rgba(222,161,147,0.4)   */
+  --footer-chip-hover-bg:  var(--rose-a04);              /* rgba(222,161,147,0.05≈) */
+}
+
 /* ── Shell ──────────────────────────────────────────────────────── */
 .footer {
   position: relative;
@@ -31,12 +55,12 @@
   height: 1px;
   background: linear-gradient(
     90deg,
-    transparent                   0%,
-    rgba(222, 161, 147, 0.0)     10%,
-    rgba(222, 161, 147, 0.45)    40%,
-    rgba(222, 161, 147, 0.65)    50%,
-    rgba(222, 161, 147, 0.45)    60%,
-    rgba(222, 161, 147, 0.0)     90%,
+    transparent                    0%,
+    transparent                   10%,
+    var(--footer-iris-side)       40%,
+    var(--footer-iris-mid)        50%,
+    var(--footer-iris-side)       60%,
+    transparent                   90%,
     transparent                  100%
   );
   pointer-events: none;
@@ -54,7 +78,7 @@
 /* XERATH wordmark — exact styling from Hero logotype */
 .footer-mark {
   font-family: var(--font-sans);
-  font-size: 1.5rem;
+  font-size: var(--footer-mark-size);
   font-weight: 500;
   letter-spacing: 0.5em;
   text-transform: uppercase;
@@ -62,9 +86,7 @@
     to right,
     var(--text-primary) 0%,
     var(--accent-rose-muted) 33%,
-    
-    #ffffff 50%,
-    
+    var(--mark-flare) 50%,
     var(--text-primary) 66%,
     var(--accent-rose-muted) 100%
   );
@@ -76,13 +98,13 @@
   line-height: 1;
   margin-bottom: var(--space-4);
   display: inline-block;
-  transition: letter-spacing 0.3s cubic-bezier(0.2, 0, 0, 1), background-position 0s;
+  transition: letter-spacing var(--duration-slow) var(--ease-apple), background-position 0s;
   will-change: letter-spacing, background-position;
 }
 
 .footer-mark:hover {
   letter-spacing: 0.55em;
-  animation: footer-sweep 1s cubic-bezier(0.2, 0, 0, 1) forwards;
+  animation: footer-sweep 1s var(--ease-apple) forwards;
 }
 
 @keyframes footer-sweep {
@@ -96,7 +118,7 @@
 
 /* One-line position statement */
 .footer-tag {
-  font-size: 0.9rem;
+  font-size: var(--footer-tag-size);
   color: var(--text-secondary);
   letter-spacing: 0.01em;
   margin-bottom: var(--space-3);
@@ -105,7 +127,7 @@
 
 /* Two-line expansion */
 .footer-desc {
-  font-size: 0.8rem;
+  font-size: var(--footer-desc-size);
   color: var(--text-tertiary);
   line-height: 1.7;
   max-width: 46ch;
@@ -121,7 +143,7 @@
 
 .footer-context-label {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.58rem;
+  font-size: var(--footer-label-size);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--text-tertiary);
@@ -129,7 +151,7 @@
 }
 
 .footer-context-event {
-  font-size: 1.1rem;
+  font-size: var(--footer-event-size);
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--text-primary);
@@ -137,20 +159,20 @@
 }
 
 .footer-context-org {
-  font-size: 0.82rem;
+  font-size: var(--footer-org-size);
   color: var(--text-secondary);
 }
 
 .footer-context-track {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.65rem;
+  font-size: var(--footer-track-size);
   color: var(--text-tertiary);
   letter-spacing: 0.04em;
 }
 
 .footer-context-date {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.62rem;
+  font-size: var(--footer-date-size);
   color: var(--text-tertiary);
   letter-spacing: 0.06em;
   margin-top: var(--space-2);
@@ -165,7 +187,7 @@
 }
 
 .footer-rule--dim {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--footer-dim-rule);
   margin-top: var(--space-7);
 }
 
@@ -176,7 +198,7 @@
 
 .footer-team-label {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.6rem;
+  font-size: var(--footer-team-label-size);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--text-tertiary);
@@ -200,7 +222,7 @@
 
 .footer-name {
   font-family: var(--font-sans);
-  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-size: var(--footer-name-size);
   font-weight: 600;
   letter-spacing: -0.025em;
   color: transparent;
@@ -219,8 +241,8 @@
   left: 0;
   width: 100%;
   color: var(--text-primary);
-  text-shadow: 0 0 80px rgba(222, 161, 147, 0.06);
-  transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1), color 0.3s ease, text-shadow 0.3s ease;
+  text-shadow: 0 0 80px var(--footer-name-glow);
+  transition: transform 0.4s var(--ease-apple), color var(--duration-slow) var(--ease-standard), text-shadow var(--duration-slow) var(--ease-standard);
 }
 
 .footer-name::before {
@@ -242,7 +264,7 @@
 }
 
 .footer-name-sep {
-  font-size: 1.2rem;
+  font-size: var(--footer-sep-size);
   color: var(--accent-rose-muted);
   opacity: 0.5;
   margin: 0 clamp(var(--space-4), 3vw, var(--space-6));
@@ -261,7 +283,7 @@
 
 .footer-copy {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.65rem;
+  font-size: var(--footer-copy-size);
   letter-spacing: 0.06em;
   color: var(--text-tertiary);
 }
@@ -276,22 +298,22 @@
 
 .footer-chip {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.6rem;
+  font-size: var(--footer-chip-size);
   letter-spacing: 0.06em;
   color: var(--text-tertiary);
   border: 1px solid var(--border-light);
   padding: 2px 8px;
-  border-radius: 2px;
+  border-radius: var(--radius-xs);
   white-space: nowrap;
   /* Hover: subtly reveal */
-  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s cubic-bezier(0.2, 0, 0, 1), background 0.2s ease;
+  transition: color var(--duration-base) var(--ease-standard), border-color var(--duration-base) var(--ease-standard), transform var(--duration-base) var(--ease-apple), background var(--duration-base) var(--ease-standard);
   will-change: transform;
 }
 
 .footer-chip:hover {
   color: var(--accent-rose);
-  border-color: rgba(222, 161, 147, 0.4);
-  background: rgba(222, 161, 147, 0.05);
+  border-color: var(--footer-chip-hover-bd);
+  background: var(--footer-chip-hover-bg);
   transform: translateY(-2px) scale(1.05);
 }
 
@@ -307,7 +329,7 @@
   }
 
   .footer-mark {
-    font-size: 1.5rem;
+    font-size: var(--footer-mark-size);
     letter-spacing: 0.3em;
   }
 

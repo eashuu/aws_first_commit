@@ -5,11 +5,19 @@
    static visual layers.
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── Shell ────────────────────────────────────────────────────── */
+/* ── AdviceCard Tokens ────────────────────────────────────────── */
 .advice-card {
-  --card-radius: var(--radius-lg);
-  --card-padding: var(--space-5);
-  --card-max-w: 420px;
+  --card-radius:           var(--radius-lg);
+  --card-padding:          var(--space-5);
+  --card-max-w:            420px;
+  --card-spotlight-radius: 320px;
+  --card-bg-tint-hi:       var(--white-a06);
+  --card-bg-tint-lo:       var(--white-a02);
+  --card-bg-base:          color-mix(in srgb, var(--surface-raised) 72%, transparent);
+  --card-blur:             var(--material-blur-lg);
+  --card-shadow:           var(--shadow-glass-deep);
+  --card-dismiss-bg:       var(--white-a05);
+  --card-dismiss-bg-hover: var(--white-a08);
 
   position: relative;
   max-width: var(--card-max-w);
@@ -22,24 +30,15 @@
   background:
     linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.055) 0%,
-      rgba(255, 255, 255, 0.02) 100%
+      var(--card-bg-tint-hi) 0%,
+      var(--card-bg-tint-lo) 100%
     ),
-    rgba(10, 10, 12, 0.72);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
+    var(--card-bg-base);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
 
   /* Hairline border — inset so it overlaps the bg */
-  box-shadow:
-    /* Outer ambient depth */
-    0 8px 40px rgba(0, 0, 0, 0.55),
-    0 2px 8px  rgba(0, 0, 0, 0.35),
-    /* Hairline top-left sheen */
-    inset 1px 1px 0 rgba(255, 255, 255, 0.1),
-    /* Full border ring */
-    inset 0 0 0 1px rgba(255, 255, 255, 0.07),
-    /* Rose-gold floor-glow */
-    inset 0 -1px 0 rgba(222, 161, 147, 0.18);
+  box-shadow: var(--card-shadow);
 
   cursor: default;
   will-change: transform;
@@ -52,14 +51,14 @@
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  z-index: 0;
+  z-index: var(--z-ground);
   /* transition handled by framer-motion spring */
 }
 
 /* ── All content sits above the spotlight ───────────────────── */
 .advice-card > *:not(.advice-card__spotlight) {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-base);
 }
 
 /* ── Header row ──────────────────────────────────────────────── */
@@ -83,13 +82,13 @@
   color: var(--accent-rose);
   flex-shrink: 0;
   /* Subtle drop-shadow glow */
-  filter: drop-shadow(0 0 4px rgba(222, 161, 147, 0.55));
+  filter: var(--icon-glow-accent);
 }
 
 /* ── Label chip ──────────────────────────────────────────────── */
 .advice-card__label {
   font-family: var(--font-sans);
-  font-size: 10px;
+  font-size: var(--font-size-2xs);
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -106,11 +105,11 @@
   height: 24px;
   border: none;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--card-dismiss-bg);
   color: var(--text-tertiary);
   opacity: 0.6;
   cursor: pointer;
-  transition: background 200ms ease, color 200ms ease;
+  transition: background var(--duration-base) var(--ease-standard), color var(--duration-base) var(--ease-standard);
   flex-shrink: 0;
 }
 
@@ -120,7 +119,7 @@
 }
 
 .advice-card__dismiss:hover {
-  background: rgba(255, 255, 255, 0.09);
+  background: var(--card-dismiss-bg-hover);
   color: var(--text-secondary);
 }
 
@@ -133,7 +132,7 @@
 /* ── Title ───────────────────────────────────────────────────── */
 .advice-card__title {
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: var(--font-size-base);
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.01em;
@@ -144,7 +143,7 @@
 /* ── Body ────────────────────────────────────────────────────── */
 .advice-card__body {
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   font-weight: 400;
   color: var(--text-secondary);
   line-height: var(--leading-normal);
@@ -159,7 +158,7 @@
 
 .advice-card__detail-text {
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   font-weight: 400;
   color: var(--text-tertiary);
   line-height: var(--leading-normal);
@@ -178,14 +177,14 @@
   border: none;
   background: none;
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   color: var(--accent-rose-muted);
   letter-spacing: 0.01em;
   cursor: pointer;
   padding: 0;
   opacity: 0.8;
-  transition: opacity 150ms ease, color 150ms ease;
+  transition: opacity var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard);
 }
 
 .advice-card__expand-btn:hover {
@@ -201,9 +200,9 @@
 
 .advice-card__expand-chevron {
   display: inline-block;
-  font-size: 10px;
+  font-size: var(--font-size-2xs);
   line-height: 1;
-  transition: transform 300ms ease;
+  transition: transform var(--duration-slow) var(--ease-standard);
 }
 
 /* ── Reduced motion ──────────────────────────────────────────── */

@@ -1,3 +1,8 @@
+/* ── CursorDots Tokens ────────────────────────────────────────── */
+.cursor-dots-canvas {
+  --dots-z: var(--z-ground);
+}
+
 .cursor-dots-canvas {
   position: absolute;
   top: 0;
@@ -5,7 +10,7 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 0; /* Just above the section background, below content (z-index 1) */
+  z-index: var(--dots-z); /* Just above the section background, below content (z-index 1) */
   mix-blend-mode: screen;
   /* Seamless fade out tethering off smoothly at the bottom */
   mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);

@@ -1,70 +1,193 @@
 /* ═══════════════════════════════════════════════════════════════
-   tokens.css — Single source of truth for all design tokens.
-   Import this first. Nothing else should define :root variables.
+   tokens.css — Semantic design token layer.
+   Maps primitives to design intent.
+   All component CSS must reference THIS layer, never primitives.
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
   color-scheme: dark;
 
-  /* ── Backgrounds ──────────────────────────────────────────── */
-  --bg-primary:   #020203; /* Threshold Black               */
-  --bg-secondary: #0A0A0C;
-  --bg-tertiary:  #101012;
+  /* ── Surfaces ──────────────────────────────────────────────── */
+  --surface-base:     var(--black-950);  /* Page background       */
+  --surface-raised:   var(--black-900);  /* Cards, panels         */
+  --surface-overlay:  var(--black-800);  /* Tooltips, dropdowns   */
 
-  /* ── Text Scale ───────────────────────────────────────────── */
-  --text-primary:   #F5F5F7;
-  --text-secondary: #A1A1A6;
-  --text-tertiary:  #6E6E73;
+  /* ── Text ──────────────────────────────────────────────────── */
+  --text-primary:     var(--grey-100);
+  --text-secondary:   var(--grey-300);
+  --text-tertiary:    var(--grey-400);
 
-  /* ── Borders ──────────────────────────────────────────────── */
-  --border-light: rgba(255, 255, 255, 0.06);
-  --border-med:   rgba(255, 255, 255, 0.12);
+  /* ── Accent ────────────────────────────────────────────────── */
+  --accent-primary:   var(--rose-400);
+  --accent-muted:     var(--rose-600);
+  --accent-subtle:    var(--rose-a12);   /* Tinted background     */
+  --accent-border:    var(--rose-a25);   /* Accent-tinted border  */
+  --accent-glow-sm:   var(--rose-a40);   /* Small proximity glow  */
+  --accent-glow-lg:   var(--rose-a80);   /* Strong glow / shine   */
+  --gradient-accent:  linear-gradient(135deg, var(--rose-300) 0%, var(--rose-600) 100%);
 
-  /* ── Cyber Metallic Rose Gold ─────────────────────────────── */
-  --accent-rose:      #DEA193;
-  --accent-rose-muted:#A6766C;
-  --accent-rose-glow: rgba(234, 168, 155, 0.12);
-  --accent-gradient:  linear-gradient(135deg, #E6B2A6 0%, #B87A6E 100%);
+  /* ── Status Semantic ───────────────────────────────────────── */
+  --status-success:      var(--green-700);
+  --status-success-bg:   var(--green-a12);
+  --status-success-border: var(--green-a25);
+  --status-warn:         var(--amber-600);
+  --status-danger:       var(--red-700);
+  --status-danger-bg:    var(--red-a12);
+  --status-danger-border: var(--red-a25);
+  --status-danger-strong: var(--red-a40);
 
-  /* ── Semantic Status Colors (Old Money Muted) ─────────────── */
-  --color-success: #6B7B65;
-  --color-warn:    #B3997A;
-  --color-danger:  #8E5A5A;
+  /* ── Borders ───────────────────────────────────────────────── */
+  --border-hairline:  var(--white-a06);  /* Subtle divider        */
+  --border-default:   var(--white-a12);  /* Standard border       */
+  --border-accent:    var(--rose-a25);   /* Accent-tinted border  */
+  --border-accent-hover: var(--rose-a40);
 
-  /* ── Spacing ──────────────────────────────────────────────── */
-  --space-1:  4px;
-  --space-2:  8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --space-7: 48px;
-  --space-8: 64px;
+  /* ── Syntax & Data ─────────────────────────────────────────── */
+  --syntax-string:    var(--blue-300);
+  --syntax-keyword:   var(--accent-muted);
+  --syntax-number:    var(--accent-primary);
 
-  /* ── Radii ────────────────────────────────────────────────── */
-  --radius-sm:   8px;
-  --radius-md:  14px;
-  --radius-lg:  22px;
+  /* ── Material (Frosted Glass) ──────────────────────────────── */
+  --material-bg:      var(--white-a05);
+  --material-blur:    blur(8px) saturate(120%);
+  --material-blur-lg: blur(20px) saturate(140%);
+  --material-sheen:
+    linear-gradient(to left top, var(--white-a08) 0%, rgba(255,255,255,0) 50%),
+    linear-gradient(to bottom, var(--white-a05) 0%, rgba(255,255,255,0) 100%);
+  --material-deep-bg:
+    linear-gradient(135deg, var(--white-a05) 0%, var(--white-a02) 100%),
+    var(--glass-dark-72);
+
+  /* ── Shadow Scale ──────────────────────────────────────────── */
+  --shadow-ambient-sm:  0 2px 8px var(--black-a35);
+  --shadow-ambient-lg:  0 8px 40px var(--black-a55);
+  --shadow-glow-sm:     0 0 8px var(--rose-a40);
+  --shadow-glow-lg:     0 0 16px var(--rose-a80);
+  --shadow-glass:
+    0 4px 20px var(--black-a40),
+    inset 0 0 0 1px var(--white-a12),
+    inset 0 0 6px 2px var(--white-a04);
+  --shadow-glass-accent:
+    0 4px 20px var(--black-a40),
+    inset 0 0 0 1px var(--rose-a30),
+    inset 0 0 6px 2px var(--rose-muted-a22),
+    inset 0 0 16px 2px var(--rose-muted-a12);
+  --shadow-glass-deep:
+    var(--shadow-ambient-lg),
+    var(--shadow-ambient-sm),
+    inset 1px 1px 0 var(--white-a10),
+    inset 0 0 0 1px var(--white-a07),
+    inset 0 -1px 0 var(--rose-a18);
+
+  /* ── Icon Glow ─────────────────────────────────────────────── */
+  --icon-glow-accent: drop-shadow(0 0 4px var(--rose-a55));
+
+  /* ── Type Scale ────────────────────────────────────────────── */
+  --font-sans:         'Montserrat Variable', 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-size-2xs:     0.625rem;   /* 10px  — labels, chevrons  */
+  --font-size-xs:      0.75rem;    /* 12px  — captions, detail  */
+  --font-size-sm:      0.8125rem;  /* 13px  — body copy (dense) */
+  --font-size-base:    0.9375rem;  /* 15px  — body copy         */
+  --font-size-md:      1.0625rem;  /* 17px  — emphasized body   */
+  --font-size-lg:      1.3rem;     /* ~21px — small headings    */
+  --font-size-xl:      1.5rem;     /* 24px  — logotypes, marks  */
+  --font-size-display: clamp(1.6rem, 3vw, 2.5rem); /* Section headlines */
+
+  /* ── Font Weights ──────────────────────────────────────────── */
+  --weight-regular:   400;
+  --weight-medium:    500;
+  --weight-semibold:  600;
+  --weight-bold:      700;
+
+  /* ── Line Heights ──────────────────────────────────────────── */
+  --leading-tight:    1.1;
+  --leading-snug:     1.4;
+  --leading-normal:   1.6;
+  --leading-loose:    1.75;
+
+  /* ── Letter Spacing ────────────────────────────────────────── */
+  --tracking-tighter: -0.025em;
+  --tracking-tight:   -0.01em;
+  --tracking-normal:   0em;
+  --tracking-wide:     0.05em;
+  --tracking-wider:    0.1em;
+  --tracking-widest:   0.2em;
+  --tracking-display:  0.5em;
+
+  /* ── Spacing Scale (base unit: 4px) ────────────────────────── */
+  --space-0-5:  2px;
+  --space-1:    4px;
+  --space-2:    8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   24px;
+  --space-6:   32px;
+  --space-7:   48px;
+  --space-8:   64px;
+  --space-9:   80px;
+  --space-10: 120px;
+
+  /* ── Radius Scale ──────────────────────────────────────────── */
+  --radius-2xs: 1px;
+  --radius-xs:  2px;
+  --radius-sm:  8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
   --radius-full: 9999px;
 
-  /* ── Materials (Secondary Frosted Glass) ───────────────────── */
-  --glass-bg:      rgba(255, 255, 255, 0.05);
-  --glass-blur:    blur(8px) saturate(120%);
-  --glass-sheen:   linear-gradient(to left top, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 50%),
-                   linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
-  --glass-shadow:  0 4px 20px rgba(0, 0, 0, 0.4),
-                   inset 0 0 0 1px rgba(255, 255, 255, 0.12),
-                   inset 0 0 6px 2px rgba(255, 255, 255, 0.04);
-  --glass-shadow-primary:
-                   0 4px 20px rgba(0, 0, 0, 0.4),
-                   inset 0 0 0 1px rgba(222, 161, 147, 0.30),
-                   inset 0 0 6px 2px rgba(166, 118, 108, 0.22),
-                   inset 0 0 16px 2px rgba(166, 118, 108, 0.12);
+  /* ── Z-Index Scale ─────────────────────────────────────────── */
+  --z-ground:   0;    /* Grain, canvas overlays, spotlights      */
+  --z-base:     1;    /* Normal content, buttons, cards           */
+  --z-raised:   2;    /* Hover highlights, timeline nodes         */
+  --z-overlay:  10;   /* SVG labels, floating elements            */
+  --z-modal:    100;
+  --z-cursor:   9999; /* Custom cursor — always on top            */
 
-  /* ── Typography ───────────────────────────────────────────── */
-  --font-sans: 'Montserrat Variable', 'Montserrat', system-ui, -apple-system, sans-serif;
-  --leading-tight:  1.1;
-  --leading-snug:   1.4;
-  --leading-normal: 1.6;
-  --leading-loose:  1.75;
+  /* ── Duration Scale ────────────────────────────────────────── */
+  --duration-snap:   80ms;
+  --duration-fast:  150ms;
+  --duration-base:  200ms;
+  --duration-slow:  300ms;
+  --duration-xslow: 500ms;
+
+  /* ── Easing Scale ──────────────────────────────────────────── */
+  --ease-apple:   cubic-bezier(0.2,  0,    0,    1);
+  --ease-out:     cubic-bezier(0.16, 1,    0.3,  1);
+  --ease-in-out:  cubic-bezier(0.65, 0,    0.35, 1);
+  --ease-standard: ease;
+
+  /* ── Breakpoints ───────────────────────────────────────────── */
+  --bp-sm:  600px;
+  --bp-md:  768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+
+  /* ── Layout Widths ─────────────────────────────────────────── */
+  --layout-max:      1200px;  /* Page-level container            */
+  --layout-content:  1100px;  /* Section inner                   */
+  --layout-text:      760px;  /* Wide headline / text blocks     */
+  --layout-prose:     600px;  /* Comfortable reading line length  */
+  --layout-panel:     480px;  /* Sidebar / right-rail panels     */
+  --layout-card:      420px;  /* Card / component max-width      */
+  --layout-iris:      900px;  /* Footer iris ornament            */
+
+  /* ── Legacy Aliases (kept for gradual migration) ───────────── */
+  /* Point to semantics so old var() calls still resolve */
+  --bg-primary:          var(--surface-base);
+  --bg-secondary:        var(--surface-raised);
+  --bg-tertiary:         var(--surface-overlay);
+  --accent-rose:         var(--accent-primary);
+  --accent-rose-muted:   var(--accent-muted);
+  --accent-rose-glow:    var(--accent-subtle);
+  --accent-gradient:     var(--gradient-accent);
+  --color-success:       var(--status-success);
+  --color-warn:          var(--status-warn);
+  --color-danger:        var(--status-danger);
+  --border-light:        var(--border-hairline);
+  --border-med:          var(--border-default);
+  --glass-bg:            var(--material-bg);
+  --glass-blur:          var(--material-blur);
+  --glass-sheen:         var(--material-sheen);
+  --glass-shadow:        var(--shadow-glass);
+  --glass-shadow-primary: var(--shadow-glass-accent);
 }

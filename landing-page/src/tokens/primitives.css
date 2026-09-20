@@ -1,0 +1,38 @@
+/* ═══════════════════════════════════════════════════════════════
+   primitives.css — Raw atomic palette. No semantic meaning.
+   Import via tokens/index.css only.
+   Rules: names describe WHAT the value IS, not what it MEANS.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Black Scale ───────────────────────────────────────────── */
+  --black-950: #020203;  /* Threshold Black */
+  --black-900: #0A0A0C;
+  --black-800: #101012;
+
+  /* ── Grey Scale ────────────────────────────────────────────── */
+  --grey-100: #F5F5F7;
+  --grey-200: #E0E0E2;
+  --grey-300: #A1A1A6;
+  --grey-400: #6E6E73;
+  --grey-500: #3A3A3C;
+
+  /* ── Rose Gold Scale ───────────────────────────────────────── */
+  --rose-300: #E6B2A6;
+  --rose-400: #DEA193;   /* Primary accent */
+  --rose-500: #C89080;
+  --rose-600: #A6766C;   /* Muted accent */
+  --rose-700: #7A5550;
+
+  /* ── Status Colors ─────────────────────────────────────────── */
+  --green-700:  #6B7B65;
+  --amber-600:  #B3997A;
+  --red-700:    #8E5A5A;
+
+  /* ── Syntax / Data ─────────────────────────────────────────── */
+  --blue-300:   #8CA9C5;
+
+  /* ── Pure Tones ────────────────────────────────────────────── */
+  --white:  #ffffff;
+  --black:  #000000;
+}

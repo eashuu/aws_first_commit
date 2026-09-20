@@ -2,6 +2,28 @@
    Section 5 — Per-call nine-step breakdown
    ───────────────────────────────────────────────────────────────── */
 
+/* ── Section5 Tokens ─────────────────────────────────────────────── */
+.s5-section {
+  --s5-spine-fill-start:  var(--rose-a15);
+  --s5-spine-fill-mid:    var(--rose-a80);
+  --s5-spine-fill-end:    var(--rose-a40);
+  --s5-connector-start:   var(--rose-a40);
+  --s5-connector-end:     var(--white-a05);
+  --s5-hover-start:       var(--rose-a80);
+  --s5-hover-end:         var(--rose-a30);
+  --s5-hover-border:      var(--rose-a25);  /* ~0.2 → nearest rose-a25 */
+  --s5-code-bg:           var(--white-a02);
+  --s5-code-border:       var(--white-a07);
+  --s5-font-step-num:     var(--font-size-xl);    /* 1.9rem  */
+  --s5-font-step-num-sm:  var(--font-size-lg);    /* 1.4rem  */
+  --s5-font-step-name:    var(--font-size-xs);    /* 0.68rem */
+  --s5-font-badge:        var(--font-size-2xs);   /* 0.58rem */
+  --s5-font-body:         var(--font-size-sm);    /* 0.83rem */
+  --s5-font-code:         var(--font-size-xs);    /* 0.7rem  */
+  --s5-font-terminal-lbl: var(--font-size-xs);    /* 0.62rem */
+  --s5-font-terminal-val: var(--font-size-xs);    /* 0.7rem  */
+}
+
 /* ── Section shell override ─────────────────────────────────────── */
 .s5-section {
   padding-bottom: calc(var(--space-8) * 2);
@@ -30,7 +52,7 @@
   bottom: 0;
   width: 2px;
   background: var(--border-light);
-  border-radius: 1px;
+  border-radius: var(--radius-2xs);
 }
 
 /* ── Spine fill — scroll-driven rose-gold ───────────────────────── */
@@ -42,13 +64,13 @@
   top: 0;
   left: 0;
   width: 100%;
-  border-radius: 1px;
+  border-radius: var(--radius-2xs);
   transform-origin: top center;
   background: linear-gradient(
     to bottom,
-    rgba(222, 161, 147, 0.15) 0%,
-    rgba(222, 161, 147, 0.75) 50%,
-    rgba(222, 161, 147, 0.40) 100%
+    var(--s5-spine-fill-start) 0%,
+    var(--s5-spine-fill-mid)   50%,
+    var(--s5-spine-fill-end)   100%
   );
 }
 
@@ -82,25 +104,25 @@
   height: 1px;
   background: linear-gradient(
     to right,
-    rgba(222, 161, 147, 0.40) 0%,
-    rgba(255, 255, 255, 0.05) 100%
+    var(--s5-connector-start) 0%,
+    var(--s5-connector-end)   100%
   );
-  transition: background 0.2s ease, width 0.2s cubic-bezier(0.2, 0, 0, 1);
+  transition: background var(--duration-base) var(--ease-standard), width var(--duration-base) var(--ease-apple);
 }
 
 .s5-step:hover::before {
   width: 24px;
   background: linear-gradient(
     to right,
-    rgba(222, 161, 147, 0.8) 0%,
-    rgba(222, 161, 147, 0.3) 100%
+    var(--s5-hover-start) 0%,
+    var(--s5-hover-end)   100%
   );
 }
 
 /* Step number — right-aligned so it reads as a paired label */
 .s5-step-num {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 1.9rem;
+  font-size: var(--s5-font-step-num);
   font-weight: 700;
   line-height: 1;
   color: var(--accent-rose);
@@ -115,13 +137,13 @@
 .s5-step-content {
   border-top: 1px solid var(--border-light);
   padding-top: var(--space-4);
-  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), border-color 0.2s ease;
+  transition: transform var(--duration-base) var(--ease-apple), border-color var(--duration-base) var(--ease-standard);
   will-change: transform;
 }
 
 .s5-step:hover .s5-step-content {
   transform: translateX(4px);
-  border-color: rgba(222, 161, 147, 0.2);
+  border-color: var(--s5-hover-border);
 }
 
 .s5-step-header {
@@ -134,7 +156,7 @@
 
 .s5-step-name {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.68rem;
+  font-size: var(--s5-font-step-name);
   font-weight: 700;
   letter-spacing: 0.14em;
   color: var(--text-primary);
@@ -145,17 +167,17 @@
 /* AWS / service badge chip */
 .s5-badge {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.58rem;
+  font-size: var(--s5-font-badge);
   letter-spacing: 0.08em;
   color: var(--text-tertiary);
   border: 1px solid var(--border-light);
   padding: 0.12em 0.55em;
-  border-radius: 2px;
+  border-radius: var(--radius-xs);
   white-space: nowrap;
 }
 
 .s5-step-body {
-  font-size: 0.83rem;
+  font-size: var(--s5-font-body);
   line-height: 1.72;
   color: var(--text-secondary);
   margin: 0 0 var(--space-4);
@@ -165,11 +187,11 @@
 /* Code / data-shape annotation */
 .s5-code {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.7rem;
+  font-size: var(--s5-font-code);
   line-height: 1.72;
   color: var(--text-tertiary);
-  background: rgba(255, 255, 255, 0.02);
-  border-left: 2px solid rgba(255, 255, 255, 0.07);
+  background: var(--s5-code-bg);
+  border-left: 2px solid var(--s5-code-border);
   padding: var(--space-3) var(--space-4);
   margin: 0;
   overflow-x: auto;
@@ -197,8 +219,8 @@
   height: 1px;
   background: linear-gradient(
     to right,
-    rgba(222, 161, 147, 0.40) 0%,
-    rgba(255, 255, 255, 0.05) 100%
+    var(--s5-connector-start) 0%,
+    var(--s5-connector-end)   100%
   );
 }
 
@@ -212,7 +234,7 @@
 
 .s5-terminal-label {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.62rem;
+  font-size: var(--s5-font-terminal-lbl);
   letter-spacing: 0.1em;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -224,13 +246,13 @@
 
 .s5-terminal-value {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.7rem;
+  font-size: var(--s5-font-terminal-val);
   color: var(--accent-rose);
   opacity: 0.8;
 }
 
 /* ── Responsive ─────────────────────────────────────────────────── */
-@media (max-width: 600px) {
+@media (max-width: 600px) /* --bp-sm */ {
   .s5-timeline {
     padding-left: 18px;
   }
@@ -241,7 +263,7 @@
   }
 
   .s5-step-num {
-    font-size: 1.4rem;
+    font-size: var(--s5-font-step-num-sm);
   }
 
   .s5-terminal {

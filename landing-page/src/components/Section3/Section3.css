@@ -12,6 +12,27 @@
 /* Section3 needs extra bottom padding to breathe after the footer.*/
 .s3-section {
   padding-bottom: calc(var(--space-8) * 1.5);
+
+  /* ── Section3 Tokens ──────────────────────────────────────────── */
+  --s3-spine-fill-start:  var(--rose-a15);     /* Spine gradient top        */
+  --s3-spine-fill-mid:    var(--rose-a70);     /* Spine gradient 40% stop   */
+  --s3-spine-fill-end:    var(--rose-a40);     /* Spine gradient bottom      */
+  --s3-node-glow-sm:      var(--shadow-glow-sm);  /* Node ambient glow     */
+  --s3-node-glow-lg:      var(--shadow-glow-lg);  /* Node hover glow       */
+  --s3-step-connector-start: var(--rose-a35);  /* Step connector bright end */
+  --s3-step-connector-end:   var(--white-a05); /* Step connector faded end  */
+  --s3-prompt-hover-bg:   var(--white-a08);    /* Prompt hover background   */
+  --s3-prompt-hover-shadow:                    /* Prompt hover box-shadow   */
+    0 8px 28px var(--black-a45),
+    inset 0 0 0 1px  var(--white-a20),
+    inset 0 0 8px 2px var(--white-a07);
+  --s3-entity-shadow:                          /* Entity tag box-shadow     */
+    0 2px 10px var(--black-a30),
+    inset 0 0 0 1px var(--white-a12),
+    inset 0 0 4px 1px var(--white-a04);
+  --s3-token-bg:          var(--rose-a07);     /* Redacted token background */
+  --s3-token-border:      var(--rose-a25);     /* Redacted token border     */
+  --s3-ledger-frozen:     var(--status-danger-strong); /* Frozen fill        */
 }
 
 
@@ -41,14 +62,11 @@
 
 .s3-prompt:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 8px 28px rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px  rgba(255, 255, 255, 0.20),
-    inset 0 0 8px 2px rgba(255, 255, 255, 0.07);
+  background: var(--s3-prompt-hover-bg);
+  box-shadow: var(--s3-prompt-hover-shadow);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 600px) { /* --bp-sm */
   .s3-prompt {
     border-radius: var(--radius-lg);
     padding: var(--space-4) var(--space-5);
@@ -57,7 +75,7 @@
 
 .s3-prompt::before {
   content: '→';
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--accent-rose-muted);
   flex-shrink: 0;
   display: inline-flex;
@@ -66,7 +84,7 @@
 }
 
 .s3-prompt-label {
-  font-size: 0.68rem;
+  font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--text-tertiary);
@@ -75,7 +93,7 @@
 }
 
 .s3-prompt-text {
-  font-size: 0.9rem;
+  font-size: var(--font-size-base);
   color: var(--text-primary);
   line-height: 1.45;
   margin: 0;
@@ -95,7 +113,7 @@
   bottom: 0;
   width: 2px;
   background: var(--border-light);
-  border-radius: 1px;
+  border-radius: var(--radius-2xs);
 }
 
 /* The growing rose-gold fill — animated via Framer Motion */
@@ -104,13 +122,13 @@
   top: 0;
   left: 0;
   width: 100%;
-  border-radius: 1px;
+  border-radius: var(--radius-2xs);
   transform-origin: top center;
   background: linear-gradient(
     to bottom,
-    rgba(222, 161, 147, 0.15) 0%,
-    rgba(222, 161, 147, 0.7)  40%,
-    rgba(222, 161, 147, 0.4)  100%
+    var(--s3-spine-fill-start) 0%,
+    var(--s3-spine-fill-mid)   40%,
+    var(--s3-spine-fill-end)   100%
   );
 }
 
@@ -138,18 +156,18 @@
   transform: translateY(-50%);
   width: 12px;
   height: 12px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   flex-shrink: 0;
   background: var(--bg-primary);
   border: 2px solid var(--accent-rose);
-  box-shadow: 0 0 8px rgba(222, 161, 147, 0.4);
-  z-index: 2;
-  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.3s ease, background 0.3s ease;
+  box-shadow: var(--s3-node-glow-sm);
+  z-index: var(--z-raised);
+  transition: transform var(--duration-slow) var(--ease-apple), box-shadow var(--duration-slow) var(--ease-standard), background var(--duration-slow) var(--ease-standard);
 }
 
 .s3-chapter-node-wrap:hover .s3-chapter-node {
   transform: translateY(-50%) scale(1.3);
-  box-shadow: 0 0 16px rgba(222, 161, 147, 0.8);
+  box-shadow: var(--s3-node-glow-lg);
   background: var(--accent-rose);
 }
 
@@ -162,7 +180,7 @@
 
 .s3-chapter-badge {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.7rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   letter-spacing: 0.06em;
   padding: 4px 12px;
@@ -181,7 +199,7 @@
 
 .s3-chapter-call {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.82rem;
+  font-size: var(--font-size-sm);
   color: var(--text-primary);
 }
 
@@ -209,15 +227,15 @@
   height: 1px;
   background: linear-gradient(
     to right,
-    rgba(222, 161, 147, 0.35) 0%,
-    rgba(255, 255, 255, 0.05) 100%
+    var(--rose-a35) 0%,
+    var(--white-a05) 100%
   );
 }
 
 .s3-step-type {
   flex-shrink: 0;
   width: 88px;
-  font-size: 0.6rem;
+  font-size: var(--font-size-2xs);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -231,13 +249,13 @@
 .s3-step-type--auth    { color: var(--color-success); }
 .s3-step-type--deny    { color: var(--color-danger); }
 .s3-step-type--redact  { color: var(--accent-rose); }
-.s3-step-type--rehydrate { color: #8CA9C5; } /* muted blue — reversal */
+.s3-step-type--rehydrate { color: var(--syntax-string); } /* muted blue — reversal */
 .s3-step-type--ledger  { color: var(--text-tertiary); }
 
 /* Step content */
 .s3-step-content {
   flex: 1;
-  font-size: 0.82rem;
+  font-size: var(--font-size-sm);
   line-height: var(--leading-normal);
   color: var(--text-secondary);
   padding-top: 4px;
@@ -249,27 +267,27 @@
   align-items: center;
   gap: 6px;
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
   padding: 3px 10px;
   border-radius: var(--radius-full);
 }
 
 .s3-chip--allow {
   color: var(--color-success);
-  background: rgba(107, 123, 101, 0.12);
-  border: 1px solid rgba(107, 123, 101, 0.25);
+  background: var(--status-success-bg);
+  border: 1px solid var(--status-success-border);
 }
 
 .s3-chip--deny {
   color: var(--color-danger);
-  background: rgba(142, 90, 90, 0.12);
-  border: 1px solid rgba(142, 90, 90, 0.25);
+  background: var(--status-danger-bg);
+  border: 1px solid var(--status-danger-border);
 }
 
 /* ── Code Response Block ──────────────────────────────────────── */
 .s3-code {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   line-height: 1.7;
   color: var(--text-secondary);
   background: var(--bg-secondary);
@@ -282,7 +300,7 @@
 
 .s3-code-key    { color: var(--text-tertiary); }
 .s3-code-val    { color: var(--text-primary); }
-.s3-code-str    { color: #8CA9C5; }
+.s3-code-str    { color: var(--syntax-string); }
 .s3-code-marked { color: var(--color-warn); } /* pre-redaction highlight */
 
 /* ── Entity Detect Row ────────────────────────────────────────── */
@@ -295,7 +313,7 @@
 
 .s3-entity-tag {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.66rem;
+  font-size: var(--font-size-xs);
   letter-spacing: 0.04em;
   padding: 3px 10px;
   border-radius: var(--radius-full);
@@ -306,9 +324,9 @@
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   box-shadow:
-    0 2px 10px rgba(0, 0, 0, 0.3),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
-    inset 0 0 4px 1px rgba(255, 255, 255, 0.04);
+    0 2px 10px var(--black-a30),
+    inset 0 0 0 1px var(--white-a12),
+    inset 0 0 4px 1px var(--white-a04);
   color: var(--text-secondary);
 }
 
@@ -325,7 +343,7 @@
   align-items: center;
   gap: var(--space-3);
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
 }
 
 .s3-field-auth-row span:first-child {
@@ -349,7 +367,7 @@
 }
 
 .s3-ledger-label {
-  font-size: 0.68rem;
+  font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-tertiary);
@@ -359,13 +377,13 @@
 .s3-ledger-track {
   height: 3px;
   background: var(--border-light);
-  border-radius: 99px;
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
 
 .s3-ledger-fill {
   height: 100%;
-  border-radius: 99px;
+  border-radius: var(--radius-full);
 }
 
 .s3-ledger-fill--full {
@@ -373,7 +391,7 @@
 }
 
 .s3-ledger-fill--unchanged {
-  background: rgba(142, 90, 90, 0.4); /* danger-tinted when "full and frozen" */
+  background: var(--status-danger-strong); /* danger-tinted when "full and frozen" */
 }
 
 .s3-ledger-types {
@@ -384,11 +402,11 @@
 
 .s3-ledger-type {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.64rem;
+  font-size: var(--font-size-xs);
   color: var(--text-secondary);
   background: var(--border-light);
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
 }
 
 /* ── The Redaction Collapse ───────────────────────────────────── */
@@ -406,10 +424,10 @@
 .s3-token {
   display: inline-block;
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--accent-rose);
-  background: rgba(222, 161, 147, 0.07);
-  border: 1px solid rgba(222, 161, 147, 0.25);
+  background: var(--rose-a07);
+  border: 1px solid var(--rose-a25);
   border-radius: var(--radius-sm);
   padding: 2px 8px;
   letter-spacing: 0.02em;
@@ -426,23 +444,23 @@
 
 .s3-rehydrate-arrow {
   color: var(--text-tertiary);
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
 }
 
 .s3-rehydrate-label {
-  font-size: 0.65rem;
+  font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-tertiary);
   background: var(--border-light);
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
 }
 
 /* ── Vault Note ───────────────────────────────────────────────── */
 .s3-vault-note {
   margin-top: var(--space-3);
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
   color: var(--text-tertiary);
   font-style: italic;
   border-left: 2px solid var(--border-light);
@@ -467,14 +485,14 @@
 }
 
 .s3-footer-stat-label {
-  font-size: 0.66rem;
+  font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--text-tertiary);
 }
 
 .s3-footer-stat-val {
-  font-size: 1.1rem;
+  font-size: var(--font-size-md);
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.01em;
@@ -482,7 +500,7 @@
 
 .s3-footer-note {
   margin-left: auto;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-tertiary);
   font-style: italic;
   align-self: center;

@@ -1,0 +1,69 @@
+/* ═══════════════════════════════════════════════════════════════
+   alpha.css — Pre-computed alpha variants of palette colors.
+   Eliminates all inline rgba(...) calculations in components.
+   Import via tokens/index.css only.
+
+   Naming: --{color}-a{opacity*100}
+   e.g. --rose-a12 = rgba(222, 161, 147, 0.12)
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Rose Gold Alpha Scale (--rose-400 = #DEA193 = rgb(222,161,147)) */
+  --rose-a04: rgba(222, 161, 147, 0.04);
+  --rose-a06: rgba(222, 161, 147, 0.06);
+  --rose-a07: rgba(222, 161, 147, 0.07);
+  --rose-a08: rgba(222, 161, 147, 0.08);
+  --rose-a10: rgba(222, 161, 147, 0.10);
+  --rose-a12: rgba(222, 161, 147, 0.12);
+  --rose-a15: rgba(222, 161, 147, 0.15);
+  --rose-a18: rgba(222, 161, 147, 0.18);
+  --rose-a25: rgba(222, 161, 147, 0.25);
+  --rose-a30: rgba(222, 161, 147, 0.30);
+  --rose-a35: rgba(222, 161, 147, 0.35);
+  --rose-a40: rgba(222, 161, 147, 0.40);
+  --rose-a45: rgba(222, 161, 147, 0.45);
+  --rose-a55: rgba(222, 161, 147, 0.55);
+  --rose-a65: rgba(222, 161, 147, 0.65);
+  --rose-a70: rgba(222, 161, 147, 0.70);
+  --rose-a80: rgba(222, 161, 147, 0.80);
+
+  /* ── Muted Rose Alpha Scale (--rose-600 = #A6766C = rgb(166,118,108)) */
+  --rose-muted-a12: rgba(166, 118, 108, 0.12);
+  --rose-muted-a18: rgba(166, 118, 108, 0.18);
+  --rose-muted-a22: rgba(166, 118, 108, 0.22);
+  --rose-muted-a30: rgba(166, 118, 108, 0.30);
+
+  /* ── White Alpha Scale ─────────────────────────────────────── */
+  --white-a02: rgba(255, 255, 255, 0.02);
+  --white-a04: rgba(255, 255, 255, 0.04);
+  --white-a05: rgba(255, 255, 255, 0.05);
+  --white-a06: rgba(255, 255, 255, 0.06);
+  --white-a07: rgba(255, 255, 255, 0.07);
+  --white-a08: rgba(255, 255, 255, 0.08);
+  --white-a09: rgba(255, 255, 255, 0.09);
+  --white-a10: rgba(255, 255, 255, 0.10);
+  --white-a12: rgba(255, 255, 255, 0.12);
+  --white-a20: rgba(255, 255, 255, 0.20);
+  --white-a28: rgba(255, 255, 255, 0.28);
+  --white-a55: rgba(255, 255, 255, 0.55);
+
+  /* ── Black Alpha Scale ─────────────────────────────────────── */
+  --black-a30: rgba(0, 0, 0, 0.30);
+  --black-a35: rgba(0, 0, 0, 0.35);
+  --black-a40: rgba(0, 0, 0, 0.40);
+  --black-a45: rgba(0, 0, 0, 0.45);
+  --black-a55: rgba(0, 0, 0, 0.55);
+
+  /* ── Status Alpha Scales ───────────────────────────────────── */
+  /* Green (#6B7B65) */
+  --green-a12: rgba(107, 123, 101, 0.12);
+  --green-a25: rgba(107, 123, 101, 0.25);
+  /* Red (#8E5A5A) */
+  --red-a12:   rgba(142, 90, 90, 0.12);
+  --red-a25:   rgba(142, 90, 90, 0.25);
+  --red-a40:   rgba(142, 90, 90, 0.40);
+
+  /* ── Glass Base Material ───────────────────────────────────── */
+  /* Dark glass base used by elevated surfaces (card, modal, etc.) */
+  --glass-dark-72: rgba(10, 10, 12, 0.72);
+}

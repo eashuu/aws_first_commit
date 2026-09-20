@@ -2,6 +2,12 @@
    CustomCursor.css — Global modern trailing cursor
    ═══════════════════════════════════════════════════════════════ */
 
+/* ── CustomCursor Tokens ──────────────────────────────────────── */
+.custom-cursor {
+  --cursor-size:   24px;
+  --cursor-z:      var(--z-cursor);
+}
+
 /* To guarantee native cursor is hidden everywhere, we force it */
 * {
   cursor: none !important;
@@ -11,10 +17,10 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 24px;
-  height: 24px;
+  width: var(--cursor-size);
+  height: var(--cursor-size);
   pointer-events: none; /* Must not block clicks! */
-  z-index: 9999;
+  z-index: var(--cursor-z);
   display: flex;
   align-items: center;
   justify-content: center;

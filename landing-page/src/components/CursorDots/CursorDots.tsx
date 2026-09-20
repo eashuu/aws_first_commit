@@ -1,6 +1,18 @@
 import { useEffect, useRef } from 'react';
 import { sharedCursorX, sharedCursorY } from '../../lib/cursorState';
+import { color } from '../../lib/design';
 import './CursorDots.css';
+
+/* Decompose the accent primary hex (#DEA193) into its RGB components so the
+   canvas can build dynamic rgba() strings that stay in sync with the token. */
+const [_ACCENT_R, _ACCENT_G, _ACCENT_B] = ((): [number, number, number] => {
+  const hex = color.accent.primary.replace('#', '');
+  return [
+    parseInt(hex.slice(0, 2), 16),
+    parseInt(hex.slice(2, 4), 16),
+    parseInt(hex.slice(4, 6), 16),
+  ];
+})();
 
 interface CursorDotsProps {
   gap?: number;
@@ -94,7 +106,7 @@ export function CursorDots({
                 // More noticeable but still smooth radius change
                 const currentRadius = radius * (0.7 + 0.4 * pulse + 0.1 * proximity);
 
-                ctx.fillStyle = `rgba(222, 161, 147, ${alpha})`;
+                ctx.fillStyle = `rgba(${_ACCENT_R}, ${_ACCENT_G}, ${_ACCENT_B}, ${alpha})`;
                 ctx.beginPath();
                 ctx.arc(dotX, dotY, currentRadius, 0, Math.PI * 2);
                 ctx.fill();

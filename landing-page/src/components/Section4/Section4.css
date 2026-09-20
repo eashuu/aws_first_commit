@@ -2,6 +2,17 @@
    Section 4 — Architecture topology
    ───────────────────────────────────────────────────────────────── */
 
+/* ── Section4 Tokens ─────────────────────────────────────────────── */
+.s4-section {
+  --s4-font-zone:     var(--font-size-2xs);   /* 7px zone labels      */
+  --s4-font-nlbl:     var(--font-size-xs);    /* 9.5px node labels    */
+  --s4-font-nsub:     var(--font-size-2xs);   /* 8px node sub-labels  */
+  --s4-font-elbl:     var(--font-size-2xs);   /* 8px edge labels      */
+  --s4-font-callout-n:  var(--font-size-xs);  /* 0.65rem callout num  */
+  --s4-font-callout:    var(--font-size-sm);  /* 0.78rem callout text */
+  --s4-elbl-color:    var(--white-a28);
+}
+
 /* ── Layout ─────────────────────────────────────────────────────── */
 .s4-section {
   padding-bottom: calc(var(--space-8) * 1.5);
@@ -23,14 +34,14 @@
 /* ── Zone labels ─────────────────────────────────────────────────── */
 .s4-zone-lbl {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 7px;
+  font-size: var(--s4-font-zone);
   letter-spacing: 0.12em;
 }
 
 /* ── Node labels ─────────────────────────────────────────────────── */
 .s4-nlbl {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 9.5px;
+  font-size: var(--s4-font-nlbl);
   letter-spacing: 0.025em;
   pointer-events: none;
   user-select: none;
@@ -38,7 +49,7 @@
 
 .s4-nsub {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 8px;
+  font-size: var(--s4-font-nsub);
   letter-spacing: 0.04em;
   pointer-events: none;
   user-select: none;
@@ -47,8 +58,8 @@
 /* ── Edge labels ─────────────────────────────────────────────────── */
 .s4-elbl {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 8px;
-  fill: rgba(255, 255, 255, 0.28);
+  font-size: var(--s4-font-elbl);
+  fill: var(--s4-elbl-color);
   letter-spacing: 0.06em;
   pointer-events: none;
   user-select: none;
@@ -141,7 +152,7 @@
 
 .s4-callout-n {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.65rem;
+  font-size: var(--s4-font-callout-n);
   color: var(--accent-rose-muted);
   letter-spacing: 0.08em;
   flex-shrink: 0;
@@ -149,7 +160,7 @@
 }
 
 .s4-callout-title {
-  font-size: 0.78rem;
+  font-size: var(--s4-font-callout);
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: 0.01em;
@@ -158,13 +169,13 @@
 }
 
 .s4-callout-body {
-  font-size: 0.78rem;
+  font-size: var(--s4-font-callout);
   color: var(--text-tertiary);
   line-height: 1.65;
 }
 
 /* ── Responsive ─────────────────────────────────────────────────── */
-@media (max-width: 720px) {
+@media (max-width: 720px) /* --bp-md */ {
   .s4-callouts {
     grid-template-columns: 1fr;
     gap: var(--space-4);

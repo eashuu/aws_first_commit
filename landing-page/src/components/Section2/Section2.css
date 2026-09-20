@@ -6,6 +6,17 @@
    Design: hairline-divided columns, no card containers.
    ═══════════════════════════════════════════════════════════════ */
 
+/* ── Section2 Tokens ──────────────────────────────────────────── */
+.s2-section {
+  --s2-col-border:       var(--rose-a12);      /* Hairline between columns  */
+  --s2-rule-fade:        var(--rose-a08);      /* Rule gradient edge stops  */
+  --s2-rule-mid:         var(--rose-a30);      /* Rule gradient centre stop */
+  --s2-blocked-bg:       var(--rose-a04);      /* Col-3 tinted background   */
+  --s2-budget-fill-from: var(--status-success-bg);   /* Budget bar start  */
+  --s2-budget-fill-to:   var(--status-success);      /* Budget bar end    */
+  --s2-status-ok:        var(--status-success);      /* OK label colour   */
+}
+
 /* ── Headline width + fade ────────────────────────────────────── */
 .s2-headline-wide {
   max-width: 760px;
@@ -27,10 +38,10 @@
   height: 1px;
   background: linear-gradient(
     to right,
-    rgba(222, 161, 147, 0.08) 0%,
-    rgba(222, 161, 147, 0.3)  30%,
-    rgba(222, 161, 147, 0.3)  70%,
-    rgba(222, 161, 147, 0.08) 100%
+    var(--s2-rule-fade) 0%,
+    var(--s2-rule-mid)  30%,
+    var(--s2-rule-mid)  70%,
+    var(--s2-rule-fade) 100%
   );
 }
 
@@ -41,7 +52,7 @@
   gap: 0;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 700px) { /* --bp-md */
   .s2-columns-grid {
     grid-template-columns: 1fr;
   }
@@ -50,11 +61,11 @@
 /* ── Individual call column ───────────────────────────────────── */
 .s2-call {
   padding: var(--space-6) var(--space-5);
-  border-right: 1px solid rgba(222, 161, 147, 0.12);
+  border-right: 1px solid var(--s2-col-border);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  transition: opacity 0.2s ease;
+  transition: opacity var(--duration-base) var(--ease-standard);
   will-change: opacity;
 }
 
@@ -72,7 +83,7 @@
 .s2-call-session,
 .s2-call-field-value,
 .s2-call-status {
-  transition: letter-spacing 0.3s cubic-bezier(0.2, 0, 0, 1), opacity 0.3s ease;
+  transition: letter-spacing var(--duration-slow) var(--ease-apple), opacity var(--duration-slow) var(--ease-standard);
 }
 
 /* The actual spacing shifts on hover */
@@ -100,10 +111,10 @@
   border-right: none;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 700px) { /* --bp-md */
   .s2-call {
     border-right: none;
-    border-bottom: 1px solid rgba(222, 161, 147, 0.12);
+    border-bottom: 1px solid var(--s2-col-border);
   }
   .s2-call:last-child {
     border-bottom: none;
@@ -112,7 +123,7 @@
 
 /* Column 3 — the blocked state */
 .s2-call--blocked {
-  background: rgba(222, 161, 147, 0.025);
+  background: var(--s2-blocked-bg);
 }
 
 /* ── Call header ──────────────────────────────────────────────── */
@@ -124,7 +135,7 @@
 }
 
 .s2-call-badge {
-  font-size: 0.62rem;
+  font-size: var(--font-size-xs);
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -143,7 +154,7 @@
 
 .s2-call-fn {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
   color: var(--text-secondary);
   letter-spacing: 0;
 }
@@ -151,7 +162,7 @@
 /* ── Session chip ─────────────────────────────────────────────── */
 .s2-call-session {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.65rem;
+  font-size: var(--font-size-xs);
   color: var(--text-tertiary);
   letter-spacing: 0.04em;
 }
@@ -171,7 +182,7 @@
 }
 
 .s2-call-field-label {
-  font-size: 0.62rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -179,7 +190,7 @@
 }
 
 .s2-call-field-value {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--text-primary);
   font-weight: 400;
   line-height: 1.4;
@@ -194,7 +205,7 @@
 
 .s2-budget-label {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.65rem;
+  font-size: var(--font-size-xs);
   color: var(--text-tertiary);
   flex-shrink: 0;
   width: 36px;
@@ -204,15 +215,15 @@
   flex: 1;
   height: 2px;
   background: var(--border-light);
-  border-radius: 99px;
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
 
 .s2-budget-fill {
   height: 100%;
-  border-radius: 99px;
+  border-radius: var(--radius-full);
   /* Default: fills partially — green-ish progress */
-  background: linear-gradient(to right, rgba(100, 200, 130, 0.6), rgba(100, 200, 130, 0.9));
+  background: linear-gradient(to right, var(--s2-budget-fill-from), var(--s2-budget-fill-to));
 }
 
 /* Full budget (column 3) — rose-gold warning fill */
@@ -222,14 +233,14 @@
 
 /* ── Status label ─────────────────────────────────────────────── */
 .s2-call-status {
-  font-size: 0.65rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .s2-call-status--ok {
-  color: rgba(100, 200, 130, 0.7);
+  color: var(--s2-status-ok);
 }
 
 .s2-call-status--blocked {
@@ -246,7 +257,7 @@
 }
 
 .s2-caption-text {
-  font-size: 0.9rem;
+  font-size: var(--font-size-base);
   color: var(--text-tertiary);
   line-height: var(--leading-normal);
   max-width: 600px;
@@ -261,7 +272,7 @@
   align-items: center;
   gap: var(--space-3);
   flex-wrap: wrap;
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
   color: var(--text-tertiary);
   letter-spacing: 0.04em;
 }

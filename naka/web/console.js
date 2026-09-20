@@ -167,7 +167,22 @@ async function runSession() {
     await store.refreshFeed();
     await store.loadSession(sessionIdInput.value.trim());
   } catch (err) {
-    showError(runErrorEl, err.body?.error ? `${err.body.error.code}: ${err.body.error.message}` : err.message);
+    const code = err.body?.error?.code;
+    // MODEL_UNAVAILABLE is not a defect in the guardrail and should not read
+    // like one. Bedrock is gated on this account, so the free-text route —
+    // the only path that needs a model to choose which tool to call — cannot
+    // run. Everything the product actually does is deterministic and is
+    // exercised by the scenario buttons above, so say that instead of
+    // printing a raw AccessDeniedException at someone evaluating this.
+    if (code === "MODEL_UNAVAILABLE") {
+      showError(runErrorEl,
+        "Free-text prompts need Amazon Bedrock to choose which tool to call, and Bedrock " +
+        "is not yet enabled on this AWS account (AccessDeniedException). The guardrail " +
+        "itself needs no model — use the one-click scenarios above, which drive the same " +
+        "Cedar authorization, the same detectors and the same ledger.");
+    } else {
+      showError(runErrorEl, err.body?.error ? `${code}: ${err.body.error.message}` : err.message);
+    }
   } finally {
     runBtn.disabled = false;
   }

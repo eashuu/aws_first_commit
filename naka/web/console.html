@@ -293,8 +293,16 @@
 
           <div class="prompt-row">
             <textarea id="prompt-input" placeholder="Ask the agent to fetch a customer, read an attachment, send a summary..."></textarea>
-            <button type="button" id="run-btn">Run</button>
+            <button type="button" class="secondary" id="run-btn" title="Requires Amazon Bedrock, which is not yet enabled on this account">Run</button>
           </div>
+          <!-- Demoted to a secondary button on purpose. Bedrock is gated on
+               this account, so this is the one control on the page that
+               cannot succeed, and it sat directly under four that can. -->
+          <p style="margin:10px 0 0;font-size:var(--t-micro);color:var(--mud);line-height:1.5">
+            Free-text prompts need Bedrock to choose which tool to call, and it is not yet
+            enabled on this account. The guardrail needs no model — the scenarios above run
+            the same Cedar authorization, detectors and ledger.
+          </p>
           <div id="run-error" class="inline-error" hidden></div>
           <div id="run-ok" class="inline-ok" hidden></div>
         </section>

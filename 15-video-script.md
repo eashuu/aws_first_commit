@@ -11,7 +11,11 @@ It is written for the build that exists on the 20th, which is not the build `06`
 
 ## The clock
 
-Nine beats. 374 words over 2:53, which is 134 words a minute with six seconds of deliberate silence in it — unhurried, and roughly the pace `06` planned for. Three minutes is a ceiling, not a target: a video that runs 3:04 can be thrown out. Record it, time it, and if the read comes back over 2:55, use the cut order below instead of talking faster.
+Ten beats as written run 3:10, which is over the ceiling. **Shoot nine: beat 8 is cut unless the read comes in fast.** That lands at 2:57 — 421 words minus beat 8's 30, so 391 words over 2:57, about 132 a minute with six seconds of deliberate silence in it. Three minutes is a ceiling, not a target: a video that runs 3:04 can be thrown out.
+
+Beat 8 is the right thing to lose. The script already flags it as the beat most likely to misbehave on camera, because it depends on cache timing, and beat 6a earns its seconds by showing something the rest of the video cannot — a real machine and a cloud console in the same frame. If the whole read comes back under 2:44 you can put beat 8 back; otherwise leave it out and let beat 4 breathe.
+
+The timings in the table below are the **ten-beat** clock. Cutting beat 8 pulls beat 9 to 2:33–2:57.
 
 | # | In | Out | Words | Beat | Shot from |
 |---|---|---|---|---|---|
@@ -21,9 +25,10 @@ Nine beats. 374 words over 2:53, which is 134 words a minute with six seconds of
 | 4 | 0:49 | 1:22 | 69 | Allowed a call ago. Denied now. | *Budget bites* |
 | 5 | 1:22 | 1:43 | 46 | The task still completes | rehydration pane |
 | 6 | 1:43 | 2:03 | 45 | A placeholder is not a bearer token | *Exfiltration attempt* |
-| 7 | 2:03 | 2:16 | 30 | What it could not scan, it says so | Detectors view / `GET /diag` |
-| 8 | 2:16 | 2:29 | 30 | One line of policy | Policy view |
-| 9 | 2:29 | 2:53 | 48 | Prior art, then the live URL | browser |
+| 6a | 2:03 | 2:20 | 47 | The same policy, on a laptop | endpoint agent + Endpoint DLP view |
+| 7 | 2:20 | 2:33 | 30 | What it could not scan, it says so | Detectors view / `GET /diag` |
+| ~~8~~ | ~~2:33~~ | ~~2:46~~ | ~~30~~ | ~~One line of policy~~ — **cut by default** | Policy view |
+| 9 | 2:33 | 2:57 | 48 | Prior art, then the live URL | browser |
 
 ---
 
@@ -107,7 +112,25 @@ This is the beat that answers "the tech looks shallow", and it costs nothing to 
 
 ---
 
-## Beat 7 — 2:03–2:16 · What it could not scan, it says so
+## Beat 6a — 2:03–2:20 · The same policy, on a laptop
+
+**On screen.** Split or hard cut, your choice. Left: this machine — a paste containing an Aadhaar and a PAN into a consumer AI tool, and the overlay stopping it. Right: the console's **Endpoint DLP** view in `ap-south-1`, where that decision appears within seconds. Let the row land on camera; do not pre-load it.
+
+**Caption.** `One Cedar bundle. Agent, endpoint, files.`
+
+> That was the agent. This is a laptop — the same Cedar bundle, the same detectors, running on the machine because a paste into a consumer tool never crosses your network at all.
+>
+> It blocks locally, then reports to the same audit table. Entity types and counts. The value never leaves the device.
+
+Seventeen seconds. This is the beat that turns three products into one platform, and it is the only moment in the video where something physical happens on a real machine and appears in a cloud console — so let the latency show. A two-second wait for the row is evidence, not dead air.
+
+**Do not say "fleet management".** Central enrolment exists; device inventory, policy push and remote uninstall do not. The claim is one policy engine across three egress paths, and that claim is true. Anything broader is not.
+
+**If the agent will not start on the day** — it needs elevation for the CA, and the overlay needs a user session — cut the left half and shoot the console alone, with a `node scripts/naka-enroll.js` enrolment and one reported decision from the terminal. It is a weaker beat but an honest one, and it still shows a real device row arriving in AWS. Do not stage the left half with a screen recording made earlier; if it is not live, say the words "recorded earlier" over it.
+
+---
+
+## Beat 7 — 2:20–2:33 · What it could not scan, it says so
 
 **On screen.** The detector tier table, live from `GET /diag`. Tier 1 green. Comprehend and the Indic tier in grey, marked *not run*. Then a feed row with `tiers_unavailable` visible, and the *unscanned* counter on the overview.
 
@@ -119,7 +142,9 @@ Thirteen seconds, said evenly, with no apology in the voice. A provisioning stat
 
 ---
 
-## Beat 8 — 2:16–2:29 · One line of policy
+## Beat 8 — CUT BY DEFAULT · One line of policy
+
+*Restore only if the full read comes back under 2:44. See the clock.*
 
 **On screen.** `agent.cedar` open in the policy view. Change the budget from three to one. Save; the ETag changes. Run a scenario again and the answer is different. Cut to the audit table carrying both.
 
@@ -131,7 +156,7 @@ This is the beat most likely to misbehave on camera, because it depends on cache
 
 ---
 
-## Beat 9 — 2:29–2:53 · Prior art, then the live URL
+## Beat 9 — 2:33–2:57 · Prior art, then the live URL
 
 **On screen.** Four names in a live browser with the dates visible: AgentCore Policy, Dogwood, CAMP, OCELOT. Then the audit table scrolling — `entities_found`, `entities_masked`, `ledger_before`, `ledger_after`. Then the Function URL typed into the address bar and loading, actually loading, on camera. End card: project name, one line, repo URL, live URL.
 

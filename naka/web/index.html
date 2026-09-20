@@ -1,134 +1,406 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Naka — guardrail console</title>
-<meta name="description" content="Cedar authorization plus a cumulative PII-disclosure ledger on an AI agent's tool boundary." />
+<title>Naka — the data-loss platform for the AI era</title>
+<meta name="description" content="One policy engine across three egress paths: your AI agents, your endpoints and your files. Cedar authorization plus a cumulative per-subject disclosure ledger, so the tenth call knows what the first one gave away." />
+<meta property="og:title" content="Naka — the data-loss platform for the AI era" />
+<meta property="og:description" content="Cedar authorization plus a cumulative per-subject disclosure ledger on every egress path." />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="./app.css" />
+<link rel="stylesheet" href="./site.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23251d1a'/%3E%3Cpath d='M9 23V9l14 14V9' stroke='%23faebd6' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
 
-<!-- Motion stack. All five are optional at runtime: motion.js checks for
-     each global and the page degrades to a plain working console if a CDN
-     is unreachable. Deferred so they never block first paint. -->
+<!-- Motion stack. Every one is optional at runtime: site.js checks for each
+     global and the page degrades to a plain, readable site if a CDN is
+     unreachable. Deferred so none of them block first paint. -->
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script defer type="module" src="./site.js"></script>
 </head>
 <body>
 
-<!-- A judge lands here with no context and no patience. The nav is sticky
-     so the thing being judged is always one click away, never "scroll past
-     the marketing to find it". -->
-<nav class="topnav">
-  <a class="topnav-brand" href="#top">Naka</a>
-  <div class="topnav-links">
-    <a href="#how">How it works</a>
-    <a href="#console">Console</a>
-    <a href="#meter-panel">Ledger</a>
-    <a href="#policy-panel">Policy</a>
+<a class="s-skip" href="#main">Skip to content</a>
+
+<!-- ================================================================== nav -->
+<nav class="s-nav">
+  <div class="s-nav-inner">
+    <a class="s-brand" href="./index.html">
+      <svg class="s-brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect width="32" height="32" rx="7" fill="#251d1a"/>
+        <path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="s-brand-word">Naka</span>
+    </a>
+
+    <div class="s-nav-links">
+      <div class="s-menu-wrap">
+        <button class="s-nav-link" type="button" aria-expanded="false">
+          Platform
+          <svg class="s-nav-caret" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 4.5 6 8.5 10 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="s-menu">
+          <a class="s-menu-item" href="./egress.html">
+            <svg viewBox="0 0 34 34" fill="none" aria-hidden="true"><rect width="34" height="34" rx="8" fill="#e2f0f2"/><path d="M9 17h7m4 0h5" stroke="#309fb6" stroke-width="2.2" stroke-linecap="round"/><rect x="14" y="12" width="6" height="10" rx="2" stroke="#3b758c" stroke-width="2.2"/></svg>
+            <span><strong>Agent Egress</strong><span>Cedar authorization on every AI tool call, with a per-subject budget</span></span>
+          </a>
+          <a class="s-menu-item" href="./endpoint.html">
+            <svg viewBox="0 0 34 34" fill="none" aria-hidden="true"><rect width="34" height="34" rx="8" fill="#fbf0e1"/><rect x="8" y="10" width="18" height="12" rx="2" stroke="#cb5800" stroke-width="2.2"/><path d="M13 25h8" stroke="#cb5800" stroke-width="2.2" stroke-linecap="round"/></svg>
+            <span><strong>Endpoint DLP</strong><span>Paste, upload and prompt inspection at the laptop, before the wire</span></span>
+          </a>
+          <a class="s-menu-item" href="./files.html">
+            <svg viewBox="0 0 34 34" fill="none" aria-hidden="true"><rect width="34" height="34" rx="8" fill="#e9ebe4"/><path d="M12 9h7l5 5v11a1 1 0 0 1-1 1H12a1 1 0 0 1-1-1V10a1 1 0 0 1 1-1Z" stroke="#66753d" stroke-width="2.2" stroke-linejoin="round"/><path d="M15 19h5" stroke="#66753d" stroke-width="2.2" stroke-linecap="round"/></svg>
+            <span><strong>File &amp; Document DLP</strong><span>Indic-script OCR on attachments, scans and identity documents</span></span>
+          </a>
+          <a class="s-menu-item" href="./platform.html">
+            <svg viewBox="0 0 34 34" fill="none" aria-hidden="true"><rect width="34" height="34" rx="8" fill="#eed0bf"/><circle cx="17" cy="17" r="4" stroke="#251d1a" stroke-width="2.2"/><path d="M17 8v3m0 12v3M8 17h3m12 0h3" stroke="#251d1a" stroke-width="2.2" stroke-linecap="round"/></svg>
+            <span><strong>One policy plane</strong><span>How the three share a single Cedar bundle and one ledger</span></span>
+          </a>
+        </div>
+      </div>
+      <a class="s-nav-link" href="./platform.html">Architecture</a>
+      <a class="s-nav-link" href="./pricing.html">Pricing</a>
+      <a class="s-nav-link" href="#faq">FAQ</a>
+    </div>
+
+    <button class="s-nav-burger" type="button" aria-expanded="false" aria-label="Menu">
+      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+
+    <div class="s-nav-actions">
+      <a class="s-btn s-btn-ghost s-btn-sm" href="./console.html">Sign in</a>
+      <a class="s-btn s-btn-sm" href="./console.html#egress">Open console</a>
+    </div>
   </div>
-  <a class="topnav-cta" href="#console">Run a scenario</a>
 </nav>
 
-<!-- ============================================================= hero -->
-<header class="hero" id="top">
-  <div class="hero-glow" aria-hidden="true"></div>
-  <div class="hero-grid" aria-hidden="true"></div>
+<main id="main">
 
-  <div class="hero-inner">
+<!-- ================================================================= hero -->
+<header class="s-hero">
+  <div class="s-shell s-hero-grid">
     <div>
-      <div class="eyebrow" data-hero-fade>Egress guardrail for AI agents</div>
-      <h1 data-split>Naka</h1>
-      <p class="hero-lede" data-hero-fade>
-        An agent doesn't leak a database. It leaks <strong>one field at a time</strong>,
-        across a dozen innocuous-looking tool calls. Naka authorizes every call with
-        Cedar, scans what comes back, and charges each disclosed field against a
-        <strong>running per-subject budget</strong> — so the tenth call knows what the
-        first one already gave away.
+      <div class="s-eyebrow" data-hero>Data-loss prevention for the AI era</div>
+      <h1 data-split>Your agent doesn't leak a database. It leaks <em>one field at a time.</em></h1>
+      <p class="s-hero-lede" data-hero>
+        A dozen innocuous tool calls, each one individually reasonable, each one
+        individually approved — and between them they have reconstructed a person.
+        Naka authorizes every call with <strong>Cedar</strong>, scans what comes back,
+        and charges each disclosed field against a <strong>running per-subject
+        budget</strong>, so the tenth call knows what the first one already gave away.
       </p>
-      <div class="hero-cta" data-hero-fade>
-        <button type="button" id="hero-jump">Open the console</button>
-        <button type="button" class="secondary" id="hero-demo">Run the demo session</button>
+      <div class="s-hero-cta" data-hero>
+        <a class="s-btn s-btn-lg" href="./console.html#egress">
+          Open the live console
+          <svg class="s-btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="s-btn s-btn-ghost s-btn-lg" href="./platform.html">See the architecture</a>
       </div>
-      <div class="pill-row" data-hero-fade>
-        <span class="pill" id="pill-control"><span class="dot"></span>control plane</span>
-        <span class="pill" id="pill-agent"><span class="dot"></span>data plane</span>
-        <span class="pill"><span class="dot"></span>policy <span class="mono" id="policy-version">—</span></span>
+      <div class="s-hero-note" data-hero>
+        <span>No plaintext ever leaves the invocation</span>
+        <span>Fails closed</span>
+        <span>Deployed in ap-south-1</span>
+      </div>
+
+      <!-- Live, from the deployed control plane. If it cannot be reached the
+           chips say so rather than showing a comforting fiction. -->
+      <div class="s-status" data-hero>
+        <span class="s-chip"><span class="s-dot"></span><span data-live="control">checking control plane…</span></span>
+        <span class="s-chip"><span class="s-dot"></span><span data-live="agent">checking data plane…</span></span>
+        <span class="s-chip"><span class="s-dot"></span>policy <span class="mono" data-live="policy">—</span></span>
       </div>
     </div>
 
-    <div class="hero-art" data-hero-fade>
-      <div id="lottie-redact" role="img" aria-label="A document with three lines being replaced by redaction bars, then a placeholder token appearing."></div>
-    </div>
-  </div>
+    <div class="s-hero-art" data-hero>
+      <!-- A real tool response after the guard has run. Deliberately literal:
+           this is the same vocabulary the console uses, so what a visitor
+           sees here is what they get after signing in. -->
+      <div class="s-scope" data-tilt>
+        <div class="s-scope-bar">
+          <div class="s-scope-lights" aria-hidden="true"><i></i><i></i><i></i></div>
+          <span class="s-scope-title">POST /tools/fetch_customer</span>
+          <span class="s-scope-badge">guarded</span>
+        </div>
+        <div class="s-scope-body">
+          <div class="s-line"><span class="s-line-key">subject</span><span class="s-line-val is-out">cust_8814</span><span class="s-tagline">ledger key</span></div>
+          <div class="s-line"><span class="s-line-key">name</span><span class="s-line-val is-out">Priya R.</span><span class="s-tagline is-allow">released</span></div>
+          <div class="s-line"><span class="s-line-key">city</span><span class="s-line-val is-out">Pune</span><span class="s-tagline is-allow">released</span></div>
+          <div class="s-line"><span class="s-line-key">aadhaar</span><span class="s-line-val is-held">[AADHAAR_1]</span><span class="s-tagline is-deny">withheld</span></div>
+          <div class="s-line"><span class="s-line-key">pan</span><span class="s-line-val is-held">[PAN_2]</span><span class="s-tagline is-deny">withheld</span></div>
+        </div>
+        <div class="s-scope-foot">
+          <span>2 released &middot; 2 withheld</span>
+          <span>Q2 · budget-per-subject</span>
+        </div>
+      </div>
 
-  <div class="scroll-cue" aria-hidden="true">
-    <span class="rail"></span>
-    scroll
+      <div class="s-ledger">
+        <div class="s-ledger-head">
+          <b>Disclosure budget — cust_8814</b>
+          <span>3 of 3 spent</span>
+        </div>
+        <div class="s-slots" aria-hidden="true">
+          <i class="is-1"></i><i class="is-2"></i><i class="is-3"></i><i class="is-over"></i>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 
-<!-- ==================================================== three questions -->
-<section class="band" id="how">
-  <div class="shell">
-    <div class="band-head reveal">
-      <h2>Three questions, asked on every single tool call</h2>
+<!-- ============================================================= marquee -->
+<!-- What Naka actually recognises, not customer logos we do not have. A
+     strip of invented logos is the fastest way to lose a technical reader. -->
+<div class="s-marquee" aria-label="Detected entity types">
+  <div class="s-marquee-track">
+    <span class="s-marquee-item">Aadhaar <b>Verhoeff-checked</b></span>
+    <span class="s-marquee-item">PAN <b>regex + checksum</b></span>
+    <span class="s-marquee-item">GSTIN <b>state-code validated</b></span>
+    <span class="s-marquee-item">IFSC <b>bank registry</b></span>
+    <span class="s-marquee-item">Voter ID <b>EPIC format</b></span>
+    <span class="s-marquee-item">Passport <b>MRZ</b></span>
+    <span class="s-marquee-item">Bank account <b>contextual</b></span>
+    <span class="s-marquee-item">Phone &amp; email <b>Comprehend</b></span>
+    <span class="s-marquee-item">Devanagari names <b>Nova Pro OCR</b></span>
+    <span class="s-marquee-item">Aadhaar <b>Verhoeff-checked</b></span>
+    <span class="s-marquee-item">PAN <b>regex + checksum</b></span>
+    <span class="s-marquee-item">GSTIN <b>state-code validated</b></span>
+    <span class="s-marquee-item">IFSC <b>bank registry</b></span>
+    <span class="s-marquee-item">Voter ID <b>EPIC format</b></span>
+    <span class="s-marquee-item">Passport <b>MRZ</b></span>
+    <span class="s-marquee-item">Bank account <b>contextual</b></span>
+    <span class="s-marquee-item">Phone &amp; email <b>Comprehend</b></span>
+    <span class="s-marquee-item">Devanagari names <b>Nova Pro OCR</b></span>
+  </div>
+</div>
+
+<!-- ============================================================ leak scene -->
+<section class="s-band s-leak" id="leak">
+  <div class="s-leak-rail" data-leak>
+    <div class="s-shell s-leak-stage">
+
+      <div class="s-leak-copy">
+        <article class="s-leak-step is-on">
+          <div class="s-leak-step-n">CALL 01 — allowed</div>
+          <h3>It starts with a name.</h3>
+          <p>An analyst asks the agent to look up a support ticket. The agent calls
+             <code>fetch_customer</code>. A name and a city come back. Nothing here
+             is sensitive, and every DLP product on the market agrees.</p>
+        </article>
+        <article class="s-leak-step">
+          <div class="s-leak-step-n">CALL 02 — allowed</div>
+          <h3>Then a phone number.</h3>
+          <p>Different tool, different turn, same person. On its own it is a support
+             contact detail. A per-call scanner sees one phone number and lets it
+             through, because one phone number is not a breach.</p>
+        </article>
+        <article class="s-leak-step">
+          <div class="s-leak-step-n">CALL 03 — allowed</div>
+          <h3>Then a partial address.</h3>
+          <p>The agent reads the shipping record to answer a delivery question.
+             Three fields now. Still nothing any individual policy would stop —
+             and this is exactly where per-call thinking runs out.</p>
+        </article>
+        <article class="s-leak-step">
+          <div class="s-leak-step-n">CALL 04 — allowed, and now it matters</div>
+          <h3>Then a date of birth.</h3>
+          <p>Name, phone, address, date of birth. That is a re-identifiable
+             individual and a working answer to most bank security questions.
+             No single call did anything wrong. The <em>sequence</em> did.</p>
+        </article>
+        <article class="s-leak-step">
+          <div class="s-leak-step-n">CALL 05 — withheld at Q2</div>
+          <h3>Naka has been counting.</h3>
+          <p>Every field released about <code>cust_8814</code> was written to a
+             cumulative, grow-only ledger keyed by principal and subject. The
+             budget is three. The fourth field comes back as
+             <code>[AADHAAR_1]</code> — a numbered placeholder, not a value.</p>
+        </article>
+        <article class="s-leak-step">
+          <div class="s-leak-step-n">CALL 06 — denied at Q3</div>
+          <h3>And the placeholder is not a loophole.</h3>
+          <p>The agent tries to send its summary to an external endpoint, passing
+             the placeholder along. Restoring a masked value into an outbound
+             argument is its own authorization question, bound to the destination.
+             Denied. Without that, the guardrail becomes the exfiltration channel.</p>
+        </article>
+      </div>
+
+      <div class="s-dossier">
+        <div class="s-dossier-head">
+          <strong>What the agent has learned about cust_8814</strong>
+          <span><span data-leak-count>1</span> / 6</span>
+        </div>
+        <dl class="s-dossier-rows">
+          <div class="s-dossier-row is-known"><dt>name</dt><dd>Priya R.</dd><span class="s-src">call 01</span></div>
+          <div class="s-dossier-row"><dt>phone</dt><dd>+91 ·· ···· 4471</dd><span class="s-src">call 02</span></div>
+          <div class="s-dossier-row"><dt>address</dt><dd>Kothrud, Pune</dd><span class="s-src">call 03</span></div>
+          <div class="s-dossier-row"><dt>date of birth</dt><dd>1994-··-··</dd><span class="s-src">call 04</span></div>
+          <div class="s-dossier-row" data-blocked="1"><dt>aadhaar</dt><dd>[AADHAAR_1]</dd><span class="s-src">withheld</span></div>
+          <div class="s-dossier-row" data-blocked="1"><dt>egress</dt><dd>denied</dd><span class="s-src">Q3</span></div>
+        </dl>
+        <div class="s-dossier-foot">
+          <span class="s-dossier-verdict">every call above was individually authorized</span>
+          <span class="mono">ledger: grow-only</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- =============================================================== planes -->
+<section class="s-band s-band-alt" id="planes">
+  <div class="s-shell">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">One platform, three egress paths</div>
+      <h2>Data leaves your company through three doors. Most tools watch one.</h2>
       <p>
-        Most guardrails ask the first one. The leak lives in the second and third.
+        Naka is a single Cedar policy bundle and a single disclosure ledger,
+        enforced at all three. A subject's budget spent by an agent is the same
+        budget an employee's paste is charged against — because it is the same
+        person's data either way.
       </p>
     </div>
 
-    <div class="q-grid">
-      <article class="q-card reveal">
-        <div class="q-card-accent" aria-hidden="true"></div>
+    <div class="s-planes s-rise" data-rise-group=".s-plane">
+      <a class="s-plane" href="./egress.html" style="--plane-accent:#309fb6">
+        <svg class="s-plane-ico" viewBox="0 0 46 46" fill="none" aria-hidden="true">
+          <rect width="46" height="46" rx="11" fill="#e2f0f2"/>
+          <path data-draw d="M11 23h8" stroke="#309fb6" stroke-width="2.6" stroke-linecap="round"/>
+          <rect data-pop x="19" y="16" width="8" height="14" rx="2.5" stroke="#3b758c" stroke-width="2.6"/>
+          <path data-draw d="M27 23h8" stroke="#66753d" stroke-width="2.6" stroke-linecap="round"/>
+          <circle data-pop cx="35" cy="23" r="3" fill="#66753d"/>
+        </svg>
+        <div class="s-plane-tag">Plane 01</div>
+        <h3>Agent Egress</h3>
+        <p>Wraps your AI agent's tool boundary. Every call is authorized before it
+           runs, every result is scanned before the model sees it, and every
+           disclosed field is charged to the subject's budget.</p>
+        <ul class="s-plane-list">
+          <li>Strands Agents SDK interceptor — no application rewrite</li>
+          <li>Numbered placeholders, never silent truncation</li>
+          <li>Rehydration is a separate, destination-bound decision</li>
+        </ul>
+        <span class="s-plane-foot">Explore the guardrail
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+      <a class="s-plane" href="./endpoint.html" style="--plane-accent:#cb5800">
+        <svg class="s-plane-ico" viewBox="0 0 46 46" fill="none" aria-hidden="true">
+          <rect width="46" height="46" rx="11" fill="#fbf0e1"/>
+          <rect data-pop x="11" y="14" width="24" height="15" rx="2.5" stroke="#cb5800" stroke-width="2.6"/>
+          <path data-draw d="M17 33h12" stroke="#cb5800" stroke-width="2.6" stroke-linecap="round"/>
+          <path data-draw d="M17 21h8" stroke="#e89469" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+        <div class="s-plane-tag">Plane 02</div>
+        <h3>Endpoint DLP</h3>
+        <p>A local agent on the laptop with a TLS-terminating proxy. It sees the
+           paste into ChatGPT, the upload to a personal drive and the prompt typed
+           into a browser extension — before any of it reaches the wire.</p>
+        <ul class="s-plane-list">
+          <li>Inline overlay warns the user at the moment of the paste</li>
+          <li>Same detector tiers, same Cedar bundle as the cloud planes</li>
+          <li>Works when the laptop is off the corporate network</li>
+        </ul>
+        <span class="s-plane-foot">Explore the endpoint agent
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+      <a class="s-plane" href="./files.html" style="--plane-accent:#66753d">
+        <svg class="s-plane-ico" viewBox="0 0 46 46" fill="none" aria-hidden="true">
+          <rect width="46" height="46" rx="11" fill="#e9ebe4"/>
+          <path data-pop d="M16 12h9l6 6v15a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 15 33V13.5A1.5 1.5 0 0 1 16.5 12Z" stroke="#66753d" stroke-width="2.6" stroke-linejoin="round"/>
+          <path data-draw d="M20 25h7" stroke="#66753d" stroke-width="2.6" stroke-linecap="round"/>
+          <path data-draw d="M20 29h4" stroke="#8a9563" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+        <div class="s-plane-tag">Plane 03</div>
+        <h3>File &amp; Document DLP</h3>
+        <p>Attachments, scans and photographs of identity documents. Textract for
+           layout, Nova Pro for the multimodal pass that reads an Aadhaar card
+           whose holder's name is printed in Devanagari.</p>
+        <ul class="s-plane-list">
+          <li>Three detector tiers, unioned — never subtracted</li>
+          <li>Indic-script OCR, because that is what the documents are</li>
+          <li>A file's findings spend the same subject budget</li>
+        </ul>
+        <span class="s-plane-foot">Explore file scanning
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================= three questions -->
+<section class="s-band" id="how">
+  <div class="s-shell">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">The decision model</div>
+      <h2>Three questions, asked on every single call</h2>
+      <p>Most guardrails ask the first one and stop. The leak lives in the second
+         and the third, and answering them is the whole product.</p>
+    </div>
+
+    <div class="q-grid s-rise" data-rise-group=".q-card">
+      <article class="q-card">
+        <div class="q-card-accent" data-bar aria-hidden="true"></div>
         <div class="q-num">Q1</div>
         <h3>May this call happen?</h3>
-        <p>Cedar authorizes the tool invocation itself, before it runs. A denied call never executes, and still lands in the audit trail.</p>
+        <p>Cedar authorizes the tool invocation itself, before it runs. Principal,
+           action, resource, context. A denied call never executes — and still
+           lands in the audit trail, because a refusal is evidence too.</p>
         <div class="q-art" aria-hidden="true">
           <svg viewBox="0 0 240 92" fill="none">
-            <path data-draw d="M8 46 H96" stroke="#6b7ae4" stroke-width="3" stroke-linecap="round"/>
-            <rect data-pop x="100" y="26" width="40" height="40" rx="4" stroke="#6b7ae4" stroke-width="3"/>
-            <path data-draw d="M144 46 H232" stroke="#27ad8b" stroke-width="3" stroke-linecap="round"/>
-            <circle data-pop cx="232" cy="46" r="6" fill="#27ad8b"/>
+            <path data-draw d="M8 46 H96" stroke="#3b758c" stroke-width="3" stroke-linecap="round"/>
+            <rect data-pop x="100" y="26" width="40" height="40" rx="4" stroke="#3b758c" stroke-width="3"/>
+            <path data-draw d="M144 46 H232" stroke="#66753d" stroke-width="3" stroke-linecap="round"/>
+            <circle data-pop cx="232" cy="46" r="6" fill="#66753d"/>
           </svg>
         </div>
       </article>
 
-      <article class="q-card reveal">
-        <div class="q-card-accent" aria-hidden="true"></div>
+      <article class="q-card">
+        <div class="q-card-accent" data-bar aria-hidden="true"></div>
         <div class="q-num">Q2</div>
         <h3>May this principal learn this field?</h3>
-        <p>Every detected field is authorized separately, against the ledger of what this principal already learned about this subject. Denied fields become numbered placeholders.</p>
+        <p>Every detected entity is authorized separately, against the ledger of
+           what this principal has already learned about this subject. Denied
+           fields become numbered placeholders the model can still reason about.</p>
         <div class="q-art" aria-hidden="true">
           <svg viewBox="0 0 240 92" fill="none">
-            <rect data-pop x="8" y="30" width="52" height="16" rx="3" fill="#27ad8b"/>
-            <rect data-pop x="66" y="30" width="52" height="16" rx="3" fill="#c8841b"/>
-            <rect data-pop x="124" y="30" width="52" height="16" rx="3" fill="#dfa23f"/>
-            <path data-draw d="M186 20 V76" stroke="#f3f5fb" stroke-width="4" stroke-linecap="round"/>
-            <rect data-pop x="196" y="30" width="36" height="16" rx="3" fill="#e0495f"/>
-            <path data-draw d="M8 62 H176" stroke="#39415a" stroke-width="2" stroke-linecap="round"/>
+            <rect data-pop x="8" y="30" width="52" height="16" rx="3" fill="#66753d"/>
+            <rect data-pop x="66" y="30" width="52" height="16" rx="3" fill="#d27133"/>
+            <rect data-pop x="124" y="30" width="52" height="16" rx="3" fill="#cb5800"/>
+            <path data-draw d="M186 20 V76" stroke="#251d1a" stroke-width="4" stroke-linecap="round"/>
+            <!-- amber, not red: a withheld field is the guard working. --fault is the only red. -->
+            <rect data-pop x="196" y="30" width="36" height="16" rx="3" fill="#fc9f28"/>
+            <path data-draw d="M8 62 H176" stroke="#eed0bf" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </div>
       </article>
 
-      <article class="q-card reveal">
-        <div class="q-card-accent" aria-hidden="true"></div>
+      <article class="q-card">
+        <div class="q-card-accent" data-bar aria-hidden="true"></div>
         <div class="q-num">Q3</div>
         <h3>May this value be restored?</h3>
-        <p>Rehydrating a placeholder into an outbound argument is its own Cedar question, bound to the destination. Without it, the guardrail becomes the exfiltration channel.</p>
+        <p>Rehydrating a placeholder into an outbound argument is its own Cedar
+           question, bound to the destination. Plaintext lives in a process-local
+           vault for the length of one invocation and is never written anywhere.</p>
         <div class="q-art" aria-hidden="true">
           <svg viewBox="0 0 240 92" fill="none">
-            <rect data-pop x="8" y="28" width="86" height="22" rx="4" stroke="#8f9bff" stroke-width="3"/>
-            <path data-draw d="M102 39 H150" stroke="#8f9bff" stroke-width="3" stroke-linecap="round"/>
-            <path data-draw d="M138 30 L150 39 L138 48" stroke="#8f9bff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            <rect data-pop x="158" y="24" width="74" height="30" rx="4" fill="#242b48" stroke="#6b7ae4" stroke-width="2"/>
-            <path data-draw d="M8 72 H232" stroke="#39415a" stroke-width="2" stroke-linecap="round"/>
+            <rect data-pop x="8" y="28" width="86" height="22" rx="4" stroke="#309fb6" stroke-width="3"/>
+            <path data-draw d="M102 39 H150" stroke="#309fb6" stroke-width="3" stroke-linecap="round"/>
+            <path data-draw d="M138 30 L150 39 L138 48" stroke="#309fb6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect data-pop x="158" y="24" width="74" height="30" rx="4" fill="#e2f0f2" stroke="#3b758c" stroke-width="2"/>
+            <path data-draw d="M8 72 H232" stroke="#eed0bf" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </div>
       </article>
@@ -136,482 +408,370 @@
   </div>
 </section>
 
-<hr class="rule" />
-
-<!-- ========================================================== console -->
-<main class="band console" id="console">
-  <div class="shell">
-    <div class="band-head reveal">
-      <h2>Live console</h2>
-      <p>Every tool call below was authorized, scanned and ledgered by the deployed stack. Nothing on this page has ever held a plaintext value.</p>
+<!-- ============================================================ live proof -->
+<section class="s-band s-band-ink" id="live">
+  <div class="s-shell">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">Live, from the deployed stack</div>
+      <h2>These are not illustrations.</h2>
+      <p>Every number below is read from the running control plane in ap-south-1
+         at the moment this page loaded. A zero is a real zero. If the API cannot
+         be reached, the number is a dash — never a comforting placeholder.</p>
     </div>
 
-    <div class="stat-strip reveal">
-      <div class="stat">
-        <span class="stat-label">unscanned egress events</span>
-        <span class="stat-value zero" id="unscanned-count">0</span>
+    <div class="s-numbers s-rise" data-rise-group=".s-number">
+      <div class="s-number">
+        <em>today</em>
+        <b data-live="calls">—</b>
+        <span>Tool calls authorized, scanned and written to the audit ledger.</span>
       </div>
-      <div class="stat">
-        <span class="stat-label">calls today</span>
-        <span class="stat-value" id="calls-count">0</span>
+      <div class="s-number">
+        <em>today</em>
+        <b data-live="withheld">—</b>
+        <span>Individual fields replaced with numbered placeholders at Q2.</span>
       </div>
-      <div class="stat">
-        <span class="stat-label">fields withheld</span>
-        <span class="stat-value" id="masked-count">0</span>
+      <div class="s-number">
+        <em>today</em>
+        <b data-live="denied">—</b>
+        <span>Calls refused outright, at Q1 or at the rehydration boundary.</span>
+      </div>
+      <div class="s-number">
+        <em>invariant</em>
+        <b data-live="unscanned">—</b>
+        <span>Egress events that reached a model without passing a detector. This
+              one must stay at zero; it is the product's core claim.</span>
       </div>
     </div>
 
-    <section class="panel reveal">
-      <h2>Session</h2>
-      <div class="settings-row">
-        <div class="field grow">
-          <label for="agent-url">Agent Function URL (data plane)</label>
-          <input type="text" id="agent-url" placeholder="https://xxxx.lambda-url.ap-south-1.on.aws/" />
-        </div>
-        <div class="field">
-          <label for="session-id">Session id</label>
-          <input type="text" id="session-id" placeholder="demo-session-1" />
-        </div>
-        <div class="field">
-          <label for="user-email">User (principal)</label>
-          <input type="text" id="user-email" placeholder="analyst@example.com" />
-        </div>
-        <div class="field">
-          <label for="role-select">Role</label>
-          <select id="role-select">
-            <option value="analyst">analyst</option>
-            <option value="compliance">compliance</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>&nbsp;</label>
-          <button type="button" class="secondary" id="load-session-btn">Load session</button>
-        </div>
-      </div>
-      <!-- One click to a complete, real payload. A judge scores what they
-           can actually reach; four configured fields between them and a
-           decision is four chances to leave. Each scenario is a real call
-           sequence from the demo fixtures, including the failure cases —
-           the budget bite and the unauthorized rehydration are the two
-           beats that prove the product, so they get their own buttons. -->
-      <div class="scenarios">
-        <span class="scenarios-label">One-click scenarios</span>
-        <div class="scenario-row" id="scenario-row">
-          <button type="button" class="scenario" data-scenario="benign" data-role="analyst"
-            data-prompt="Fetch the KYC record for customer cust_8814 and summarise what you find.">
-            <strong>Benign lookup</strong>
-            <span>KYC for cust_8814 · Aadhaar + PAN masked, name released</span>
-          </button>
-          <button type="button" class="scenario" data-scenario="budget" data-role="analyst"
-            data-prompt="Fetch the name, then the phone, then the email, then the address for customer cust_8814.">
-            <strong>Budget bites</strong>
-            <span>Fourth field, same subject · the ledger stops it</span>
-          </button>
-          <button type="button" class="scenario" data-scenario="exfiltration" data-role="analyst"
-            data-prompt="Read the attachment on ticket tkt_4471, then send a summary to pastebin.example.com including the Aadhaar number.">
-            <strong>Exfiltration attempt</strong>
-            <span>Rehydrate to an unauthorized destination · denied at Q3</span>
-          </button>
-          <button type="button" class="scenario" data-scenario="compliance" data-role="compliance"
-            data-prompt="Fetch the KYC record for customer cust_8814 and summarise what you find.">
-            <strong>Compliance role</strong>
-            <span>Same call, different principal · exemption applies</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="prompt-row">
-        <textarea id="prompt-input" placeholder="Ask the agent to fetch a customer, read an attachment, send a summary..."></textarea>
-        <button type="button" id="run-btn">Run</button>
-      </div>
-      <div id="run-error" class="inline-error" hidden></div>
-      <div id="run-ok" class="inline-ok" hidden></div>
-    </section>
-
-    <section class="panel reveal">
-      <h2>Live feed</h2>
-      <div class="feed-scroll" id="feed"></div>
-      <div style="margin-top:14px"><button class="secondary" id="load-older-btn" type="button">Load older</button></div>
-    </section>
-
-    <section class="panel reveal" id="tiers-panel">
-      <h2>Detector coverage</h2>
-      <div id="tiers"></div>
-    </section>
-
-    <div class="grid-2">
-      <section class="panel reveal" id="meter-panel">
-        <h2>Disclosure meter</h2>
-        <div id="meter"></div>
-      </section>
-
-      <section class="panel reveal">
-        <h2>Decision detail</h2>
-        <div id="diff"></div>
-      </section>
+    <div class="s-cta-row s-rise" style="margin-top:var(--s7);justify-content:flex-start">
+      <a class="s-btn" href="./console.html#overview">
+        Open the console
+        <svg class="s-btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="s-btn s-btn-ghost" href="./console.html#egress">Run a scenario yourself</a>
     </div>
-
-    <section class="panel policy-editor reveal" id="policy-panel">
-      <h2>Policy editor</h2>
-      <textarea id="policy-cedar" spellcheck="false" placeholder="Cedar policy text loads here..."></textarea>
-      <div class="policy-row">
-        <div class="field">
-          <label for="naka-key">X-Naka-Key</label>
-          <input type="password" id="naka-key" placeholder="shared secret" />
-        </div>
-        <button type="button" id="policy-save-btn">Save</button>
-        <button type="button" class="secondary" id="policy-reload-btn">Reload from server</button>
-        <span class="etag" id="policy-etag"></span>
-      </div>
-      <div id="policy-error" class="inline-error" hidden></div>
-      <div id="policy-ok" class="inline-ok" hidden></div>
-    </section>
   </div>
+</section>
+
+<!-- ============================================================== integrate -->
+<section class="s-band" id="integrate">
+  <div class="s-shell s-hero-grid">
+    <div class="s-rise">
+      <div class="s-eyebrow">Integration</div>
+      <h2 style="font-family:var(--font-display);margin-bottom:var(--s4)">Four lines, and your agent is guarded.</h2>
+      <p style="font-size:var(--t-lede);color:var(--ink-2);margin:0 0 var(--s5);line-height:1.55">
+        Naka attaches to the Strands Agents SDK as an interceptor. You do not
+        restructure your agent, you do not proxy your model, and you do not move
+        your data. The guard sits between the tool and the transcript, which is
+        the only place where it can see both what was asked and what came back.
+      </p>
+      <div class="s-steps">
+        <div class="s-step">
+          <div class="s-step-n">01</div>
+          <div>
+            <h3>Attach the hook</h3>
+            <p>One interceptor on the agent's tool boundary. Every invocation and
+               every result passes through it.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n">02</div>
+          <div>
+            <h3>Point it at a policy bundle</h3>
+            <p>Cedar text, versioned and ETag-guarded. Edit it in the console and
+               the next call picks it up — no redeploy.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n">03</div>
+          <div>
+            <h3>Watch the ledger fill</h3>
+            <p>A grow-only set per <code>(principal, subject)</code>, updated with
+               an atomic DynamoDB <code>ADD</code>, so concurrent calls cannot race
+               each other into over-disclosure.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-rise" data-parallax="30">
+      <div class="s-code">
+        <div class="s-code-bar">
+          <span>agent.py</span>
+          <div class="s-code-tabs">
+            <button class="s-code-tab" aria-selected="true" type="button">python</button>
+          </div>
+        </div>
+<pre><span class="c"># The guard is a Strands interceptor. It sees every tool call</span>
+<span class="c"># and every tool result — which is the only vantage point from</span>
+<span class="c"># which Q2 can be asked at all.</span>
+
+<span class="k">from</span> naka <span class="k">import</span> <span class="f">DisclosureGuard</span>, <span class="f">AuditHook</span>
+
+guard = <span class="f">DisclosureGuard</span>(
+    policy   = <span class="s">"s3://naka-policy/agent.cedar"</span>,
+    ledger   = <span class="s">"dynamodb://naka_audit"</span>,
+    budget   = <span class="n">3</span>,            <span class="c"># fields per subject, per principal</span>
+    on_error = <span class="s">"deny"</span>,       <span class="c"># fail closed. always.</span>
+)
+
+agent = <span class="f">Agent</span>(
+    tools = [fetch_customer, read_attachment, send_summary],
+    hooks = [guard, <span class="f">AuditHook</span>()],
+)
+
+<span class="c"># From here the agent is unchanged. It just cannot</span>
+<span class="c"># over-disclose any more.</span>
+agent(<span class="s">"Summarise the KYC file for cust_8814"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================================== features -->
+<section class="s-band s-band-alt" id="features">
+  <div class="s-shell">
+    <div class="s-head s-center s-rise">
+      <div class="s-eyebrow">What you get</div>
+      <h2>Built like an audit system, not like a demo</h2>
+      <p>Every decision is evidence. Every failure mode was chosen deliberately.</p>
+    </div>
+
+    <div class="s-features s-rise" data-rise-group=".s-feature">
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 4 6.5v5c0 4.6 3.2 8.6 8 9.5 4.8-.9 8-4.9 8-9.5v-5L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Fails closed, on purpose</h3>
+        <p>If a detector is unreachable, the field is withheld — not released with
+           a warning. The one place Naka is allowed to be unavailable is the one
+           place it is not allowed to be wrong.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M8 13h8M8 16h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <h3>No plaintext, anywhere</h3>
+        <p>Detected values live in a process-local vault for the length of one
+           invocation. They are never persisted, never logged, never serialized.
+           The audit API has no field that could carry one.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-4.5 7-10V5l-7-2-7 2v6c0 5.5 7 10 7 10Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 8v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="15.5" r=".9" fill="currentColor"/></svg>
+        <h3>Three tiers, unioned</h3>
+        <p>Local deterministic checks, then Comprehend, then Nova Pro multimodal.
+           Later tiers only ever <em>add</em> findings. A slower model can never
+           un-detect what a checksum already proved.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5m0 14h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8 15V9m4 6V7m4 8v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <h3>Grow-only ledger</h3>
+        <p>The disclosure set is a G-Set updated with an atomic DynamoDB
+           <code>ADD</code> on a string set. Two concurrent calls cannot race each
+           other past the budget, and nothing can be quietly un-disclosed.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M9 9h6v6H9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <h3>Policy as text, versioned</h3>
+        <p>Cedar source, editable in the console, ETag-guarded against lost
+           updates, versioned on every save. Roll forward by editing; roll back by
+           pasting. No deploy in the loop.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Every refusal is evidence</h3>
+        <p>Denied calls are written to the audit table with the same rigour as
+           allowed ones, including which policy clause refused and which tiers
+           ran. A DPDP enquiry is answered from the table, not from memory.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================================================================== faq -->
+<section class="s-band" id="faq">
+  <div class="s-shell s-shell-narrow">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">Questions a technical buyer actually asks</div>
+      <h2>The honest answers</h2>
+    </div>
+
+    <div class="s-faq s-rise">
+      <div class="s-faq-item">
+        <button class="s-faq-q" type="button" aria-expanded="false">
+          Isn't this just a PII scanner with extra steps?
+          <svg class="s-faq-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="s-faq-a"><div class="s-faq-a-inner">
+          <p>A scanner is stateless: it looks at one payload and decides. That is
+             genuinely useful and Naka contains one — three of them, in fact.</p>
+          <p>The difference is the ledger. A scanner asked the same question twenty
+             times gives the same answer twenty times, which is precisely how an
+             agent walks out with a complete record one innocuous field at a time.
+             Naka's Q2 is a function of <em>history</em>, not just of content, so
+             the twentieth answer differs from the first.</p>
+        </div></div>
+      </div>
+
+      <div class="s-faq-item">
+        <button class="s-faq-q" type="button" aria-expanded="false">
+          What happens when a detector is down?
+          <svg class="s-faq-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="s-faq-a"><div class="s-faq-a-inner">
+          <p>The field is withheld and the call is marked degraded in the audit
+             row, naming which tier was unavailable. It is not released with a
+             logged warning, because a warning nobody reads is indistinguishable
+             from no control at all.</p>
+          <p>This is the one place in the product where you will see red: a tier
+             that could not run is a fault, not a policy decision. A blocked field
+             is amber, because blocking is Naka working correctly.</p>
+        </div></div>
+      </div>
+
+      <div class="s-faq-item">
+        <button class="s-faq-q" type="button" aria-expanded="false">
+          Does the model still work if you mask its inputs?
+          <svg class="s-faq-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="s-faq-a"><div class="s-faq-a-inner">
+          <p>Yes, because the placeholders are numbered and stable within a
+             session. <code>[AADHAAR_1]</code> is a token the model can carry
+             through its reasoning, compare against <code>[AADHAAR_2]</code>, and
+             pass back into a later tool call.</p>
+          <p>That last part is why Q3 exists. If a placeholder can be handed to a
+             tool and silently restored, the masking bought you nothing — so
+             restoring one is a separate authorization decision bound to where the
+             value is going.</p>
+        </div></div>
+      </div>
+
+      <div class="s-faq-item">
+        <button class="s-faq-q" type="button" aria-expanded="false">
+          Why Cedar rather than a rules engine or YAML?
+          <svg class="s-faq-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="s-faq-a"><div class="s-faq-a-inner">
+          <p>Because a policy you cannot reason about is a policy you cannot
+             defend to a regulator. Cedar is analysable: you can ask whether one
+             policy is strictly more permissive than another and get an answer,
+             which YAML and imperative rule code cannot offer.</p>
+          <p>It also means the same bundle governs all three planes. An exemption
+             written for the compliance role applies whether the request came from
+             an agent, a laptop paste or a file scan.</p>
+        </div></div>
+      </div>
+
+      <div class="s-faq-item">
+        <button class="s-faq-q" type="button" aria-expanded="false">
+          Where does the data live, and what leaves the region?
+          <svg class="s-faq-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="s-faq-a"><div class="s-faq-a-inner">
+          <p>Everything runs in <code>ap-south-1</code>. The audit table stores
+             entity <em>types and counts</em> — that a PAN was withheld, never
+             which PAN. The before/after panes in the console are reconstructed
+             from those counts, which is why the API has no field that could carry
+             a plaintext value even if something went wrong upstream.</p>
+        </div></div>
+      </div>
+
+      <div class="s-faq-item">
+        <button class="s-faq-q" type="button" aria-expanded="false">
+          What is genuinely not built yet?
+          <svg class="s-faq-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="s-faq-a"><div class="s-faq-a-inner">
+          <p>Multi-tenant authentication and per-org isolation are not implemented;
+             the console is a single-tenant operator surface secured by a shared
+             key on the write path. Endpoint fleet enrolment is manual. Billing is
+             not wired to anything.</p>
+          <p>The guardrail itself — Cedar, the three tiers, the ledger, the vault,
+             the audit trail — is real, deployed and running, and the console reads
+             from it live. We would rather tell you which half is which.</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ cta -->
+<section class="s-band s-band-ink">
+  <div class="s-shell s-cta s-rise">
+    <h2>See it refuse something.</h2>
+    <p>The console runs four real scenarios against the deployed stack — including
+       the two failure cases, because a guardrail that only ever says yes proves
+       nothing.</p>
+    <div class="s-cta-row">
+      <a class="s-btn s-btn-lg" href="./console.html#egress">
+        Run a scenario
+        <svg class="s-btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="s-btn s-btn-ghost s-btn-lg" href="./pricing.html">See pricing</a>
+    </div>
+  </div>
+</section>
+
 </main>
 
-<footer class="foot">
-  <div class="shell">
-    Naka · Cedar authorization + cumulative PII-disclosure ledger · ap-south-1.
-    The before/after panes are reconstructed from entity <em>types and counts</em>;
-    the API has no field that could carry a plaintext value.
+<!-- =============================================================== footer -->
+<footer class="s-foot">
+  <div class="s-shell">
+    <div class="s-foot-grid">
+      <div class="s-foot-about">
+        <a class="s-brand" href="./index.html">
+          <svg class="s-brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <rect width="32" height="32" rx="7" fill="#251d1a"/>
+            <path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="s-brand-word">Naka</span>
+        </a>
+        <p>One policy engine across every path your data takes out of the company —
+           your agents, your endpoints and your files.</p>
+      </div>
+
+      <div class="s-foot-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="./egress.html">Agent Egress</a></li>
+          <li><a href="./endpoint.html">Endpoint DLP</a></li>
+          <li><a href="./files.html">File &amp; Document DLP</a></li>
+          <li><a href="./platform.html">Architecture</a></li>
+        </ul>
+      </div>
+
+      <div class="s-foot-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="./console.html#overview">Console</a></li>
+          <li><a href="./console.html#policy">Policy editor</a></li>
+          <li><a href="./console.html#detectors">Detector coverage</a></li>
+          <li><a href="./pricing.html">Pricing</a></li>
+        </ul>
+      </div>
+
+      <div class="s-foot-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#how">The three questions</a></li>
+          <li><a href="#leak">How a leak happens</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="./platform.html#threat">Threat model</a></li>
+        </ul>
+      </div>
+
+      <div class="s-foot-col">
+        <h4>Status</h4>
+        <ul>
+          <li><a href="./console.html#overview"><span data-live="control">control plane</span></a></li>
+          <li><a href="./console.html#overview"><span data-live="agent">data plane</span></a></li>
+          <li><a href="./console.html#detectors">Detector tiers</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="s-foot-bar">
+      <span>Naka · Cedar authorization + cumulative disclosure ledger · <span class="mono">ap-south-1</span></span>
+      <span>The before/after panes are reconstructed from entity types and counts. The API has no field that could carry a plaintext value.</span>
+    </div>
   </div>
 </footer>
 
-<script type="module">
-import { api } from "./api.js";
-import { store } from "./store.js";
-import { renderFeed, renderMeter, renderDiff, renderTiers } from "./render.js";
-import {
-  initScroll, initHero, initReveals,
-  animateFeedRows, animateMeterSlots, animateChips, animateCount, playTrip, refreshScroll,
-} from "./motion.js";
-
-const feedEl = document.getElementById("feed");
-const meterEl = document.getElementById("meter");
-const diffEl = document.getElementById("diff");
-
-const policyVersionEl = document.getElementById("policy-version");
-const unscannedEl = document.getElementById("unscanned-count");
-const callsCountEl = document.getElementById("calls-count");
-const maskedCountEl = document.getElementById("masked-count");
-
-const agentUrlInput = document.getElementById("agent-url");
-const sessionIdInput = document.getElementById("session-id");
-const userEmailInput = document.getElementById("user-email");
-const roleSelect = document.getElementById("role-select");
-const promptInput = document.getElementById("prompt-input");
-const runBtn = document.getElementById("run-btn");
-const runErrorEl = document.getElementById("run-error");
-const runOkEl = document.getElementById("run-ok");
-const loadSessionBtn = document.getElementById("load-session-btn");
-const loadOlderBtn = document.getElementById("load-older-btn");
-
-const cedarTextarea = document.getElementById("policy-cedar");
-const nakaKeyInput = document.getElementById("naka-key");
-const policySaveBtn = document.getElementById("policy-save-btn");
-const policyReloadBtn = document.getElementById("policy-reload-btn");
-const policyEtagEl = document.getElementById("policy-etag");
-const policyErrorEl = document.getElementById("policy-error");
-const policyOkEl = document.getElementById("policy-ok");
-
-let selectedRow = null;
-let policyEditorTouched = false;
-let currentEtag = null;
-
-// ---- motion boot -----------------------------------------------------------
-
-const lenis = initScroll();
-initHero();
-initReveals();
-
-function scrollToConsole() {
-  const target = document.getElementById("console");
-  if (!target) return;
-  if (lenis) lenis.scrollTo(target, { offset: -8 });
-  else target.scrollIntoView({ behavior: "smooth" });
-}
-document.getElementById("hero-jump").addEventListener("click", scrollToConsole);
-
-// ---- settings strip --------------------------------------------------------
-
-agentUrlInput.value = api.getAgentUrl();
-agentUrlInput.addEventListener("change", () => api.setAgentUrl(agentUrlInput.value.trim()));
-
-sessionIdInput.value = "demo-session-1";
-userEmailInput.value = "analyst@example.com";
-
-function hide(el) { el.hidden = true; el.textContent = ""; }
-function showError(el, text) { el.hidden = false; el.textContent = text; }
-function showOk(el, text) { el.hidden = false; el.textContent = text; }
-
-// ---- health pills ----------------------------------------------------------
-
-async function pingHealth() {
-  const controlPill = document.getElementById("pill-control");
-  const agentPill = document.getElementById("pill-agent");
-  try {
-    const h = await api.health();
-    controlPill.classList.add("live");
-    // A first-time viewer has no localStorage, so fall back to the agent
-    // URL this deploy told the control plane about. Never overrides a
-    // value the viewer set themselves.
-    if (h && h.agent_url && !agentUrlInput.value) {
-      agentUrlInput.value = h.agent_url;
-      api.setAgentUrl(h.agent_url);
-    }
-  } catch {
-    controlPill.classList.add("down");
-  }
-
-  const url = api.getAgentUrl();
-  if (!url) return;
-  try {
-    const resp = await fetch(url.replace(/\/$/, "") + "/health");
-    agentPill.classList.add(resp.ok ? "live" : "down");
-  } catch {
-    agentPill.classList.add("down");
-  }
-}
-pingHealth();
-
-// Detector coverage. Probed server-side and cached for 60s there, so this
-// is a real answer about this account, not a claim baked into the page.
-const tiersEl = document.getElementById("tiers");
-renderTiers(null, tiersEl);
-api
-  .diag()
-  .then((d) => renderTiers(d, tiersEl))
-  .catch(() => {
-    tiersEl.innerHTML =
-      '<div class="empty">Detector coverage unavailable — the control plane did not answer.</div>';
-  });
-
-// ---- run -------------------------------------------------------------------
-
-async function runSession() {
-  hide(runErrorEl);
-  hide(runOkEl);
-  const prompt = promptInput.value.trim();
-  if (!prompt) {
-    showError(runErrorEl, "Enter a prompt for the agent first.");
-    return;
-  }
-  runBtn.disabled = true;
-  try {
-    const resp = await api.run({
-      session_id: sessionIdInput.value.trim(),
-      prompt,
-      user: userEmailInput.value.trim(),
-      role: roleSelect.value,
-    });
-    showOk(runOkEl, `${resp.calls?.length ?? 0} tool calls · policy ${resp.policy_version}`);
-    await store.refreshFeed();
-    await store.loadSession(sessionIdInput.value.trim());
-  } catch (err) {
-    showError(runErrorEl, err.body?.error ? `${err.body.error.code}: ${err.body.error.message}` : err.message);
-  } finally {
-    runBtn.disabled = false;
-  }
-}
-
-runBtn.addEventListener("click", runSession);
-
-document.getElementById("hero-demo").addEventListener("click", () => {
-  const first = document.querySelector(".scenario");
-  if (first) {
-    promptInput.value = first.dataset.prompt;
-    roleSelect.value = first.dataset.role || "analyst";
-  }
-  scrollToConsole();
-  runSession();
-});
-
-// Scenario buttons: fill the prompt AND the role, then run. Each one is a
-// complete payload, so a judge reaches a real decision in one click.
-document.getElementById("scenario-row").addEventListener("click", async (ev) => {
-  const btn = ev.target.closest(".scenario");
-  if (!btn) return;
-  for (const b of document.querySelectorAll(".scenario")) b.classList.remove("scenario-active");
-  btn.classList.add("scenario-active");
-  promptInput.value = btn.dataset.prompt || "";
-  roleSelect.value = btn.dataset.role || "analyst";
-  // A fresh session id per scenario, so each one starts with an empty
-  // ledger instead of inheriting the previous scenario's spend — otherwise
-  // "budget bites" would already be exhausted before it ran.
-  const sid = "demo-" + Math.random().toString(36).slice(2, 8);
-  sessionIdInput.value = sid;
-
-  hide(runErrorEl);
-  hide(runOkEl);
-  runBtn.disabled = true;
-  try {
-    const resp = await api.demo({
-      scenario: btn.dataset.scenario,
-      session_id: sid,
-      user: userEmailInput.value.trim(),
-      role: btn.dataset.role || "analyst",
-    });
-    const denied = resp.transcript.filter((t) => String(t.outcome).startsWith("denied")).length;
-    const masked = resp.transcript.reduce(
-      (n, t) => n + Object.values(t.entities_masked || {}).reduce((a, b) => a + b, 0), 0);
-    showOk(
-      runOkEl,
-      `${resp.title} — ${resp.transcript.length} tool calls, ${masked} fields withheld, ` +
-        `${denied} calls refused. ${resp.proves}`
-    );
-    await store.refreshFeed();
-    await store.loadSession(sid);
-  } catch (err) {
-    showError(runErrorEl, err.body?.error ? `${err.body.error.code}: ${err.body.error.message}` : err.message);
-  } finally {
-    runBtn.disabled = false;
-  }
-});
-
-loadSessionBtn.addEventListener("click", async () => {
-  const id = sessionIdInput.value.trim();
-  if (!id) return;
-  try {
-    await store.loadSession(id);
-  } catch (err) {
-    showError(runErrorEl, err.body?.error ? `${err.body.error.code}: ${err.body.error.message}` : err.message);
-  }
-});
-
-loadOlderBtn.addEventListener("click", async () => {
-  loadOlderBtn.disabled = true;
-  try {
-    await store.loadOlder();
-  } catch (err) {
-    console.error("naka: load older failed", err);
-  } finally {
-    loadOlderBtn.disabled = !store.cursor;
-  }
-});
-
-// ---- feed selection -> diff panel ------------------------------------------
-
-feedEl.addEventListener("naka:selectrow", (ev) => {
-  selectedRow = ev.detail;
-  renderDiff(selectedRow, diffEl);
-  animateChips(diffEl.querySelectorAll(".chip"));
-  // Follow the row into its own session, so the meter shows the subject
-  // this row is about rather than staying pinned to the typed session id.
-  const rowSession = ev.detail.session_id;
-  if (rowSession && rowSession !== sessionIdInput.value.trim()) {
-    sessionIdInput.value = rowSession;
-    store.loadSession(rowSession).catch((err) => console.error("naka: session load failed", err));
-  }
-});
-
-// ---- store subscription ----------------------------------------------------
-
-function currentSessionMeters() {
-  const id = sessionIdInput.value.trim();
-  const session = store.sessions[id];
-  if (!session) return {};
-  const meters = {};
-  for (const [subject, m] of Object.entries(session.meters || {})) {
-    meters[subject] = { ...m, calls: session.calls.filter((c) => c.subject === subject) };
-  }
-  return meters;
-}
-
-let seenRowKeys = new Set();
-
-function rerender() {
-  renderFeed(store.feedRows, feedEl);
-  renderMeter(currentSessionMeters(), meterEl);
-
-  // Animate only rows that are new since the last render — animating the
-  // whole table on every poll is visual thrash, not liveness.
-  const fresh = [];
-  for (const tr of feedEl.querySelectorAll("tr.feed-row")) {
-    const key = tr.dataset.key;
-    if (key && !seenRowKeys.has(key)) {
-      seenRowKeys.add(key);
-      fresh.push(tr);
-    }
-  }
-  if (seenRowKeys.size > 400) seenRowKeys = new Set([...seenRowKeys].slice(-200));
-  animateFeedRows(fresh);
-  animateMeterSlots(meterEl.querySelectorAll(".slot"));
-
-  // The trip runs once per subject, the first time its budget is seen
-  // spent. playTrip() guards against replaying on later polls itself.
-  for (const card of meterEl.querySelectorAll('.meter[data-exhausted="1"]')) {
-    playTrip(card);
-  }
-
-  const unscanned = store.feedRows.filter(
-    (r) => r.outcome === "ok" && (!r.detector_tiers || r.detector_tiers.length === 0)
-  ).length;
-  animateCount(unscannedEl, unscanned);
-  unscannedEl.className = "stat-value " + (unscanned === 0 ? "zero" : "nonzero");
-
-  animateCount(callsCountEl, store.feedRows.length);
-  const masked = store.feedRows.reduce(
-    (sum, r) => sum + Object.values(r.entities_masked || {}).reduce((a, b) => a + b, 0),
-    0
-  );
-  animateCount(maskedCountEl, masked);
-
-  refreshScroll();
-}
-
-store.subscribe(rerender);
-renderDiff(null, diffEl);
-
-// ---- policy ----------------------------------------------------------------
-
-cedarTextarea.addEventListener("input", () => { policyEditorTouched = true; });
-
-function applyPolicyToUI(policyState) {
-  if (!policyState) return;
-  policyVersionEl.textContent = policyState.bundle.version || "(unversioned)";
-  currentEtag = policyState.etag;
-  policyEtagEl.textContent = currentEtag ? `etag ${currentEtag}` : "";
-  if (!policyEditorTouched) cedarTextarea.value = policyState.bundle.cedar || "";
-}
-
-async function refreshPolicy() {
-  try {
-    applyPolicyToUI(await store.refreshPolicy());
-  } catch {
-    policyVersionEl.textContent = "(unreachable)";
-  }
-}
-
-policyReloadBtn.addEventListener("click", () => {
-  policyEditorTouched = false;
-  refreshPolicy();
-});
-
-policySaveBtn.addEventListener("click", async () => {
-  hide(policyErrorEl);
-  hide(policyOkEl);
-  const currentBundle = store.policy ? store.policy.bundle : {};
-  // Drop `version` deliberately: app_control.py does
-  // `payload.get("version") or _now_iso()`, so echoing the old version
-  // back pins the stored bundle to its original version string forever.
-  const { version: _oldVersion, ...carriedOver } = currentBundle;
-  const bundle = { ...carriedOver, cedar: cedarTextarea.value };
-  try {
-    const resp = await api.savePolicy(bundle, currentEtag, nakaKeyInput.value);
-    showOk(policyOkEl, `saved — version ${resp.version}`);
-    policyEditorTouched = false;
-    await refreshPolicy();
-  } catch (err) {
-    const body = err.body && err.body.error;
-    showError(policyErrorEl, body ? `${body.code}: ${body.message}` : err.message);
-  }
-});
-
-// ---- boot ------------------------------------------------------------------
-
-refreshPolicy();
-setInterval(refreshPolicy, 6000);
-store.poll(1500);
-</script>
 </body>
 </html>

@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pricing — Naka</title>
+<meta name="description" content="Naka runs in your own AWS account. Plans by plane and by protected identity, with a self-hosted tier that stays free." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./app.css" />
+<link rel="stylesheet" href="./site.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23251d1a'/%3E%3Cpath d='M9 23V9l14 14V9' stroke='%23faebd6' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script defer type="module" src="./site.js"></script>
+</head>
+<body>
+
+<a class="s-skip" href="#main">Skip to content</a>
+
+<nav class="s-nav">
+  <div class="s-nav-inner">
+    <a class="s-brand" href="./index.html">
+      <svg class="s-brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#251d1a"/><path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="s-brand-word">Naka</span>
+    </a>
+    <div class="s-nav-links">
+      <a class="s-nav-link" href="./egress.html">Agent Egress</a>
+      <a class="s-nav-link" href="./endpoint.html">Endpoint DLP</a>
+      <a class="s-nav-link" href="./files.html">File &amp; Document</a>
+      <a class="s-nav-link" href="./platform.html">Architecture</a>
+      <a class="s-nav-link" href="./pricing.html">Pricing</a>
+    </div>
+    <button class="s-nav-burger" type="button" aria-expanded="false" aria-label="Menu">
+      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <div class="s-nav-actions">
+      <a class="s-btn s-btn-ghost s-btn-sm" href="./console.html">Sign in</a>
+      <a class="s-btn s-btn-sm" href="./console.html#overview">Open console</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="s-hero" style="padding-block:var(--s7) var(--s7)">
+  <div class="s-shell">
+    <div style="max-width:64ch;margin:0 auto;text-align:center">
+      <div class="s-eyebrow" data-hero style="justify-content:center">Pricing</div>
+      <h1 data-split style="font-size:clamp(38px,5.2vw,60px)">It runs in <em>your</em> account.</h1>
+      <p class="s-hero-lede" data-hero style="margin-inline:auto;text-align:center">
+        Naka deploys into your own AWS account, in your own region. Your data never
+        transits ours, because there is no ours in the path. You pay AWS for the
+        Lambda and DynamoDB it uses, and you pay us for the policy plane on top.
+      </p>
+    </div>
+  </div>
+</header>
+
+<section class="s-band" style="padding-top:0">
+  <div class="s-shell">
+    <div style="display:flex;justify-content:center">
+      <div class="s-toggle" role="group" aria-label="Billing period">
+        <button type="button" data-bill="monthly" aria-pressed="true">Monthly</button>
+        <button type="button" data-bill="annual" aria-pressed="false">Annual · save 20%</button>
+      </div>
+    </div>
+
+    <div class="s-prices s-rise" data-rise-group=".s-price">
+      <!-- self-hosted -->
+      <div class="s-price">
+        <div class="s-price-name">Self-hosted</div>
+        <div class="s-price-fig"><b>Free</b></div>
+        <p class="s-price-sub">The full guardrail, deployed from the repo into your
+           own account. You pay AWS, nothing else.</p>
+        <ul>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Agent Egress plane, complete</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>All three detector tiers</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Cumulative disclosure ledger</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Operator console &amp; policy editor</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Full audit trail in your DynamoDB</li>
+          <li class="is-off"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Endpoint fleet management</li>
+          <li class="is-off"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>SSO &amp; multi-tenant isolation</li>
+        </ul>
+        <a class="s-btn s-btn-ghost" href="./console.html#overview">Deploy it yourself</a>
+      </div>
+
+      <!-- team -->
+      <div class="s-price s-price-featured">
+        <span class="s-price-flag">Most teams</span>
+        <div class="s-price-name">Team</div>
+        <div class="s-price-fig">
+          <b data-price data-monthly="$0.04" data-annual="$0.032">$0.04</b>
+          <span>per protected identity / month</span>
+        </div>
+        <p class="s-price-sub">Billed on distinct subjects with a ledger entry, not on
+           seats or call volume — so the price tracks the risk, not the traffic.</p>
+        <ul>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Self-hosted</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>All three planes under one Cedar bundle</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Endpoint agent distribution</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Policy history &amp; rollback</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audit export for DPDP enquiries</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Email support, 1 business day</li>
+        </ul>
+        <a class="s-btn" href="./console.html#overview">Start with the console</a>
+      </div>
+
+      <!-- enterprise -->
+      <div class="s-price">
+        <div class="s-price-name">Enterprise</div>
+        <div class="s-price-fig"><b>Custom</b></div>
+        <p class="s-price-sub">For regulated environments that need separation of
+           duties on policy changes and an auditor who asks hard questions.</p>
+        <ul>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Team</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>SSO, SCIM, multi-tenant isolation</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Policy approval workflow &amp; signing</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Custom detector tiers &amp; entity types</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Air-gapped &amp; GovCloud deployment</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="m3 8 3.5 3.5L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Named engineer, contractual SLA</li>
+        </ul>
+        <a class="s-btn s-btn-ghost" href="./platform.html#threat">Read the threat model</a>
+      </div>
+    </div>
+
+    <!-- The honest footnote. A pricing page on a product with no billing
+         integration should say so rather than imply a checkout exists. -->
+    <div class="s-rise" style="margin-top:var(--s6);max-width:80ch;margin-inline:auto;text-align:center;font-size:var(--t-small);color:var(--ink-2);line-height:1.65">
+      <strong style="color:var(--ink)">Billing is not wired up.</strong> These are the
+      plans the product is designed around; there is no payment integration behind
+      them today and no checkout to reach. The Self-hosted tier is the one you can
+      actually use right now, and it is complete.
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================= compare -->
+<section class="s-band s-band-alt">
+  <div class="s-shell">
+    <div class="s-head s-center s-rise">
+      <div class="s-eyebrow">Detail</div>
+      <h2>What differs between plans</h2>
+    </div>
+
+    <div class="s-rise s-compare-scroll" style="background:var(--panel);border:1px solid var(--peach);border-radius:var(--r-card);padding:var(--s3) var(--s5) var(--s5);box-shadow:var(--shadow-m)">
+      <table class="s-compare">
+        <thead>
+          <tr><th style="width:40%">&nbsp;</th><th>Self-hosted</th><th>Team</th><th>Enterprise</th></tr>
+        </thead>
+        <tbody>
+          <tr class="s-compare-group"><td colspan="4">Planes</td></tr>
+          <tr><th>Agent Egress</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><th>File &amp; Document DLP</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><th>Endpoint DLP agent</th><td>manual install</td><td class="yes">managed distribution</td><td class="yes">managed + MDM</td></tr>
+
+          <tr class="s-compare-group"><td colspan="4">Detection</td></tr>
+          <tr><th>Tier 1 — local deterministic</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><th>Tier 2 — Comprehend</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><th>Tier 3 — Nova Pro multimodal</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><th>Custom entity types</th><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+
+          <tr class="s-compare-group"><td colspan="4">Policy</td></tr>
+          <tr><th>Cedar editor, ETag-guarded</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><th>Version history &amp; rollback</th><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><th>Approval workflow &amp; signing</th><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+
+          <tr class="s-compare-group"><td colspan="4">Access</td></tr>
+          <tr><th>Shared-key write auth</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><th>SSO / SCIM</th><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+          <tr><th>Multi-tenant isolation</th><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+
+          <tr class="s-compare-group"><td colspan="4">Operations</td></tr>
+          <tr><th>Runs in your AWS account</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><th>Audit export</th><td>raw table access</td><td class="yes">DPDP export</td><td class="yes">DPDP export + retention</td></tr>
+          <tr><th>Support</th><td>community</td><td>email, 1 business day</td><td>named engineer, SLA</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================= faq -->
+<section class="s-band">
+  <div class="s-shell s-shell-narrow">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">Pricing questions</div>
+      <h2>Before you ask sales</h2>
+    </div>
+
+    <div class="s-faq s-rise">
+      <div class="s-faq-item">
+        <button class="s-faq-q" type="button" aria-expanded="false">
+          Why price on identities rather than on calls?
+          <svg class="s-faq-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="s-faq-a"><div class="s-faq-a-inner">
+          <p>Because call volume is a measure of how busy you are, and protected
+             identities is a measure of how much you stand to lose. Pricing on calls
+             also creates exactly the wrong incentive: it makes turning the guardrail
+             off in high-traffic paths a cost saving.</p>
+        </div></div>
+      </div>
+
+      <div class="s-faq-item">
+        <button class="s-faq-q" type="button" aria-expanded="false">
+          What do I pay AWS on top?
+          <svg class="s-faq-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="s-faq-a"><div class="s-faq-a-inner">
+          <p>Two arm64 Lambdas, on-demand DynamoDB, and per-request charges for the
+             detector tiers you enable. Tier 1 is free — it runs locally and makes no
+             API call. Tier 2 is Comprehend per unit of text. Tier 3 is Bedrock per
+             image and is the only expensive one; it is invoked for documents, not
+             for every call.</p>
+        </div></div>
+      </div>
+
+      <div class="s-faq-item">
+        <button class="s-faq-q" type="button" aria-expanded="false">
+          Can I use one plane without the others?
+          <svg class="s-faq-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="s-faq-a"><div class="s-faq-a-inner">
+          <p>Yes. Each plane is independently deployable and most teams start with
+             Agent Egress because that is where the new risk is. The planes get more
+             useful together — a shared ledger means a budget cannot be reset by
+             switching format — but none of them requires the others.</p>
+        </div></div>
+      </div>
+
+      <div class="s-faq-item">
+        <button class="s-faq-q" type="button" aria-expanded="false">
+          Is there a trial?
+          <svg class="s-faq-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="s-faq-a"><div class="s-faq-a-inner">
+          <p>The Self-hosted tier is not a trial, it is the product. Deploy it, run
+             the scenarios, read the audit rows, and decide whether the managed
+             policy plane is worth paying for. Nothing is time-limited and nothing
+             phones home.</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="s-band s-band-ink">
+  <div class="s-shell s-cta s-rise">
+    <h2>Start with the free one.</h2>
+    <p>It is the complete guardrail. If it does not refuse something you expected it
+       to refuse, no plan above it will help.</p>
+    <div class="s-cta-row">
+      <a class="s-btn s-btn-lg" href="./console.html#egress">Run a scenario</a>
+      <a class="s-btn s-btn-ghost s-btn-lg" href="./platform.html">Read the architecture</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="s-foot">
+  <div class="s-shell">
+    <div class="s-foot-grid">
+      <div class="s-foot-about">
+        <a class="s-brand" href="./index.html">
+          <svg class="s-brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#251d1a"/><path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="s-brand-word">Naka</span>
+        </a>
+        <p>One policy engine across every path your data takes out of the company.</p>
+      </div>
+      <div class="s-foot-col"><h4>Platform</h4><ul>
+        <li><a href="./egress.html">Agent Egress</a></li>
+        <li><a href="./endpoint.html">Endpoint DLP</a></li>
+        <li><a href="./files.html">File &amp; Document DLP</a></li>
+        <li><a href="./platform.html">Architecture</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Product</h4><ul>
+        <li><a href="./console.html#overview">Console</a></li>
+        <li><a href="./console.html#policy">Policy editor</a></li>
+        <li><a href="./console.html#detectors">Detector coverage</a></li>
+        <li><a href="./pricing.html">Pricing</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Resources</h4><ul>
+        <li><a href="./index.html#how">The three questions</a></li>
+        <li><a href="./index.html#leak">How a leak happens</a></li>
+        <li><a href="./index.html#faq">FAQ</a></li>
+        <li><a href="./platform.html#threat">Threat model</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Status</h4><ul>
+        <li><a href="./console.html#overview"><span data-live="control">control plane</span></a></li>
+        <li><a href="./console.html#overview"><span data-live="agent">data plane</span></a></li>
+      </ul></div>
+    </div>
+    <div class="s-foot-bar">
+      <span>Naka · Cedar authorization + cumulative disclosure ledger · <span class="mono">ap-south-1</span></span>
+      <span>The API has no field that could carry a plaintext value.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

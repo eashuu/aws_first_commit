@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>File &amp; Document DLP — Naka</title>
+<meta name="description" content="Attachment and identity-document scanning with Indic-script OCR. Three detector tiers that union and never subtract, charged against the same per-subject disclosure budget." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./app.css" />
+<link rel="stylesheet" href="./site.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23251d1a'/%3E%3Cpath d='M9 23V9l14 14V9' stroke='%23faebd6' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script defer type="module" src="./site.js"></script>
+</head>
+<body>
+
+<a class="s-skip" href="#main">Skip to content</a>
+
+<nav class="s-nav">
+  <div class="s-nav-inner">
+    <a class="s-brand" href="./index.html">
+      <svg class="s-brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#251d1a"/><path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="s-brand-word">Naka</span>
+    </a>
+    <div class="s-nav-links">
+      <a class="s-nav-link" href="./egress.html">Agent Egress</a>
+      <a class="s-nav-link" href="./endpoint.html">Endpoint DLP</a>
+      <a class="s-nav-link" href="./files.html">File &amp; Document</a>
+      <a class="s-nav-link" href="./platform.html">Architecture</a>
+      <a class="s-nav-link" href="./pricing.html">Pricing</a>
+    </div>
+    <button class="s-nav-burger" type="button" aria-expanded="false" aria-label="Menu">
+      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <div class="s-nav-actions">
+      <a class="s-btn s-btn-ghost s-btn-sm" href="./console.html">Sign in</a>
+      <a class="s-btn s-btn-sm" href="./console.html#files">Open console</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="s-hero" style="padding-block:var(--s7) var(--s8)">
+  <div class="s-shell s-hero-grid">
+    <div>
+      <div class="s-eyebrow" data-hero>Plane 03 · File &amp; Document DLP</div>
+      <h1 data-split>A pipeline that only reads Latin script has a <em>country-sized</em> blind spot.</h1>
+      <p class="s-hero-lede" data-hero>
+        The document that leaks an Aadhaar number is a photograph of a card, taken on
+        a phone, with the holder's name printed in Devanagari. Naka runs Textract for
+        layout and <strong>Nova Pro</strong> for the multimodal pass — because that is
+        what these documents actually are.
+      </p>
+      <div class="s-hero-cta" data-hero>
+        <a class="s-btn s-btn-lg" href="./console.html#files">
+          See scan results
+          <svg class="s-btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="s-btn s-btn-ghost s-btn-lg" href="./console.html#detectors">Live detector coverage</a>
+      </div>
+      <div class="s-status" data-hero>
+        <span class="s-chip"><span class="s-dot"></span><span data-live="control">checking control plane…</span></span>
+      </div>
+    </div>
+
+    <div class="s-hero-art" data-hero>
+      <div class="s-scope" data-tilt>
+        <div class="s-scope-bar">
+          <div class="s-scope-lights" aria-hidden="true"><i></i><i></i><i></i></div>
+          <span class="s-scope-title">aadhaar-scan.jpg · 2.1 MB</span>
+          <span class="s-scope-badge">3 tiers run</span>
+        </div>
+        <div class="s-scope-body">
+          <div class="s-line"><span class="s-line-key">tier 1</span><span class="s-line-val is-held">AADHAAR ×1</span><span class="s-tagline is-deny">Verhoeff ✓</span></div>
+          <div class="s-line"><span class="s-line-key">tier 2</span><span class="s-line-val is-out">ADDRESS ×1</span><span class="s-tagline is-allow">Textract</span></div>
+          <div class="s-line">
+            <span class="s-line-key">tier 3</span>
+            <span class="s-line-val is-held" style="font-family:'IBM Plex Sans Devanagari',var(--font-mono)">नाम ×1</span>
+            <span class="s-tagline is-deny">Nova Pro</span>
+          </div>
+          <div class="s-line"><span class="s-line-key">union</span><span class="s-line-val is-out">3 findings, 0 dropped</span><span class="s-tagline">never subtracted</span></div>
+        </div>
+        <div class="s-scope-foot">
+          <span>2 withheld · 1 released</span>
+          <span>charged to cust_8814</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="s-band s-band-alt">
+  <div class="s-shell">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">The ordering rule</div>
+      <h2>Tiers union. They never subtract.</h2>
+      <p>This is a one-line rule with a large consequence: a later, cleverer model
+         may only ever <em>add</em> findings to what an earlier tier proved.</p>
+    </div>
+
+    <div class="s-steps s-rise">
+      <div class="s-step">
+        <div class="s-step-n">1</div>
+        <div>
+          <h3>Local, deterministic, and final</h3>
+          <p>An Aadhaar number that passes the Verhoeff checksum is an Aadhaar
+             number. No model gets a vote on that. Tier 1 runs first, on-device
+             where there is a device, and its findings cannot be removed downstream.</p>
+        </div>
+      </div>
+      <div class="s-step">
+        <div class="s-step-n">2</div>
+        <div>
+          <h3>Layout and standard entities</h3>
+          <p>Textract for document structure, Comprehend for the entity classes
+             where a regex is guesswork — names, addresses, dates. Added to tier 1's
+             set.</p>
+        </div>
+      </div>
+      <div class="s-step">
+        <div class="s-step-n">3</div>
+        <div>
+          <h3>The multimodal pass</h3>
+          <p>Nova Pro reads the image itself, including Indic scripts. This is the
+             tier that catches the identity card nobody transcribed — and it is
+             purely additive, so a bad day for the model degrades coverage without
+             ever clearing a document.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-rise" style="margin-top:var(--s6);background:var(--panel);border:1px solid var(--peach);border-left:3px solid var(--fault);border-radius:0 var(--r-card) var(--r-card) 0;padding:var(--s5);font-size:var(--t-small);color:var(--ink-2);line-height:1.6">
+      <strong style="color:var(--ink)">If a tier cannot run, the document is not clean — it is unscanned.</strong>
+      The audit row records which tiers ran and which did not, and the console
+      reports a gated service as a neutral <code>NOT_RUN</code> rather than a green
+      tick. The failure this product exists to prevent is a blind spot wearing the
+      clean state's clothes.
+    </div>
+  </div>
+</section>
+
+<section class="s-band">
+  <div class="s-shell">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">Shared state</div>
+      <h2>A file's findings spend the same budget</h2>
+      <p>A document is not a separate world. What a scan discloses about a subject is
+         charged to that subject's ledger, exactly as a tool call would be.</p>
+    </div>
+
+    <div class="s-features s-rise" data-rise-group=".s-feature">
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V5m0 15h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8 16V10m4 6V7m4 9v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <h3>One ledger, three planes</h3>
+        <p>An agent that has already learned three fields about a subject cannot
+           then be handed a document containing the fourth. The budget does not
+           reset because the data arrived in a different format.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18" stroke="currentColor" stroke-width="1.8"/></svg>
+        <h3>Placeholders survive the format</h3>
+        <p>A masked entity in a document becomes the same numbered placeholder it
+           would in a JSON field — so the model can carry it, compare it and hand it
+           back into a tool call, where Q3 decides whether it may be restored.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Types and counts only</h3>
+        <p>The audit row says a PAN was found and withheld. It does not and cannot
+           say which PAN — there is no field on the API that could carry one, which
+           is why a scan result is safe to keep.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="s-band s-band-ink">
+  <div class="s-shell s-cta s-rise">
+    <h2>Check what's actually reachable.</h2>
+    <p>The console probes Textract, Comprehend and Nova Pro live against the account
+       and reports what it finds — including when the answer is "not entitled".</p>
+    <div class="s-cta-row">
+      <a class="s-btn s-btn-lg" href="./console.html#detectors">Detector coverage</a>
+      <a class="s-btn s-btn-ghost s-btn-lg" href="./platform.html">See the architecture</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="s-foot">
+  <div class="s-shell">
+    <div class="s-foot-grid">
+      <div class="s-foot-about">
+        <a class="s-brand" href="./index.html">
+          <svg class="s-brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#251d1a"/><path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="s-brand-word">Naka</span>
+        </a>
+        <p>One policy engine across every path your data takes out of the company.</p>
+      </div>
+      <div class="s-foot-col"><h4>Platform</h4><ul>
+        <li><a href="./egress.html">Agent Egress</a></li>
+        <li><a href="./endpoint.html">Endpoint DLP</a></li>
+        <li><a href="./files.html">File &amp; Document DLP</a></li>
+        <li><a href="./platform.html">Architecture</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Product</h4><ul>
+        <li><a href="./console.html#overview">Console</a></li>
+        <li><a href="./console.html#policy">Policy editor</a></li>
+        <li><a href="./console.html#detectors">Detector coverage</a></li>
+        <li><a href="./pricing.html">Pricing</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Resources</h4><ul>
+        <li><a href="./index.html#how">The three questions</a></li>
+        <li><a href="./index.html#leak">How a leak happens</a></li>
+        <li><a href="./index.html#faq">FAQ</a></li>
+        <li><a href="./platform.html#threat">Threat model</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Status</h4><ul>
+        <li><a href="./console.html#overview"><span data-live="control">control plane</span></a></li>
+        <li><a href="./console.html#overview"><span data-live="agent">data plane</span></a></li>
+      </ul></div>
+    </div>
+    <div class="s-foot-bar">
+      <span>Naka · Cedar authorization + cumulative disclosure ledger · <span class="mono">ap-south-1</span></span>
+      <span>The API has no field that could carry a plaintext value.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

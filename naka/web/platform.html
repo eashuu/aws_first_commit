@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Architecture — Naka</title>
+<meta name="description" content="How Naka's three planes share one Cedar bundle and one disclosure ledger: the request path, the data model, the threat model, and what is deliberately not built." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./app.css" />
+<link rel="stylesheet" href="./site.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23251d1a'/%3E%3Cpath d='M9 23V9l14 14V9' stroke='%23faebd6' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script defer type="module" src="./site.js"></script>
+</head>
+<body>
+
+<a class="s-skip" href="#main">Skip to content</a>
+
+<nav class="s-nav">
+  <div class="s-nav-inner">
+    <a class="s-brand" href="./index.html">
+      <svg class="s-brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#251d1a"/><path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="s-brand-word">Naka</span>
+    </a>
+    <div class="s-nav-links">
+      <a class="s-nav-link" href="./egress.html">Agent Egress</a>
+      <a class="s-nav-link" href="./endpoint.html">Endpoint DLP</a>
+      <a class="s-nav-link" href="./files.html">File &amp; Document</a>
+      <a class="s-nav-link" href="./platform.html">Architecture</a>
+      <a class="s-nav-link" href="./pricing.html">Pricing</a>
+    </div>
+    <button class="s-nav-burger" type="button" aria-expanded="false" aria-label="Menu">
+      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <div class="s-nav-actions">
+      <a class="s-btn s-btn-ghost s-btn-sm" href="./console.html">Sign in</a>
+      <a class="s-btn s-btn-sm" href="./console.html#overview">Open console</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="s-hero" style="padding-block:var(--s7) var(--s7)">
+  <div class="s-shell">
+    <div style="max-width:70ch">
+      <div class="s-eyebrow" data-hero>Architecture</div>
+      <h1 data-split style="font-size:clamp(38px,5.2vw,62px)">One policy bundle. One ledger. <em>Three doors.</em></h1>
+      <p class="s-hero-lede" data-hero style="max-width:66ch">
+        The interesting thing about Naka is not any single plane — it is that all
+        three answer to the same Cedar text and write to the same disclosure ledger.
+        A subject's budget spent by an agent is the same budget an employee's paste
+        is charged against, because it is the same person's data either way.
+      </p>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================ the diagram -->
+<section class="s-band s-band-alt" style="padding-top:var(--s7)">
+  <div class="s-shell">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">Request path</div>
+      <h2>What happens between a tool and a transcript</h2>
+    </div>
+
+    <div class="s-rise" style="background:var(--panel);border:1px solid var(--peach);border-radius:var(--r-card);padding:var(--s6);box-shadow:var(--shadow-m);overflow-x:auto">
+      <svg viewBox="0 0 1040 340" style="width:100%;min-width:860px;height:auto" fill="none" role="img"
+        aria-label="A tool call enters the guard, is authorized by Cedar at Q1, executes, its result is scanned by three detector tiers, each entity is authorized at Q2 against the ledger, denied entities become placeholders, the ledger is updated atomically, and an audit row is written. Outbound arguments containing placeholders go through Q3 before restoration.">
+
+        <!-- lane labels -->
+        <text x="0" y="22" font-family="IBM Plex Mono, monospace" font-size="11" fill="#9f8b7f" letter-spacing="1">AGENT</text>
+        <text x="0" y="132" font-family="IBM Plex Mono, monospace" font-size="11" fill="#9f8b7f" letter-spacing="1">NAKA GUARD</text>
+        <text x="0" y="292" font-family="IBM Plex Mono, monospace" font-size="11" fill="#9f8b7f" letter-spacing="1">STATE</text>
+
+        <!-- agent lane -->
+        <rect data-pop x="90" y="0" width="150" height="46" rx="6" fill="#fdf7ef" stroke="#eed0bf" stroke-width="2"/>
+        <text x="165" y="28" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#251d1a">tool call</text>
+
+        <rect data-pop x="800" y="0" width="150" height="46" rx="6" fill="#fdf7ef" stroke="#eed0bf" stroke-width="2"/>
+        <text x="875" y="28" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#251d1a">transcript</text>
+
+        <!-- down into the guard -->
+        <path data-draw d="M165 46 V96" stroke="#3b758c" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M160 88 L165 96 L170 88" fill="#3b758c"/>
+
+        <!-- guard lane boxes -->
+        <rect data-pop x="90" y="96" width="132" height="62" rx="6" fill="#e2f0f2" stroke="#309fb6" stroke-width="2.5"/>
+        <text x="156" y="122" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#251d1a">Q1 · Cedar</text>
+        <text x="156" y="140" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#3b758c">may this call run?</text>
+
+        <path data-draw d="M222 127 H272" stroke="#251d1a" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M264 122 L272 127 L264 132" fill="#251d1a"/>
+
+        <rect data-pop x="272" y="96" width="120" height="62" rx="6" fill="#fdf7ef" stroke="#eed0bf" stroke-width="2.5"/>
+        <text x="332" y="122" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#251d1a">execute</text>
+        <text x="332" y="140" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#9f8b7f">the real tool</text>
+
+        <path data-draw d="M392 127 H442" stroke="#251d1a" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M434 122 L442 127 L434 132" fill="#251d1a"/>
+
+        <rect data-pop x="442" y="96" width="140" height="62" rx="6" fill="#e9ebe4" stroke="#66753d" stroke-width="2.5"/>
+        <text x="512" y="122" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#251d1a">detect ×3</text>
+        <text x="512" y="140" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#66753d">union, never subtract</text>
+
+        <path data-draw d="M582 127 H632" stroke="#251d1a" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M624 122 L632 127 L624 132" fill="#251d1a"/>
+
+        <rect data-pop x="632" y="96" width="136" height="62" rx="6" fill="#fbf0e1" stroke="#cb5800" stroke-width="2.5"/>
+        <text x="700" y="122" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#251d1a">Q2 · per field</text>
+        <text x="700" y="140" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#cb5800">against the ledger</text>
+
+        <path data-draw d="M768 127 H818" stroke="#251d1a" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M810 122 L818 127 L810 132" fill="#251d1a"/>
+        <rect data-pop x="818" y="96" width="132" height="62" rx="6" fill="#fdf7ef" stroke="#eed0bf" stroke-width="2.5"/>
+        <text x="884" y="122" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#251d1a">mask</text>
+        <text x="884" y="140" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#8a4a12">[PAN_2]</text>
+
+        <!-- up to transcript -->
+        <path data-draw d="M884 96 V46" stroke="#66753d" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M879 54 L884 46 L889 54" fill="#66753d"/>
+
+        <!-- down into state -->
+        <path data-draw d="M700 158 V246" stroke="#cb5800" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6 5"/>
+        <path d="M695 238 L700 246 L705 238" fill="#cb5800"/>
+        <path data-draw d="M512 158 V246" stroke="#9f8b7f" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6 5"/>
+        <path d="M507 238 L512 246 L517 238" fill="#9f8b7f"/>
+        <path data-draw d="M156 158 V246" stroke="#9f8b7f" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6 5"/>
+        <path d="M151 238 L156 246 L161 238" fill="#9f8b7f"/>
+
+        <!-- state lane -->
+        <rect data-pop x="90" y="246" width="200" height="58" rx="6" fill="#fffdfa" stroke="#251d1a" stroke-width="2"/>
+        <text x="190" y="270" text-anchor="middle" font-family="Inter, sans-serif" font-size="12.5" font-weight="700" fill="#251d1a">policy bundle</text>
+        <text x="190" y="288" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#9f8b7f">S3 · versioned · ETag</text>
+
+        <rect data-pop x="412" y="246" width="200" height="58" rx="6" fill="#fffdfa" stroke="#251d1a" stroke-width="2"/>
+        <text x="512" y="270" text-anchor="middle" font-family="Inter, sans-serif" font-size="12.5" font-weight="700" fill="#251d1a">audit rows</text>
+        <text x="512" y="288" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#9f8b7f">types + counts only</text>
+
+        <rect data-pop x="620" y="246" width="200" height="58" rx="6" fill="#fffdfa" stroke="#cb5800" stroke-width="2"/>
+        <text x="720" y="270" text-anchor="middle" font-family="Inter, sans-serif" font-size="12.5" font-weight="700" fill="#251d1a">disclosure ledger</text>
+        <text x="720" y="288" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#cb5800">ADD · grow-only</text>
+
+        <!-- Q3 return path -->
+        <path data-draw d="M950 127 H1000 V196 H340 V158" stroke="#309fb6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5"/>
+        <path d="M335 166 L340 158 L345 166" fill="#309fb6"/>
+        <text x="670" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="600" fill="#309fb6">Q3 · may this placeholder be restored, and to where?</text>
+      </svg>
+    </div>
+
+    <div class="s-rise" style="margin-top:var(--s5);font-size:var(--t-small);color:var(--ink-2);line-height:1.65;max-width:80ch">
+      The dashed line back from the transcript is the one most guardrail designs
+      omit. A masked value that the model hands to an outbound tool must be
+      authorized again, against the destination, before it is restored — otherwise
+      the mask is theatre and the guardrail is the exfiltration path.
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ data model -->
+<section class="s-band">
+  <div class="s-shell s-hero-grid">
+    <div class="s-rise">
+      <div class="s-eyebrow">Data model</div>
+      <h2 style="font-family:var(--font-display);margin-bottom:var(--s4)">One table, three item types</h2>
+      <p style="font-size:var(--t-lede);color:var(--ink-2);line-height:1.55;margin:0 0 var(--s5)">
+        Single-table DynamoDB with a GSI for the global feed. Sessions, ledger
+        entries and audit rows share a partition, so a session's whole history is
+        one query.
+      </p>
+      <div class="s-steps">
+        <div class="s-step">
+          <div class="s-step-n">pk</div>
+          <div>
+            <h3><code>SESSION#&lt;id&gt;</code></h3>
+            <p>Everything about one session lives together: its calls, its ledger
+               entries, its meters.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n">sk</div>
+          <div>
+            <h3><code>CALL#&lt;seq&gt;</code> · <code>LEDGER#&lt;principal&gt;#&lt;subject&gt;</code></h3>
+            <p>The sort key discriminates the item type. Audit rows sort naturally
+               in call order; ledger entries are addressed directly by the pair
+               that owns them.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n">gsi1</div>
+          <div>
+            <h3>The cross-session feed</h3>
+            <p>Partitioned by date so the console's live feed is one query against
+               today, with a cursor for older pages — not a table scan.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-rise" data-parallax="24">
+      <div class="s-code">
+        <div class="s-code-bar">
+          <span>audit row · what is actually stored</span>
+          <div class="s-code-tabs"><button class="s-code-tab" aria-selected="true" type="button">json</button></div>
+        </div>
+<pre>{
+  <span class="f">"pk"</span>:              <span class="s">"SESSION#demo-4f2a"</span>,
+  <span class="f">"sk"</span>:              <span class="s">"CALL#000004"</span>,
+  <span class="f">"principal"</span>:       <span class="s">"analyst@example.com"</span>,
+  <span class="f">"subject"</span>:         <span class="s">"cust_8814"</span>,
+  <span class="f">"tool"</span>:            <span class="s">"fetch_customer"</span>,
+  <span class="f">"call_decision"</span>:   <span class="s">"Allow"</span>,
+  <span class="f">"detector_tiers"</span>:  [<span class="s">"tier1"</span>, <span class="s">"comprehend"</span>],
+
+  <span class="c">// Types and counts. Never values. There is no field</span>
+  <span class="c">// on this item that could carry a plaintext identifier,</span>
+  <span class="c">// which is why an audit row is safe to keep forever.</span>
+  <span class="f">"entities_found"</span>:   { <span class="s">"AADHAAR"</span>: <span class="n">1</span>, <span class="s">"NAME"</span>: <span class="n">1</span> },
+  <span class="f">"entities_masked"</span>:  { <span class="s">"AADHAAR"</span>: <span class="n">1</span> },
+  <span class="f">"entities_revealed"</span>:{ <span class="s">"NAME"</span>: <span class="n">1</span> },
+
+  <span class="f">"ledger_after"</span>:    [<span class="s">"NAME"</span>, <span class="s">"PHONE"</span>, <span class="s">"EMAIL"</span>],
+  <span class="f">"budget"</span>:          <span class="n">3</span>,
+  <span class="f">"outcome"</span>:         <span class="s">"masked"</span>,
+  <span class="f">"policy_version"</span>:   <span class="s">"2026-09-19T14:02:11Z"</span>
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ aws stack -->
+<section class="s-band s-band-alt">
+  <div class="s-shell">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">Deployment</div>
+      <h2>What actually runs, and where</h2>
+      <p>Two Lambdas behind Function URLs in <code>ap-south-1</code>. No VPC, no load
+         balancer, no container registry — the whole stack deploys from one script.</p>
+    </div>
+
+    <div class="s-features s-rise" data-rise-group=".s-feature">
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m4 14 8-10 8 10-8 6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <h3>Lambda · arm64 · Python 3.12</h3>
+        <p>A data plane carrying the agent and the guard, and a control plane serving
+           the console, the policy API and the audit feed. Graviton because the
+           workload is I/O-bound and arm64 is cheaper per invocation.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="currentColor" stroke-width="1.8"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6" stroke="currentColor" stroke-width="1.8"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" stroke="currentColor" stroke-width="1.8"/></svg>
+        <h3>DynamoDB · on-demand</h3>
+        <p>One table, one GSI. The ledger update is a single <code>UpdateItem</code>
+           with an atomic <code>ADD</code>, which is what makes concurrent calls safe
+           without a lock or a transaction.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 7.5v9M7.5 12h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <h3>Comprehend · Textract · Bedrock</h3>
+        <p>Tiers 2 and 3. Each is probed live by the console rather than assumed, so
+           the coverage you see is this account's real entitlement — including when
+           the honest answer is that a service is not enabled.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16v13H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 7l3-3h10l3 3" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <h3>S3 · policy &amp; sessions</h3>
+        <p>The Cedar bundle is an S3 object with an ETag, which is what gives the
+           policy editor its optimistic-concurrency guarantee: a save built on a
+           stale read is refused rather than silently winning.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 4 6.5v5c0 4.6 3.2 8.6 8 9.5 4.8-.9 8-4.9 8-9.5v-5L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <h3>Cedar · via cedarpy</h3>
+        <p>The same policy language AWS uses in Verified Permissions. Analysable,
+           which means you can ask whether one bundle is strictly more permissive
+           than another and get an answer — not a code review.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 4v16M3 10h5" stroke="currentColor" stroke-width="1.8"/></svg>
+        <h3>Strands Agents SDK</h3>
+        <p>The guard attaches as an interceptor on the tool boundary. No proxying of
+           the model, no rewrite of the agent, and no place for the application to
+           accidentally bypass it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================== threat model -->
+<section class="s-band" id="threat">
+  <div class="s-shell s-shell-narrow">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">Threat model</div>
+      <h2>What Naka defends against — and what it does not</h2>
+      <p>A security product that cannot state its own limits is asking you to trust
+         it on faith.</p>
+    </div>
+
+    <div class="s-rise">
+      <div class="s-steps">
+        <div class="s-step">
+          <div class="s-step-n" style="color:var(--allow)">✓</div>
+          <div>
+            <h3>Gradual re-identification across calls</h3>
+            <p>The core case. An agent, or a principal driving one, accumulating
+               enough individually-permitted fields to reconstruct a person. This is
+               what the cumulative ledger exists for.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n" style="color:var(--allow)">✓</div>
+          <div>
+            <h3>Laundering a masked value back out</h3>
+            <p>A model that carries <code>[PAN_2]</code> into an outbound argument
+               and expects it to be restored. Q3 binds restoration to a destination,
+               so the placeholder is not a bearer token.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n" style="color:var(--allow)">✓</div>
+          <div>
+            <h3>A detector silently not running</h3>
+            <p>Fail-closed, plus an audit row that records which tiers ran. A gated
+               service reports as <code>NOT_RUN</code>, never as a clean scan.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n" style="color:var(--deny)">○</div>
+          <div>
+            <h3>A malicious operator with the shared key</h3>
+            <p>Anyone holding <code>X-Naka-Key</code> can rewrite the policy bundle.
+               There is no approval workflow, no signing and no separation of duties
+               on policy changes. This is a real gap, not a design choice.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n" style="color:var(--deny)">○</div>
+          <div>
+            <h3>Multi-tenant isolation</h3>
+            <p>Not implemented. The console is single-tenant and reads are
+               unauthenticated. Deploy it where that is acceptable, or in front of
+               your own authenticating proxy.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n" style="color:var(--deny)">○</div>
+          <div>
+            <h3>Within-hop budget enforcement</h3>
+            <p>Every entity in a single tool result is authorized against the same
+               pre-hop ledger state. A record returning ten identifiers at once will
+               release them all against a budget of three; the budget bites on the
+               <em>next</em> call. Sequential within-hop authorization is the obvious
+               next piece of work and is not done.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n" style="color:var(--deny)">○</div>
+          <div>
+            <h3>A model that infers rather than reads</h3>
+            <p>Naka governs what a tool <em>returns</em>. It cannot stop a model from
+               guessing a value it was never given, and nothing in this category
+               can.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="s-band s-band-ink">
+  <div class="s-shell s-cta s-rise">
+    <h2>Read it in the console.</h2>
+    <p>The policy bundle, the detector probes and the audit trail are all live
+       surfaces — not screenshots of an architecture that exists on a slide.</p>
+    <div class="s-cta-row">
+      <a class="s-btn s-btn-lg" href="./console.html#overview">Open the console</a>
+      <a class="s-btn s-btn-ghost s-btn-lg" href="./pricing.html">See pricing</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="s-foot">
+  <div class="s-shell">
+    <div class="s-foot-grid">
+      <div class="s-foot-about">
+        <a class="s-brand" href="./index.html">
+          <svg class="s-brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#251d1a"/><path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="s-brand-word">Naka</span>
+        </a>
+        <p>One policy engine across every path your data takes out of the company.</p>
+      </div>
+      <div class="s-foot-col"><h4>Platform</h4><ul>
+        <li><a href="./egress.html">Agent Egress</a></li>
+        <li><a href="./endpoint.html">Endpoint DLP</a></li>
+        <li><a href="./files.html">File &amp; Document DLP</a></li>
+        <li><a href="./platform.html">Architecture</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Product</h4><ul>
+        <li><a href="./console.html#overview">Console</a></li>
+        <li><a href="./console.html#policy">Policy editor</a></li>
+        <li><a href="./console.html#detectors">Detector coverage</a></li>
+        <li><a href="./pricing.html">Pricing</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Resources</h4><ul>
+        <li><a href="./index.html#how">The three questions</a></li>
+        <li><a href="./index.html#leak">How a leak happens</a></li>
+        <li><a href="./index.html#faq">FAQ</a></li>
+        <li><a href="./platform.html#threat">Threat model</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Status</h4><ul>
+        <li><a href="./console.html#overview"><span data-live="control">control plane</span></a></li>
+        <li><a href="./console.html#overview"><span data-live="agent">data plane</span></a></li>
+      </ul></div>
+    </div>
+    <div class="s-foot-bar">
+      <span>Naka · Cedar authorization + cumulative disclosure ledger · <span class="mono">ap-south-1</span></span>
+      <span>The API has no field that could carry a plaintext value.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

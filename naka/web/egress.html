@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agent Egress — Naka</title>
+<meta name="description" content="Cedar authorization on your AI agent's tool boundary, with a cumulative per-subject disclosure budget. Every call authorized, every result scanned, every field charged." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./app.css" />
+<link rel="stylesheet" href="./site.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23251d1a'/%3E%3Cpath d='M9 23V9l14 14V9' stroke='%23faebd6' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script defer type="module" src="./site.js"></script>
+</head>
+<body>
+
+<a class="s-skip" href="#main">Skip to content</a>
+
+<nav class="s-nav">
+  <div class="s-nav-inner">
+    <a class="s-brand" href="./index.html">
+      <svg class="s-brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#251d1a"/><path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="s-brand-word">Naka</span>
+    </a>
+    <div class="s-nav-links">
+      <a class="s-nav-link" href="./egress.html">Agent Egress</a>
+      <a class="s-nav-link" href="./endpoint.html">Endpoint DLP</a>
+      <a class="s-nav-link" href="./files.html">File &amp; Document</a>
+      <a class="s-nav-link" href="./platform.html">Architecture</a>
+      <a class="s-nav-link" href="./pricing.html">Pricing</a>
+    </div>
+    <button class="s-nav-burger" type="button" aria-expanded="false" aria-label="Menu">
+      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <div class="s-nav-actions">
+      <a class="s-btn s-btn-ghost s-btn-sm" href="./console.html">Sign in</a>
+      <a class="s-btn s-btn-sm" href="./console.html#egress">Open console</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="s-hero" style="padding-block:var(--s7) var(--s8)">
+  <div class="s-shell s-hero-grid">
+    <div>
+      <div class="s-eyebrow" data-hero>Plane 01 · Agent Egress</div>
+      <h1 data-split>The guardrail that <em>remembers.</em></h1>
+      <p class="s-hero-lede" data-hero>
+        Your agent calls tools. Those tools return real records. Naka sits on that
+        boundary and asks three questions on every single call — and the second one
+        is a function of everything the agent has already been told.
+      </p>
+      <div class="s-hero-cta" data-hero>
+        <a class="s-btn s-btn-lg" href="./console.html#egress">
+          Run it against the live stack
+          <svg class="s-btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="s-btn s-btn-ghost s-btn-lg" href="./platform.html">Architecture</a>
+      </div>
+      <div class="s-status" data-hero>
+        <span class="s-chip"><span class="s-dot"></span><span data-live="agent">checking data plane…</span></span>
+        <span class="s-chip"><span class="s-dot"></span>policy <span class="mono" data-live="policy">—</span></span>
+      </div>
+    </div>
+
+    <div class="s-hero-art" data-hero>
+      <div class="s-scope" data-tilt>
+        <div class="s-scope-bar">
+          <div class="s-scope-lights" aria-hidden="true"><i></i><i></i><i></i></div>
+          <span class="s-scope-title">call 4 of 4 · same subject</span>
+          <span class="s-scope-badge" style="color:#a35c12;background:var(--deny-tint);border-color:var(--deny)">budget spent</span>
+        </div>
+        <div class="s-scope-body">
+          <div class="s-line"><span class="s-line-key">call 1</span><span class="s-line-val is-out">name → Priya R.</span><span class="s-tagline is-allow">released</span></div>
+          <div class="s-line"><span class="s-line-key">call 2</span><span class="s-line-val is-out">phone → +91 ·· ···· 4471</span><span class="s-tagline is-allow">released</span></div>
+          <div class="s-line"><span class="s-line-key">call 3</span><span class="s-line-val is-out">email → p····@····.com</span><span class="s-tagline is-allow">released</span></div>
+          <div class="s-line"><span class="s-line-key">call 4</span><span class="s-line-val is-held">address → [ADDRESS_1]</span><span class="s-tagline is-deny">withheld</span></div>
+        </div>
+        <div class="s-scope-foot">
+          <span>ledger: name, phone, email</span>
+          <span>budget 3 / 3</span>
+        </div>
+      </div>
+      <div class="s-ledger">
+        <div class="s-ledger-head"><b>cust_8814 · analyst@example.com</b><span>grow-only</span></div>
+        <div class="s-slots" aria-hidden="true"><i class="is-1"></i><i class="is-2"></i><i class="is-3"></i><i class="is-over"></i></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="s-band s-band-alt">
+  <div class="s-shell">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">What it actually does</div>
+      <h2>Three decisions, in order, on every call</h2>
+      <p>Each one has a different question, a different input, and a different
+         failure mode. Collapsing them into one check is how products in this
+         category end up shipping a scanner and calling it a guardrail.</p>
+    </div>
+
+    <div class="s-steps s-rise">
+      <div class="s-step">
+        <div class="s-step-n">Q1</div>
+        <div>
+          <h3>Authorize the invocation</h3>
+          <p>Before the tool runs. Cedar evaluates principal, action, resource and
+             context — the role, the session, the tool being called and what it is
+             being called on. A denied call never executes, and is written to the
+             audit table anyway, because a refusal is evidence and an auditor will
+             ask for it.</p>
+        </div>
+      </div>
+      <div class="s-step">
+        <div class="s-step-n">Q2</div>
+        <div>
+          <h3>Authorize each field, against history</h3>
+          <p>The result comes back and is scanned by three detector tiers. Every
+             entity found is authorized <em>separately</em>, with the ledger of what
+             this principal already knows about this subject in the Cedar context.
+             Denied entities are replaced with numbered placeholders —
+             <code>[PAN_2]</code>, not <code>[REDACTED]</code> — so the model can
+             still reason about, compare and carry the value it is not allowed to
+             see.</p>
+        </div>
+      </div>
+      <div class="s-step">
+        <div class="s-step-n">Q3</div>
+        <div>
+          <h3>Authorize restoration, bound to a destination</h3>
+          <p>When a placeholder appears in an outbound tool argument, restoring it is
+             its own Cedar question and the destination is part of it. Plaintext
+             lives in a process-local vault scoped to one invocation: never
+             persisted, never logged, never serialized. Without this step the
+             guardrail is the exfiltration channel — the agent simply asks a tool to
+             send <code>[PAN_2]</code> somewhere and the mask undoes itself.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="s-band">
+  <div class="s-shell s-hero-grid">
+    <div class="s-rise">
+      <div class="s-eyebrow">The ledger</div>
+      <h2 style="font-family:var(--font-display);margin-bottom:var(--s4)">A grow-only set, updated atomically</h2>
+      <p style="font-size:var(--t-lede);color:var(--ink-2);line-height:1.55;margin:0 0 var(--s5)">
+        The disclosure ledger is a G-Set keyed by <code>(principal, subject)</code>,
+        stored in DynamoDB and updated with a single <code>UpdateItem</code> carrying
+        an <code>ADD</code> on a string set.
+      </p>
+      <div class="s-steps">
+        <div class="s-step">
+          <div class="s-step-n">→</div>
+          <div>
+            <h3>Concurrency-safe by construction</h3>
+            <p>Two tool calls landing in the same millisecond both apply their
+               additions; neither clobbers the other. A read-modify-write would let
+               them race each other straight past the budget.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n">→</div>
+          <div>
+            <h3>Nothing can be un-disclosed</h3>
+            <p>The set only ever gains members. There is no decrement, because a
+               ledger you can decrement is a ledger an attacker can decrement.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n">→</div>
+          <div>
+            <h3>It stores types, never values</h3>
+            <p>The ledger records that a PAN was disclosed — not which PAN. The audit
+               API has no field that could carry a plaintext value, which is why the
+               console's before/after panes are reconstructed from counts.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-rise" data-parallax="26">
+      <div class="s-code">
+        <div class="s-code-bar">
+          <span>ledger.py</span>
+          <div class="s-code-tabs"><button class="s-code-tab" aria-selected="true" type="button">python</button></div>
+        </div>
+<pre><span class="c"># One round trip. The ADD is applied server-side, so two</span>
+<span class="c"># concurrent callers both land and neither overwrites.</span>
+
+resp = ddb.<span class="f">update_item</span>(
+    TableName = <span class="s">"naka_audit"</span>,
+    Key = {
+        <span class="s">"pk"</span>: {<span class="s">"S"</span>: <span class="s">f"SESSION#{session_id}"</span>},
+        <span class="s">"sk"</span>: {<span class="s">"S"</span>: <span class="s">f"LEDGER#{principal}#{subject}"</span>},
+    },
+    UpdateExpression = <span class="s">"ADD seen :new"</span>,
+    ExpressionAttributeValues = {<span class="s">":new"</span>: {<span class="s">"SS"</span>: types}},
+    <span class="c"># ALL_OLD gives the pre-write set, which is what Q2 was</span>
+    <span class="c"># authorized against — so the decision and the record agree.</span>
+    ReturnValues = <span class="s">"ALL_OLD"</span>,
+)</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="s-band s-band-alt">
+  <div class="s-shell">
+    <div class="s-head s-center s-rise">
+      <div class="s-eyebrow">Detection</div>
+      <h2>Three tiers, unioned — never subtracted</h2>
+      <p>Later tiers may only ever <em>add</em> findings. A slower, cleverer model
+         cannot un-detect what a checksum already proved.</p>
+    </div>
+
+    <div class="s-features s-rise" data-rise-group=".s-feature">
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h4l3-7 3 14 3-7h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Tier 1 — local, deterministic</h3>
+        <p>Aadhaar with a Verhoeff checksum, PAN, GSTIN with its state code, IFSC,
+           EPIC voter ID. No network call, no model, no ambiguity. These run first
+           and their findings are final.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v4.5l3 1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Tier 2 — Amazon Comprehend</h3>
+        <p>Names, addresses, phone numbers, emails, dates — the entity classes where
+           a regex is guesswork and a trained model is not. Adds to tier 1's
+           findings; cannot remove them.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="m3 15 5-4 4 3 3-2 6 4" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <h3>Tier 3 — Nova Pro multimodal</h3>
+        <p>The photograph of an Aadhaar card. Indic-script OCR, because that is what
+           these documents actually are — a pipeline that only reads Latin script
+           has a blind spot the size of the country.</p>
+      </div>
+    </div>
+
+    <div class="d-note s-rise" style="margin-top:var(--s6);background:var(--panel);border-left:3px solid var(--fault);padding:var(--s4) var(--s5);border-radius:0 var(--r-btn) var(--r-btn) 0;font-size:var(--t-small);color:var(--ink-2);line-height:1.6">
+      <strong style="color:var(--ink)">When a tier cannot run, the field is withheld.</strong>
+      Not released with a logged warning. The call is marked degraded in the audit row,
+      naming the unavailable tier. This is the one place in the product where you will
+      see red — a tier that could not run is a fault, not a policy decision.
+    </div>
+  </div>
+</section>
+
+<section class="s-band s-band-ink">
+  <div class="s-shell s-cta s-rise">
+    <h2>Watch it refuse the fourth field.</h2>
+    <p>Four scenarios against the deployed stack, including the two failure cases.
+       A guardrail that only ever says yes proves nothing.</p>
+    <div class="s-cta-row">
+      <a class="s-btn s-btn-lg" href="./console.html#egress">
+        Open the console
+        <svg class="s-btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="s-btn s-btn-ghost s-btn-lg" href="./endpoint.html">Next: Endpoint DLP</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="s-foot">
+  <div class="s-shell">
+    <div class="s-foot-grid">
+      <div class="s-foot-about">
+        <a class="s-brand" href="./index.html">
+          <svg class="s-brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#251d1a"/><path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="s-brand-word">Naka</span>
+        </a>
+        <p>One policy engine across every path your data takes out of the company.</p>
+      </div>
+      <div class="s-foot-col"><h4>Platform</h4><ul>
+        <li><a href="./egress.html">Agent Egress</a></li>
+        <li><a href="./endpoint.html">Endpoint DLP</a></li>
+        <li><a href="./files.html">File &amp; Document DLP</a></li>
+        <li><a href="./platform.html">Architecture</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Product</h4><ul>
+        <li><a href="./console.html#overview">Console</a></li>
+        <li><a href="./console.html#policy">Policy editor</a></li>
+        <li><a href="./console.html#detectors">Detector coverage</a></li>
+        <li><a href="./pricing.html">Pricing</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Resources</h4><ul>
+        <li><a href="./index.html#how">The three questions</a></li>
+        <li><a href="./index.html#leak">How a leak happens</a></li>
+        <li><a href="./index.html#faq">FAQ</a></li>
+        <li><a href="./platform.html#threat">Threat model</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Status</h4><ul>
+        <li><a href="./console.html#overview"><span data-live="control">control plane</span></a></li>
+        <li><a href="./console.html#overview"><span data-live="agent">data plane</span></a></li>
+      </ul></div>
+    </div>
+    <div class="s-foot-bar">
+      <span>Naka · Cedar authorization + cumulative disclosure ledger · <span class="mono">ap-south-1</span></span>
+      <span>The API has no field that could carry a plaintext value.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

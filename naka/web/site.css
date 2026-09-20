@@ -1,0 +1,783 @@
+/* ===========================================================================
+   Naka — marketing surface
+   ---------------------------------------------------------------------------
+   Loaded AFTER app.css, which owns the tokens. Nothing here redefines a
+   token; everything composes from them, so a palette change in app.css
+   moves the whole site including these pages.
+
+   Naming: every class here is prefixed `s-` (site) or is a component name
+   that does not appear in app.css's class list. That is deliberate — the
+   console and the marketing site share one stylesheet of tokens and one of
+   controls, and a silent collision between the two surfaces is exactly the
+   bug that took out the reveal animations last time.
+
+   The rule from app.css still holds and is restated because this is the
+   surface where it is easiest to break for the sake of a punchy graphic:
+   red means "Naka failed", never "Naka blocked something". Marketing copy
+   about blocking uses --deny (amber) and --redact (orange). --fault is
+   reserved for genuine error states and appears on these pages only in the
+   one place we talk about what happens when a detector is unreachable.
+   =========================================================================== */
+
+/* ---------------------------------------------------------------- shell */
+
+/* Keyboard users land on this first. Off-screen until focused; a sticky nav
+   makes a missing skip-link genuinely costly, because tabbing past it means
+   tabbing through the entire product menu on every page. */
+.s-skip {
+  position: absolute; left: -9999px; top: 0; z-index: 200;
+  background: var(--ink); color: var(--page);
+  padding: 12px 18px; border-radius: 0 0 var(--r-btn) 0;
+  font-size: var(--t-small); font-weight: 600; text-decoration: none;
+}
+.s-skip:focus { left: 0; }
+
+.s-shell { width: 100%; max-width: var(--shell); margin: 0 auto; padding-inline: var(--gutter); }
+.s-shell-narrow { max-width: 860px; }
+
+.s-band { position: relative; padding: var(--band) 0; }
+.s-band-tight { padding: var(--s8) 0; }
+.s-band-alt { background: var(--page-alt); border-block: 1px solid var(--line); }
+.s-band-ink { background: var(--ink); color: var(--page); }
+.s-band-ink h2, .s-band-ink h3 { color: var(--page); }
+
+.s-head { max-width: 62ch; margin-bottom: var(--s7); }
+.s-head.s-center { margin-inline: auto; text-align: center; }
+.s-head h2 { font-family: var(--font-display); margin-bottom: var(--s4); }
+.s-head p { margin: 0; color: var(--ink-2); font-size: var(--t-lede); line-height: 1.55; }
+.s-band-ink .s-head p { color: color-mix(in oklab, #faebd6 72%, transparent); }
+
+.s-eyebrow {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  font-size: var(--t-micro); font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--rusty); margin-bottom: var(--s4);
+}
+.s-eyebrow::before { content: ""; width: 26px; height: 2px; background: var(--rust); }
+.s-band-ink .s-eyebrow { color: var(--tea); }
+.s-band-ink .s-eyebrow::before { background: var(--tea); }
+
+/* ---------------------------------------------------------------- site nav */
+
+/* Distinct from app.css's .topnav: this one carries a product menu and has
+   to survive being scrolled under, so it gains a border and a shadow only
+   once the page has moved (`.s-nav-stuck`, set from site.js). A border that
+   is present at rest draws a line across the hero for no reason. */
+.s-nav {
+  position: sticky; top: 0; z-index: 80;
+  background: color-mix(in oklab, #faebd6 86%, transparent);
+  backdrop-filter: blur(14px) saturate(1.4);
+  border-bottom: 1px solid transparent;
+  transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease),
+              background 200ms var(--ease);
+}
+.s-nav-stuck {
+  border-bottom-color: var(--line);
+  box-shadow: 0 1px 0 0 rgba(20, 21, 26, 0.02), 0 6px 20px -12px rgba(20, 21, 26, 0.3);
+}
+.s-nav-inner {
+  display: flex; align-items: center; gap: var(--s5);
+  height: 68px; max-width: var(--shell); margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+.s-brand {
+  display: inline-flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--ink); flex-shrink: 0;
+}
+.s-brand-mark { width: 28px; height: 28px; flex-shrink: 0; }
+.s-brand-word {
+  font-family: var(--font-display);
+  font-size: 23px; font-weight: 700; letter-spacing: -0.025em;
+}
+
+.s-nav-links { display: flex; align-items: center; gap: var(--s2); flex: 1; }
+.s-nav-link {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 36px; padding: 0 12px;
+  font-size: var(--t-small); font-weight: 600;
+  color: var(--ink-2); text-decoration: none;
+  border-radius: var(--r-btn);
+  background: none; border: 0; cursor: pointer;
+  transition: color 140ms var(--ease), background 140ms var(--ease);
+}
+.s-nav-link:hover { color: var(--ink); background: color-mix(in oklab, #251d1a 5%, transparent); }
+.s-nav-link[aria-current="page"] { color: var(--ink); }
+.s-nav-link[aria-current="page"]::after {
+  content: ""; position: absolute; left: 12px; right: 12px; bottom: 2px;
+  height: 2px; background: var(--rust); border-radius: 2px;
+}
+.s-nav-caret { width: 9px; height: 9px; opacity: 0.5; transition: transform 180ms var(--ease); }
+.s-nav-link[aria-expanded="true"] .s-nav-caret { transform: rotate(180deg); }
+
+.s-nav-actions { display: flex; align-items: center; gap: var(--s2); flex-shrink: 0; }
+
+/* product mega-menu */
+.s-menu {
+  position: absolute; top: calc(100% - 6px); left: 0;
+  width: min(680px, calc(100vw - 2 * var(--gutter)));
+  background: var(--panel);
+  border: 1px solid var(--peach);
+  border-radius: var(--r-card);
+  box-shadow: 0 24px 48px -12px rgba(20, 21, 26, 0.18), var(--shadow-m);
+  padding: var(--s3);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  opacity: 0; visibility: hidden; transform: translateY(-8px);
+  transition: opacity 180ms var(--ease), transform 180ms var(--ease), visibility 180ms;
+}
+.s-menu-wrap { position: relative; }
+.s-menu-wrap.s-menu-open .s-menu { opacity: 1; visibility: visible; transform: none; }
+.s-menu-item {
+  display: grid; grid-template-columns: 34px 1fr; gap: var(--s3);
+  padding: var(--s3); border-radius: var(--r-btn);
+  text-decoration: none; color: var(--ink);
+  transition: background 140ms var(--ease);
+}
+.s-menu-item:hover { background: var(--page-alt); }
+.s-menu-item svg { width: 34px; height: 34px; }
+.s-menu-item strong { display: block; font-size: var(--t-small); font-weight: 700; margin-bottom: 2px; }
+.s-menu-item span { display: block; font-size: var(--t-micro); color: var(--ink-2); line-height: 1.45; }
+
+.s-nav-burger { display: none; }
+
+/* ---------------------------------------------------------------- buttons */
+
+.s-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: var(--control-h); padding: 0 var(--s5);
+  font-family: var(--font-ui); font-size: var(--t-body); font-weight: 600;
+  border-radius: var(--r-btn); border: 0; cursor: pointer;
+  text-decoration: none; white-space: nowrap;
+  background: var(--ink); color: var(--page);
+  transition: transform 140ms var(--ease), background 140ms var(--ease), box-shadow 200ms var(--ease);
+}
+.s-btn:hover { background: #3a2e29; transform: translateY(-1px); box-shadow: 0 8px 18px -8px rgba(20,21,26,.5); }
+.s-btn:active { transform: translateY(0); }
+.s-btn-sm { height: 38px; padding: 0 var(--s4); font-size: var(--t-small); }
+.s-btn-lg { height: 52px; padding: 0 var(--s6); font-size: 17px; }
+
+.s-btn-ghost { background: transparent; color: var(--ink); box-shadow: var(--ring-ink); }
+.s-btn-ghost:hover { background: color-mix(in oklab, #251d1a 6%, transparent); color: var(--ink); }
+
+.s-btn-rust { background: var(--rust); color: #fffdfa; }
+.s-btn-rust:hover { background: #b34d00; }
+
+.s-band-ink .s-btn { background: var(--page); color: var(--ink); }
+.s-band-ink .s-btn:hover { background: #fff; }
+.s-band-ink .s-btn-ghost { background: transparent; color: var(--page); box-shadow: inset 0 0 0 1px color-mix(in oklab, #faebd6 40%, transparent); }
+.s-band-ink .s-btn-ghost:hover { background: color-mix(in oklab, #faebd6 10%, transparent); }
+
+.s-btn-arrow { transition: transform 200ms var(--ease); }
+.s-btn:hover .s-btn-arrow { transform: translateX(3px); }
+
+/* text link with a growing underline */
+.s-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--t-small); font-weight: 600;
+  color: var(--brand-deep); text-decoration: none;
+  border-bottom: 1px solid color-mix(in oklab, #3b758c 35%, transparent);
+  padding-bottom: 1px;
+  transition: border-color 160ms var(--ease), color 160ms var(--ease);
+}
+.s-link:hover { color: var(--rust); border-bottom-color: var(--rust); }
+
+/* ---------------------------------------------------------------- hero */
+
+.s-hero { position: relative; padding: var(--s8) 0 var(--band); overflow: hidden; }
+.s-hero::before {
+  /* one warm bloom behind the headline. Sits under everything and is the
+     only decorative gradient on the page — the rest of the depth comes
+     from the emboss token, which is the Fibery signature. */
+  content: ""; position: absolute; inset: -20% 30% 40% -10%;
+  background: radial-gradient(60% 60% at 40% 40%, #fdf7ef 0%, transparent 70%);
+  pointer-events: none;
+}
+.s-hero-grid {
+  position: relative;
+  display: grid; grid-template-columns: 1.02fr 0.98fr;
+  gap: var(--s8); align-items: center;
+}
+.s-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(44px, 6vw, 72px);
+  line-height: 0.98; letter-spacing: -0.03em;
+  margin-bottom: var(--s5);
+}
+.s-hero h1 em {
+  font-style: italic; color: var(--rust);
+  /* the one italic in the product; Fraunces' italic is the reason to use it */
+}
+.s-hero-lede {
+  font-size: 19px; line-height: 1.55; color: var(--ink-2);
+  max-width: 54ch; margin: 0 0 var(--s6); font-weight: 500;
+}
+.s-hero-lede strong { color: var(--ink); font-weight: 700; }
+.s-hero-cta { display: flex; gap: var(--s3); flex-wrap: wrap; align-items: center; }
+.s-hero-note {
+  margin-top: var(--s5); font-size: var(--t-micro); color: var(--mud);
+  display: flex; gap: var(--s4); flex-wrap: wrap;
+}
+.s-hero-note span { display: inline-flex; align-items: center; gap: 6px; }
+.s-hero-note span::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--allow);
+}
+
+/* live status pills, fed from the real control plane */
+.s-status { display: flex; gap: var(--s2); flex-wrap: wrap; margin-top: var(--s6); }
+.s-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: var(--t-micro); font-weight: 600;
+  color: var(--ink-2); background: var(--panel);
+  border: 1px solid var(--peach); border-radius: var(--r-pill);
+  padding: 7px 14px; box-shadow: var(--shadow-m);
+}
+.s-chip .s-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); flex-shrink: 0; }
+.s-chip.is-live .s-dot { background: var(--allow); box-shadow: 0 0 0 3px color-mix(in oklab, #66753d 22%, transparent); }
+.s-chip.is-down .s-dot { background: var(--fault); }
+.s-chip .mono { color: var(--ink); }
+
+/* transform-style so the tilt in site.js reads as depth, not as a skew */
+.s-hero-art { perspective: 1200px; }
+.s-hero-art .s-scope { transform-style: preserve-3d; will-change: transform; }
+
+/* ---------------------------------------------------------- hero terminal */
+
+/* The hero visual is a real tool call going through the guard. It is built
+   from the same vocabulary the console uses, so what a visitor sees here is
+   literally what they see after signing in — no marketing-only artwork that
+   the product cannot produce. */
+.s-scope {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--peach);
+  border-radius: var(--r-card);
+  box-shadow: 0 30px 60px -24px rgba(20, 21, 26, 0.28), var(--shadow-m);
+  overflow: hidden;
+}
+.s-scope-bar {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: 12px var(--s4);
+  background: var(--page-alt);
+  border-bottom: 1px solid var(--line);
+}
+.s-scope-lights { display: flex; gap: 6px; }
+.s-scope-lights i { width: 9px; height: 9px; border-radius: 50%; background: var(--peach); }
+.s-scope-title {
+  font-family: var(--font-mono); font-size: var(--t-micro);
+  color: var(--mud); letter-spacing: 0.02em;
+}
+.s-scope-badge {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--allow); background: var(--allow-tint);
+  border: 1px solid color-mix(in oklab, #66753d 40%, transparent);
+  border-radius: var(--r-mark); padding: 3px 8px;
+}
+.s-scope-body { padding: var(--s5); }
+
+.s-line {
+  display: grid; grid-template-columns: 104px 1fr auto; gap: var(--s3);
+  align-items: center; padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--t-small);
+}
+.s-line:last-child { border-bottom: 0; }
+.s-line-key {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--mud);
+}
+.s-line-val { font-family: var(--font-mono); font-size: var(--t-small); }
+.s-line-val.is-out { color: var(--ink); }
+.s-line-val.is-held {
+  color: #8a4a12; background: var(--redact-tint);
+  border: 1px solid var(--redact); border-radius: var(--r-mark);
+  padding: 2px 8px; font-weight: 600; justify-self: start;
+}
+.s-tagline {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--mud);
+}
+.s-tagline.is-allow { color: var(--allow); }
+.s-tagline.is-deny { color: #a35c12; }
+
+.s-scope-foot {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--s3);
+  padding: var(--s3) var(--s5);
+  background: var(--page-alt); border-top: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: var(--t-micro); color: var(--ink-2);
+}
+
+/* the ledger strip under the scope — four slots, third one spends the budget */
+.s-ledger { margin-top: var(--s4); }
+.s-ledger-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: var(--t-micro); color: var(--mud); margin-bottom: 7px;
+}
+.s-ledger-head b { color: var(--ink); font-size: var(--t-small); }
+.s-slots { display: flex; gap: 4px; }
+.s-slots i {
+  flex: 1; height: 26px; border-radius: var(--r-mark);
+  background: var(--page-alt); box-shadow: inset 0 0 0 1px var(--line-2);
+  transform-origin: left center;
+}
+.s-slots i.is-1 { background: var(--deny); box-shadow: none; }
+.s-slots i.is-2 { background: var(--redact); box-shadow: none; }
+.s-slots i.is-3 { background: var(--rust); box-shadow: none; }
+.s-slots i.is-over {
+  background-color: var(--rust); box-shadow: none;
+  background-image: repeating-linear-gradient(45deg, transparent 0 3px, rgba(255,253,250,.5) 3px 8px);
+}
+
+/* ---------------------------------------------------------------- marquee */
+
+/* What Naka actually recognises. Real detector inventory, not customer
+   logos we do not have — a strip of invented logos is the fastest way to
+   lose a technical reader. */
+.s-marquee {
+  overflow: hidden; padding: var(--s5) 0;
+  border-block: 1px solid var(--line);
+  background: var(--page-alt);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+/* Pure CSS, deliberately — this was a motion.dev animation and it did not
+   run: measured on the deployed page, getAnimations() returned 0 on a track
+   with a correct 4052px scrollWidth. A marquee is the one piece of motion
+   here with no state, no trigger and no interaction, so it has no business
+   depending on a CDN, on rAF (which is suspended entirely in a hidden tab)
+   or on a library resolving a `transform` shorthand the way I assumed.
+   The item list is duplicated exactly once in the markup, so -50% lands on
+   a pixel-identical frame and the loop is seamless at any width. */
+.s-marquee-track {
+  display: flex; gap: var(--s7); width: max-content;
+  will-change: transform;
+  animation: s-marquee 48s linear infinite;
+}
+.s-marquee:hover .s-marquee-track { animation-play-state: paused; }
+@keyframes s-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.s-marquee-item {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: var(--t-small); font-weight: 600; color: var(--ink-2);
+  white-space: nowrap;
+}
+.s-marquee-item b {
+  font-family: var(--font-mono); font-size: var(--t-micro); font-weight: 600;
+  color: var(--rust); background: var(--panel);
+  border: 1px solid var(--peach); border-radius: var(--r-mark);
+  padding: 3px 7px;
+}
+
+/* ---------------------------------------------------------------- planes */
+
+.s-planes { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
+.s-plane {
+  position: relative; display: flex; flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--peach);
+  border-radius: var(--r-card);
+  padding: var(--s6) var(--s5) var(--s5);
+  text-decoration: none; color: var(--ink);
+  box-shadow: var(--shadow-m);
+  overflow: hidden;
+  transition: transform 260ms var(--ease), box-shadow 260ms var(--ease), border-color 260ms var(--ease);
+}
+.s-plane::after {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: var(--plane-accent, var(--rust));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 320ms var(--ease);
+}
+.s-plane:hover { transform: translateY(-4px); border-color: var(--plane-accent, var(--rust)); box-shadow: 0 18px 34px -18px rgba(20,21,26,.35), var(--shadow-m); }
+.s-plane:hover::after { transform: scaleX(1); }
+.s-plane-ico { width: 46px; height: 46px; margin-bottom: var(--s4); }
+.s-plane-tag {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--plane-accent, var(--rust)); margin-bottom: 10px;
+}
+.s-plane h3 { font-size: 22px; font-weight: 700; margin-bottom: var(--s3); letter-spacing: -0.015em; }
+.s-plane p { margin: 0 0 var(--s4); font-size: var(--t-small); color: var(--ink-2); line-height: 1.55; }
+.s-plane-list { list-style: none; margin: 0 0 var(--s5); padding: 0; display: grid; gap: 7px; }
+.s-plane-list li {
+  display: grid; grid-template-columns: 16px 1fr; gap: 9px;
+  font-size: var(--t-micro); color: var(--ink-2); line-height: 1.5;
+}
+.s-plane-list li::before {
+  content: ""; width: 6px; height: 6px; margin-top: 6px; margin-left: 4px;
+  border-radius: 1px; background: var(--plane-accent, var(--rust));
+}
+.s-plane-foot {
+  margin-top: auto; display: flex; align-items: center; gap: 7px;
+  font-size: var(--t-small); font-weight: 700; color: var(--plane-accent, var(--rust));
+}
+.s-plane-foot svg { transition: transform 220ms var(--ease); }
+.s-plane:hover .s-plane-foot svg { transform: translateX(4px); }
+
+/* a plane card that is not yet generally available says so, quietly */
+.s-plane-state {
+  position: absolute; top: var(--s4); right: var(--s4);
+  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--mud); background: var(--page-alt);
+  border: 1px solid var(--line-2); border-radius: var(--r-pill);
+  padding: 4px 9px;
+}
+
+/* word masks for the hero headline split (built by site.js) */
+.s-word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.06em; }
+.s-word > * { display: inline-block; font-style: inherit; color: inherit; }
+.s-word > em { font-style: italic; color: var(--rust); }
+
+/* ---------------------------------------------------------------- leak scene */
+
+/* The sequence: six innocuous calls, each individually allowed, that together
+   reconstruct a person. This is the argument the product exists to make, so
+   it gets the one piece of heavy scroll choreography on the site.
+
+   The pin is native CSS `position: sticky` over a tall rail, NOT a
+   ScrollTrigger pin — see the note at the top of site.js. Sticky needs no
+   JavaScript to hold the stage in place, so even if every animation library
+   fails to load the section still reads correctly; JS only advances which
+   step is lit. */
+.s-leak { position: relative; }
+.s-leak-rail { height: 340vh; }
+.s-leak-stage {
+  position: sticky; top: 0;
+  display: grid; grid-template-columns: 0.85fr 1.15fr; gap: var(--s8);
+  align-items: center; min-height: 100vh;
+  padding-block: var(--s8);
+}
+.s-leak-copy { position: relative; min-height: 260px; }
+.s-leak-step {
+  position: absolute; inset: 0; opacity: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  pointer-events: none;
+  transform: translateY(14px);
+  transition: opacity 420ms var(--ease), transform 420ms var(--ease);
+}
+.s-leak-step.is-on { transform: none; }
+.s-leak-step.is-on { opacity: 1; pointer-events: auto; }
+.s-leak-step-n {
+  font-family: var(--font-mono); font-size: var(--t-micro);
+  letter-spacing: 0.12em; color: var(--rust); margin-bottom: var(--s3);
+}
+.s-leak-step h3 { font-family: var(--font-display); font-size: 34px; margin-bottom: var(--s3); }
+.s-leak-step p { margin: 0; font-size: 17px; line-height: 1.55; color: var(--ink-2); max-width: 46ch; }
+.s-leak-step p em { font-style: italic; color: var(--ink); font-weight: 600; }
+.s-leak-step code, .s-feature code {
+  font-family: var(--font-mono); font-size: 0.86em;
+  background: var(--page-alt); border: 1px solid var(--line-2);
+  border-radius: var(--r-mark); padding: 1px 6px;
+}
+/* a static fallback: without JS the steps stack and read as a list */
+.s-leak-static { display: none; }
+
+.s-dossier {
+  background: var(--panel);
+  border: 1px solid var(--peach);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-m);
+  padding: var(--s5);
+}
+.s-dossier-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding-bottom: var(--s3); margin-bottom: var(--s3);
+  border-bottom: 1px solid var(--line);
+}
+.s-dossier-head strong { font-size: var(--t-small); font-weight: 700; }
+.s-dossier-head span { font-family: var(--font-mono); font-size: var(--t-micro); color: var(--mud); }
+.s-dossier-rows { display: grid; gap: 2px; }
+.s-dossier-row {
+  display: grid; grid-template-columns: 96px 1fr auto; gap: var(--s3);
+  align-items: center; padding: 10px var(--s3);
+  border-radius: var(--r-btn);
+  font-size: var(--t-small);
+  opacity: 0.32;
+  transition: opacity 320ms var(--ease), background 320ms var(--ease);
+}
+.s-dossier-row.is-known { opacity: 1; background: var(--page-alt); }
+.s-dossier-row.is-blocked { opacity: 1; background: var(--deny-tint); }
+.s-dossier-row dt {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--mud); margin: 0;
+}
+.s-dossier-row dd { margin: 0; font-family: var(--font-mono); font-size: var(--t-small); color: var(--ink); }
+.s-dossier-row .s-src { font-family: var(--font-mono); font-size: 10px; color: var(--mud); }
+.s-dossier-row.is-blocked dd { color: #8a4a12; font-weight: 600; }
+.s-dossier-foot {
+  margin-top: var(--s4); padding-top: var(--s3); border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; align-items: center; gap: var(--s3);
+  font-size: var(--t-micro); color: var(--mud);
+}
+.s-dossier-verdict { font-weight: 700; color: var(--ink); }
+.s-dossier-verdict.is-bad { color: var(--rust); }
+.s-dossier-verdict.is-good { color: var(--allow); }
+
+/* ---------------------------------------------------------------- steps */
+
+.s-steps { display: grid; gap: var(--s4); }
+.s-step {
+  display: grid; grid-template-columns: 56px 1fr; gap: var(--s5);
+  padding: var(--s5) 0; border-bottom: 1px solid var(--line);
+  align-items: start;
+}
+.s-step:last-child { border-bottom: 0; }
+.s-step-n {
+  font-family: var(--font-mono); font-size: var(--t-small); font-weight: 600;
+  color: var(--rust); padding-top: 6px;
+}
+.s-step h3 { font-size: 22px; font-weight: 700; margin-bottom: var(--s2); letter-spacing: -0.015em; }
+.s-step p { margin: 0; color: var(--ink-2); font-size: var(--t-body); line-height: 1.6; max-width: 70ch; }
+.s-step code {
+  font-family: var(--font-mono); font-size: 13px;
+  background: var(--page-alt); border: 1px solid var(--line-2);
+  border-radius: var(--r-mark); padding: 1px 6px;
+}
+
+/* ---------------------------------------------------------------- features */
+
+.s-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r-card); overflow: hidden; }
+.s-feature { background: var(--panel); padding: var(--s6) var(--s5); }
+.s-feature svg { width: 26px; height: 26px; margin-bottom: var(--s4); color: var(--rust); }
+.s-feature h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.01em; }
+.s-feature p { margin: 0; font-size: var(--t-small); color: var(--ink-2); line-height: 1.55; }
+
+/* ---------------------------------------------------------------- numbers */
+
+.s-numbers { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s4); }
+.s-number {
+  padding: var(--s5); border-radius: var(--r-card);
+  background: color-mix(in oklab, #faebd6 7%, transparent);
+  border: 1px solid color-mix(in oklab, #faebd6 14%, transparent);
+}
+.s-number b {
+  display: block; font-family: var(--font-display);
+  font-size: 44px; font-weight: 700; line-height: 1;
+  letter-spacing: -0.02em; margin-bottom: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.s-number span {
+  display: block; font-size: var(--t-micro); line-height: 1.5;
+  color: color-mix(in oklab, #faebd6 64%, transparent);
+}
+.s-number em {
+  display: block; font-style: normal; font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--tea); margin-bottom: 6px; font-weight: 700;
+}
+
+/* ---------------------------------------------------------------- code */
+
+.s-code {
+  background: var(--ink); border-radius: var(--r-card); overflow: hidden;
+  box-shadow: 0 24px 48px -20px rgba(20,21,26,.5);
+}
+.s-code-bar {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: 11px var(--s4);
+  border-bottom: 1px solid color-mix(in oklab, #faebd6 12%, transparent);
+}
+.s-code-bar span {
+  font-family: var(--font-mono); font-size: var(--t-micro);
+  color: color-mix(in oklab, #faebd6 50%, transparent);
+}
+.s-code-tabs { display: flex; gap: 2px; margin-left: auto; }
+.s-code-tab {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  color: color-mix(in oklab, #faebd6 50%, transparent);
+  background: none; border: 0; cursor: pointer;
+  height: 26px; padding: 0 10px; border-radius: var(--r-mark);
+  transition: background 140ms var(--ease), color 140ms var(--ease);
+}
+.s-code-tab:hover { color: var(--page); background: color-mix(in oklab, #faebd6 8%, transparent); }
+.s-code-tab[aria-selected="true"] { color: var(--ink); background: var(--tea); }
+.s-code pre {
+  margin: 0; padding: var(--s5);
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.75;
+  color: #f0e4d4; overflow-x: auto;
+}
+.s-code .k { color: #f6d3a0; }
+.s-code .s { color: #9fd3a8; }
+.s-code .c { color: color-mix(in oklab, #faebd6 38%, transparent); font-style: italic; }
+.s-code .f { color: #7fc9dc; }
+.s-code .n { color: #e89469; }
+
+/* ---------------------------------------------------------------- pricing */
+
+.s-prices { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); align-items: start; }
+.s-price {
+  display: flex; flex-direction: column;
+  background: var(--panel); border: 1px solid var(--peach);
+  border-radius: var(--r-card); padding: var(--s6) var(--s5);
+  box-shadow: var(--shadow-m);
+}
+.s-price-featured {
+  border-color: var(--ink); box-shadow: var(--emboss);
+  position: relative;
+}
+.s-price-flag {
+  position: absolute; top: -11px; left: var(--s5);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--page); background: var(--ink);
+  border-radius: var(--r-pill); padding: 4px 11px;
+}
+.s-price-name { font-size: var(--t-small); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--rust); margin-bottom: var(--s3); }
+.s-price-fig { display: flex; align-items: baseline; gap: 6px; margin-bottom: var(--s2); }
+.s-price-fig b { font-family: var(--font-display); font-size: 42px; font-weight: 700; letter-spacing: -0.02em; }
+.s-price-fig span { font-size: var(--t-small); color: var(--mud); }
+.s-price-sub { font-size: var(--t-small); color: var(--ink-2); margin: 0 0 var(--s5); min-height: 42px; line-height: 1.5; }
+.s-price ul { list-style: none; margin: 0 0 var(--s5); padding: 0; display: grid; gap: 10px; }
+.s-price li { display: grid; grid-template-columns: 18px 1fr; gap: 9px; font-size: var(--t-small); color: var(--ink-2); line-height: 1.5; }
+.s-price li svg { width: 14px; height: 14px; margin-top: 4px; color: var(--allow); }
+.s-price li.is-off { color: var(--ink-3); }
+.s-price li.is-off svg { color: var(--ink-3); }
+.s-price .s-btn { margin-top: auto; width: 100%; }
+
+.s-toggle {
+  display: inline-flex; align-items: center; gap: 2px; padding: 3px;
+  background: var(--page-alt); border: 1px solid var(--line-2);
+  border-radius: var(--r-pill); margin-inline: auto; margin-bottom: var(--s6);
+}
+.s-toggle button {
+  height: 34px; padding: 0 var(--s4); border-radius: var(--r-pill);
+  background: none; color: var(--ink-2); font-size: var(--t-small); font-weight: 600;
+  box-shadow: none;
+}
+.s-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--page); }
+.s-toggle button:hover { background: color-mix(in oklab, #251d1a 7%, transparent); color: var(--ink); }
+.s-toggle button[aria-pressed="true"]:hover { background: var(--ink); color: var(--page); }
+
+/* comparison table */
+.s-compare { width: 100%; border-collapse: collapse; font-size: var(--t-small); }
+.s-compare th, .s-compare td { padding: 13px var(--s4); border-bottom: 1px solid var(--line); text-align: left; }
+.s-compare thead th {
+  font-size: var(--t-micro); font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--mud);
+  border-bottom: 1px solid var(--line-2);
+}
+.s-compare tbody th { font-weight: 600; color: var(--ink); }
+.s-compare td { color: var(--ink-2); }
+.s-compare-group td {
+  background: var(--page-alt); font-size: var(--t-micro); font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--rust);
+}
+.s-compare .yes { color: var(--allow); font-weight: 700; }
+.s-compare .no { color: var(--ink-3); }
+
+/* ---------------------------------------------------------------- faq */
+
+.s-faq { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.s-faq-item { border-bottom: 1px solid var(--line); }
+.s-faq-q {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s4);
+  height: auto; padding: var(--s5) 0; text-align: left;
+  background: none; color: var(--ink);
+  font-size: 18px; font-weight: 700; letter-spacing: -0.01em;
+  box-shadow: none; border-radius: 0;
+}
+.s-faq-q:hover { background: none; color: var(--rust); }
+.s-faq-ico { flex-shrink: 0; width: 20px; height: 20px; color: var(--rust); transition: transform 260ms var(--ease); }
+.s-faq-q[aria-expanded="true"] .s-faq-ico { transform: rotate(45deg); }
+.s-faq-a { overflow: hidden; height: 0; }
+.s-faq-a-inner { padding: 0 0 var(--s5); color: var(--ink-2); font-size: var(--t-body); line-height: 1.65; max-width: 76ch; }
+.s-faq-a-inner p { margin: 0 0 12px; }
+.s-faq-a-inner p:last-child { margin: 0; }
+.s-faq-a-inner code {
+  font-family: var(--font-mono); font-size: 13px;
+  background: var(--page-alt); border: 1px solid var(--line-2);
+  border-radius: var(--r-mark); padding: 1px 6px;
+}
+
+/* ---------------------------------------------------------------- cta band */
+
+.s-cta { text-align: center; }
+.s-cta h2 { font-family: var(--font-display); font-size: clamp(32px, 4.4vw, 52px); margin-bottom: var(--s4); }
+.s-cta p { max-width: 56ch; margin: 0 auto var(--s6); font-size: var(--t-lede); color: color-mix(in oklab, #faebd6 70%, transparent); }
+.s-cta-row { display: flex; gap: var(--s3); justify-content: center; flex-wrap: wrap; }
+
+/* ---------------------------------------------------------------- footer */
+
+.s-foot { background: var(--page-alt); border-top: 1px solid var(--line); padding: var(--s8) 0 var(--s6); }
+.s-foot-grid { display: grid; grid-template-columns: 1.6fr repeat(4, 1fr); gap: var(--s6); }
+.s-foot-about p { margin: var(--s4) 0 0; font-size: var(--t-small); color: var(--ink-2); line-height: 1.6; max-width: 34ch; }
+.s-foot-col h4 {
+  margin: 0 0 var(--s4); font-size: var(--t-micro); font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--mud);
+}
+.s-foot-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
+.s-foot-col a { font-size: var(--t-small); color: var(--ink-2); text-decoration: none; transition: color 140ms var(--ease); }
+.s-foot-col a:hover { color: var(--rust); }
+.s-foot-bar {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--s4);
+  flex-wrap: wrap; margin-top: var(--s7); padding-top: var(--s5);
+  border-top: 1px solid var(--line);
+  font-size: var(--t-micro); color: var(--mud);
+}
+.s-foot-bar .mono { color: var(--ink-2); }
+
+/* ---------------------------------------------------------------- reveals */
+
+/* Same contract as app.css: authored visible, hidden only once site.js has
+   confirmed it has a working reveal loop. A CDN failure must never leave a
+   marketing page blank. */
+.s-rise { opacity: 1; }
+html.s-motion .s-rise { opacity: 0; transform: translateY(26px); }
+html.s-motion .s-rise.s-in { opacity: 1; transform: none; }
+
+/* ---------------------------------------------------------------- responsive */
+
+@media (max-width: 1080px) {
+  .s-hero-grid { grid-template-columns: 1fr; gap: var(--s7); }
+  .s-planes { grid-template-columns: 1fr; }
+  .s-features { grid-template-columns: 1fr 1fr; }
+  .s-numbers { grid-template-columns: 1fr 1fr; }
+  .s-prices { grid-template-columns: 1fr; }
+  .s-foot-grid { grid-template-columns: 1fr 1fr 1fr; }
+  /* Without the sticky stage there is no scrubbing, so show the steps as a
+     list and let the dossier sit complete underneath. The rail must lose
+     its height too, or the section becomes three screens of nothing. */
+  .s-leak-rail { height: auto; }
+  .s-leak-stage { position: static; grid-template-columns: 1fr; min-height: 0; padding-block: 0; }
+  .s-leak-copy { min-height: 0; }
+  .s-leak-step { position: static; opacity: 1; transform: none; pointer-events: auto; margin-bottom: var(--s6); }
+  .s-nav-links { display: none; }
+  .s-nav-burger {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; padding: 0; margin-left: auto;
+    background: none; color: var(--ink); box-shadow: var(--ring-ink);
+  }
+  .s-nav-open .s-nav-links {
+    display: flex; position: absolute; top: 68px; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 2px;
+    background: var(--panel); border-bottom: 1px solid var(--peach);
+    padding: var(--s3) var(--gutter) var(--s5);
+    box-shadow: var(--shadow-m);
+  }
+  .s-nav-open .s-nav-link { height: 42px; justify-content: flex-start; }
+  .s-menu { position: static; width: auto; grid-template-columns: 1fr; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: 0; padding: 0 0 0 var(--s3); }
+  .s-menu-wrap { position: static; }
+}
+
+@media (max-width: 720px) {
+  .s-features { grid-template-columns: 1fr; }
+  .s-numbers { grid-template-columns: 1fr; }
+  .s-foot-grid { grid-template-columns: 1fr 1fr; }
+  .s-step { grid-template-columns: 1fr; gap: var(--s3); }
+  .s-hero h1 { font-size: clamp(36px, 10vw, 48px); }
+  .s-compare-scroll { overflow-x: auto; }
+  .s-compare { min-width: 620px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.s-motion .s-rise { opacity: 1; transform: none; }
+  .s-marquee-track { animation: none; transform: none; }
+  .s-leak-rail { height: auto; }
+  .s-leak-stage { position: static; min-height: 0; padding-block: 0; }
+  .s-leak-step { position: static; opacity: 1; transform: none; margin-bottom: var(--s6); }
+  .s-leak-copy { min-height: 0; }
+}

@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Endpoint DLP — Naka</title>
+<meta name="description" content="A local agent with a TLS-terminating proxy that inspects paste, upload and prompt traffic at the laptop — including traffic to consumer AI tools that never touches your network." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./app.css" />
+<link rel="stylesheet" href="./site.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23251d1a'/%3E%3Cpath d='M9 23V9l14 14V9' stroke='%23faebd6' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script defer type="module" src="./site.js"></script>
+</head>
+<body>
+
+<a class="s-skip" href="#main">Skip to content</a>
+
+<nav class="s-nav">
+  <div class="s-nav-inner">
+    <a class="s-brand" href="./index.html">
+      <svg class="s-brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#251d1a"/><path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="s-brand-word">Naka</span>
+    </a>
+    <div class="s-nav-links">
+      <a class="s-nav-link" href="./egress.html">Agent Egress</a>
+      <a class="s-nav-link" href="./endpoint.html">Endpoint DLP</a>
+      <a class="s-nav-link" href="./files.html">File &amp; Document</a>
+      <a class="s-nav-link" href="./platform.html">Architecture</a>
+      <a class="s-nav-link" href="./pricing.html">Pricing</a>
+    </div>
+    <button class="s-nav-burger" type="button" aria-expanded="false" aria-label="Menu">
+      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <div class="s-nav-actions">
+      <a class="s-btn s-btn-ghost s-btn-sm" href="./console.html">Sign in</a>
+      <a class="s-btn s-btn-sm" href="./console.html#endpoint">Open console</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="s-hero" style="padding-block:var(--s7) var(--s8)">
+  <div class="s-shell s-hero-grid">
+    <div>
+      <div class="s-eyebrow" data-hero>Plane 02 · Endpoint DLP</div>
+      <h1 data-split>The leak that never touches <em>your network.</em></h1>
+      <p class="s-hero-lede" data-hero>
+        An employee pastes a customer record into a consumer chatbot from a laptop at
+        home. Your network appliance sees nothing, because there is no network to see
+        it on. Naka's endpoint agent sits <strong>on the machine</strong>, terminates
+        TLS locally, and inspects the payload before it reaches the wire.
+      </p>
+      <div class="s-hero-cta" data-hero>
+        <a class="s-btn s-btn-lg" href="./console.html#endpoint">
+          See the enrolment flow
+          <svg class="s-btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="s-btn s-btn-ghost s-btn-lg" href="#status">What's built today</a>
+      </div>
+      <div class="s-hero-note" data-hero>
+        <span>Works off the corporate network</span>
+        <span>Same Cedar bundle as the cloud planes</span>
+      </div>
+    </div>
+
+    <div class="s-hero-art" data-hero>
+      <!-- The overlay, as it actually appears at the moment of a paste. -->
+      <div class="s-scope" data-tilt>
+        <div class="s-scope-bar">
+          <div class="s-scope-lights" aria-hidden="true"><i></i><i></i><i></i></div>
+          <span class="s-scope-title">paste → chat.example.com</span>
+          <span class="s-scope-badge" style="color:#a35c12;background:var(--deny-tint);border-color:var(--deny)">held</span>
+        </div>
+        <div class="s-scope-body">
+          <div class="s-line"><span class="s-line-key">detected</span><span class="s-line-val is-held">AADHAAR ×1</span><span class="s-tagline is-deny">tier 1</span></div>
+          <div class="s-line"><span class="s-line-key">detected</span><span class="s-line-val is-held">PAN ×1</span><span class="s-tagline is-deny">tier 1</span></div>
+          <div class="s-line"><span class="s-line-key">detected</span><span class="s-line-val is-out">NAME ×2</span><span class="s-tagline is-allow">allowed</span></div>
+          <div class="s-line"><span class="s-line-key">destination</span><span class="s-line-val is-out">consumer AI</span><span class="s-tagline is-deny">unapproved</span></div>
+        </div>
+        <div class="s-scope-foot">
+          <span>2 identifiers withheld</span>
+          <span>paste blocked · user notified</span>
+        </div>
+      </div>
+      <div class="s-ledger">
+        <div class="s-ledger-head"><b>Decision latency</b><span>local, no round trip</span></div>
+        <div class="s-slots" aria-hidden="true"><i class="is-1"></i><i class="is-2"></i><i></i><i></i></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="s-band s-band-alt">
+  <div class="s-shell">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">Why the endpoint</div>
+      <h2>The three egress paths a network appliance cannot see</h2>
+      <p>Not because it is badly configured. Because the traffic never crosses it.</p>
+    </div>
+    <div class="s-features s-rise" data-rise-group=".s-feature">
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="3" width="10" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M6 7H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1" stroke="currentColor" stroke-width="1.8"/></svg>
+        <h3>Paste into a consumer AI tool</h3>
+        <p>A customer record, a support transcript, a spreadsheet column. The single
+           most common AI data-loss event in practice, and the hardest to see,
+           because it looks exactly like normal browsing.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16V4m0 0L8 8m4-4 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <h3>Upload to personal storage</h3>
+        <p>A file dragged into a personal cloud drive over the employee's own
+           connection. The bytes leave the machine encrypted and go somewhere your
+           DLP has no relationship with.</p>
+      </div>
+      <div class="s-feature">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5h16v11H8l-4 4V5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <h3>A prompt typed into a browser extension</h3>
+        <p>Extensions post directly to their own endpoints. There is no corporate
+           proxy in that path and there never will be — the only vantage point is
+           the device itself.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="s-band">
+  <div class="s-shell s-hero-grid">
+    <div class="s-rise">
+      <div class="s-eyebrow">How it works</div>
+      <h2 style="font-family:var(--font-display);margin-bottom:var(--s4)">Local interception, shared policy</h2>
+      <div class="s-steps">
+        <div class="s-step">
+          <div class="s-step-n">01</div>
+          <div>
+            <h3>A local proxy with its own root CA</h3>
+            <p>The agent installs a root certificate on the machine and mints leaf
+               certificates for the hosts it inspects. This is a genuine
+               TLS-interception capability and it is stated plainly rather than
+               buried: install it only where you intend to, and the console gives
+               you the uninstall command next to the install one.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n">02</div>
+          <div>
+            <h3>The same three detector tiers</h3>
+            <p>Tier 1 runs entirely on-device, so an Aadhaar or PAN is caught with no
+               network round trip and no latency the user can feel. Tiers 2 and 3
+               are consulted for content that warrants them.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n">03</div>
+          <div>
+            <h3>The same Cedar bundle</h3>
+            <p>Not a second policy language, not a separate console, not a different
+               set of exemptions to keep in sync. An exemption written for the
+               compliance role applies whether the request came from an agent, a
+               laptop paste or a file scan.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n">04</div>
+          <div>
+            <h3>An inline overlay, at the moment of the paste</h3>
+            <p>Not an email the next morning. The user is told which entity types
+               were found and why the action was held, while they still have the
+               context to do something about it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-rise" data-parallax="26">
+      <div class="s-code">
+        <div class="s-code-bar">
+          <span>interceptor.js</span>
+          <div class="s-code-tabs"><button class="s-code-tab" aria-selected="true" type="button">node</button></div>
+        </div>
+<pre><span class="c">// Outbound request bodies are inspected before the socket</span>
+<span class="c">// to the real host is ever opened.</span>
+
+proxy.<span class="f">on</span>(<span class="s">'request'</span>, <span class="k">async</span> (req, res) =&gt; {
+  <span class="k">const</span> body    = <span class="k">await</span> <span class="f">readBody</span>(req)
+  <span class="k">const</span> found   = <span class="k">await</span> detectors.<span class="f">scan</span>(body)   <span class="c">// tier 1 local</span>
+  <span class="k">const</span> verdict = <span class="k">await</span> cedar.<span class="f">authorize</span>({
+    principal:   session.user,
+    action:      <span class="s">'egress::paste'</span>,
+    resource:    req.headers.host,
+    context:     { entities: found.types },
+  })
+
+  <span class="k">if</span> (verdict.decision === <span class="s">'Deny'</span>) {
+    overlay.<span class="f">warn</span>(found.types, req.headers.host)
+    <span class="k">return</span> res.<span class="f">writeHead</span>(<span class="n">403</span>).<span class="f">end</span>()
+  }
+  <span class="f">forward</span>(req, res)
+})</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ honesty -->
+<section class="s-band s-band-alt" id="status">
+  <div class="s-shell s-shell-narrow">
+    <div class="s-head s-rise">
+      <div class="s-eyebrow">Straight answer</div>
+      <h2>What is built, and what is not</h2>
+      <p>This plane is the least finished of the three. Here is the line, drawn
+         honestly, because you will find it yourself in about ten minutes otherwise.</p>
+    </div>
+
+    <div class="s-rise">
+      <div class="s-steps">
+        <div class="s-step">
+          <div class="s-step-n" style="color:var(--allow)">✓</div>
+          <div>
+            <h3>Built and running</h3>
+            <p>The local agent, the TLS-terminating proxy with its own CA, on-device
+               tier-1 detection, the Cedar evaluation path, and the inline overlay.
+               This has been run end to end on a real machine with live TLS
+               interception, not mocked.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n" style="color:var(--deny)">○</div>
+          <div>
+            <h3>Not built</h3>
+            <p>Central enrolment, fleet telemetry and device inventory. The console's
+               Endpoint view therefore shows zero endpoints and says why, rather than
+               rendering a fleet table that does not correspond to anything. Policy
+               distribution to endpoints is manual.</p>
+          </div>
+        </div>
+        <div class="s-step">
+          <div class="s-step-n" style="color:var(--mud)">!</div>
+          <div>
+            <h3>Provenance</h3>
+            <p>The endpoint agent began as a separate codebase and was brought under
+               Naka: rebranded, re-themed, and rewired to the shared Cedar bundle.
+               The interception and overlay code predates this project. We would
+               rather say that than have you discover it in the commit history.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="s-band s-band-ink">
+  <div class="s-shell s-cta s-rise">
+    <h2>One policy. Every door.</h2>
+    <p>The endpoint plane shares its Cedar bundle and its detector tiers with the
+       agent and file planes — because it is the same person's data whichever way
+       it leaves.</p>
+    <div class="s-cta-row">
+      <a class="s-btn s-btn-lg" href="./console.html#endpoint">Open the console</a>
+      <a class="s-btn s-btn-ghost s-btn-lg" href="./files.html">Next: File &amp; Document DLP</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="s-foot">
+  <div class="s-shell">
+    <div class="s-foot-grid">
+      <div class="s-foot-about">
+        <a class="s-brand" href="./index.html">
+          <svg class="s-brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#251d1a"/><path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="s-brand-word">Naka</span>
+        </a>
+        <p>One policy engine across every path your data takes out of the company.</p>
+      </div>
+      <div class="s-foot-col"><h4>Platform</h4><ul>
+        <li><a href="./egress.html">Agent Egress</a></li>
+        <li><a href="./endpoint.html">Endpoint DLP</a></li>
+        <li><a href="./files.html">File &amp; Document DLP</a></li>
+        <li><a href="./platform.html">Architecture</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Product</h4><ul>
+        <li><a href="./console.html#overview">Console</a></li>
+        <li><a href="./console.html#policy">Policy editor</a></li>
+        <li><a href="./console.html#detectors">Detector coverage</a></li>
+        <li><a href="./pricing.html">Pricing</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Resources</h4><ul>
+        <li><a href="./index.html#how">The three questions</a></li>
+        <li><a href="./index.html#leak">How a leak happens</a></li>
+        <li><a href="./index.html#faq">FAQ</a></li>
+        <li><a href="./platform.html#threat">Threat model</a></li>
+      </ul></div>
+      <div class="s-foot-col"><h4>Status</h4><ul>
+        <li><a href="./console.html#overview"><span data-live="control">control plane</span></a></li>
+        <li><a href="./console.html#overview"><span data-live="agent">data plane</span></a></li>
+      </ul></div>
+    </div>
+    <div class="s-foot-bar">
+      <span>Naka · Cedar authorization + cumulative disclosure ledger · <span class="mono">ap-south-1</span></span>
+      <span>The API has no field that could carry a plaintext value.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

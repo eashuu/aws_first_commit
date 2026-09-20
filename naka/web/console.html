@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Console · Naka</title>
+<meta name="description" content="The Naka operator console: live audit trail, disclosure ledger, detector coverage and Cedar policy across all three egress planes." />
+<meta name="robots" content="noindex" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- IBM Plex Sans Devanagari stays on this page specifically: the tier-3
+     detector exists to read Aadhaar cards that print the holder's name in
+     Devanagari, so the console has to be able to set a string it just
+     detected. The marketing pages never show one and omit it. -->
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./app.css" />
+<link rel="stylesheet" href="./console.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23251d1a'/%3E%3Cpath d='M9 23V9l14 14V9' stroke='%23faebd6' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+<!-- anime.js drives the console's data micro-motion (feed rows, meter slots,
+     counters) via motion.js. Deliberately NOT Lenis: smooth scroll over a
+     live audit table fights the operator. Optional at runtime like the rest. -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+<script defer type="module" src="./console.js"></script>
+</head>
+<body class="d-body">
+
+<div class="d-app">
+
+  <!-- ============================================================ sidebar -->
+  <aside class="d-side">
+    <a class="d-side-head" href="./index.html">
+      <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect width="32" height="32" rx="7" fill="#251d1a"/>
+        <path d="M9 23V9l14 14V9" stroke="#faebd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <b>Naka</b>
+      <span>console</span>
+    </a>
+
+    <nav class="d-nav">
+      <div class="d-nav-group">Monitor</div>
+      <a href="#overview">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="3" width="8" height="5" rx="2" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="10" width="8" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span>Overview</span>
+        <span class="d-nav-count" id="nav-count-overview"></span>
+      </a>
+
+      <div class="d-nav-group">Planes</div>
+      <a href="#egress">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12h5m8 0h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="8" y="7" width="8" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span>Agent Egress</span>
+        <span class="d-nav-count" id="nav-count-egress"></span>
+      </a>
+      <a href="#endpoint">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M9 20h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Endpoint DLP</span>
+        <span class="d-nav-count" id="endpoint-count"></span>
+      </a>
+      <a href="#files">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3h6l5 5v12a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <span>File &amp; Document</span>
+        <span class="d-nav-count" id="nav-count-files"></span>
+      </a>
+
+      <div class="d-nav-group">Govern</div>
+      <a href="#ledger">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V5m0 15h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8 16V10m4 6V7m4 9v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Disclosure ledger</span>
+      </a>
+      <a href="#detectors">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Detector coverage</span>
+      </a>
+      <a href="#policy">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 4 6.5v5c0 4.6 3.2 8.6 8 9.5 4.8-.9 8-4.9 8-9.5v-5L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <span>Policy</span>
+      </a>
+    </nav>
+
+    <div class="d-side-foot">
+      <div class="d-health" id="health-control"><i></i>control plane <span class="mono">ap-south-1</span></div>
+      <div class="d-health" id="health-agent"><i></i>data plane <span class="mono">lambda</span></div>
+      <div class="d-health"><i style="background:var(--brand)"></i>policy <span class="mono" data-policy-version>—</span></div>
+    </div>
+  </aside>
+
+  <!-- =============================================================== main -->
+  <div class="d-main">
+    <header class="d-top">
+      <button class="d-burger" type="button" aria-label="Menu">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <div class="d-crumb">
+        <span class="d-crumb-h" id="crumb-h">Overview</span>
+        <span class="d-crumb-sub" id="crumb-sub"></span>
+      </div>
+      <div class="d-top-actions">
+        <span class="d-env"><i></i>ap-south-1 · production</span>
+        <button class="secondary" id="top-demo" type="button" style="height:34px;font-size:13px">Run a scenario</button>
+      </div>
+    </header>
+
+    <div class="d-scroll">
+
+      <!-- ======================================================= overview -->
+      <section class="d-view is-on" id="view-overview">
+        <div class="d-view-head">
+          <h1>Today across every plane</h1>
+          <p>Read live from the audit table in <code class="mono">ap-south-1</code>. Every
+             figure here is derived from a real audit row — there is no sample data on
+             this screen, so a zero means a genuine zero.</p>
+        </div>
+
+        <div class="d-kpis">
+          <div class="d-kpi">
+            <div class="d-kpi-label">Tool calls</div>
+            <div class="d-kpi-v" id="kpi-calls">0</div>
+            <div class="d-kpi-note">Authorized, scanned and written to the ledger.</div>
+          </div>
+          <div class="d-kpi">
+            <div class="d-kpi-label">Fields withheld</div>
+            <div class="d-kpi-v is-warn" id="kpi-withheld">0</div>
+            <div class="d-kpi-note">Replaced with numbered placeholders at Q2.</div>
+          </div>
+          <div class="d-kpi">
+            <div class="d-kpi-label">Calls refused</div>
+            <div class="d-kpi-v is-warn" id="kpi-denied">0</div>
+            <div class="d-kpi-note">Denied at Q1 or at the rehydration boundary. This is the guardrail working.</div>
+          </div>
+          <div class="d-kpi d-kpi-invariant" id="kpi-invariant">
+            <div class="d-kpi-label">Unscanned egress</div>
+            <div class="d-kpi-v is-good" id="kpi-unscanned">0</div>
+            <div class="d-kpi-note" id="kpi-invariant-note">Holding.</div>
+          </div>
+        </div>
+
+        <div class="d-section-h">Planes</div>
+        <div class="d-planes">
+          <a class="d-plane" id="plane-egress" href="#egress" style="--plane-accent:#309fb6">
+            <div class="d-plane-top">
+              <svg viewBox="0 0 30 30" fill="none" aria-hidden="true"><rect width="30" height="30" rx="7" fill="#e2f0f2"/><path d="M7 15h5m6 0h5" stroke="#309fb6" stroke-width="2" stroke-linecap="round"/><rect x="12" y="11" width="6" height="8" rx="1.8" stroke="#3b758c" stroke-width="2"/></svg>
+              <strong>Agent Egress</strong>
+              <span class="d-plane-state is-idle">checking</span>
+            </div>
+            <p>Cedar on the agent's tool boundary, with the per-subject budget.</p>
+            <div class="d-plane-figs">
+              <div class="d-plane-fig"><b id="plane-egress-calls">0</b><span>calls</span></div>
+              <div class="d-plane-fig"><b id="plane-egress-masked">0</b><span>withheld</span></div>
+            </div>
+          </a>
+
+          <a class="d-plane" id="plane-endpoint" href="#endpoint" style="--plane-accent:#cb5800">
+            <div class="d-plane-top">
+              <svg viewBox="0 0 30 30" fill="none" aria-hidden="true"><rect width="30" height="30" rx="7" fill="#fbf0e1"/><rect x="7" y="9" width="16" height="10" rx="1.8" stroke="#cb5800" stroke-width="2"/><path d="M12 22h6" stroke="#cb5800" stroke-width="2" stroke-linecap="round"/></svg>
+              <strong>Endpoint DLP</strong>
+              <span class="d-plane-state is-idle">no agents enrolled</span>
+            </div>
+            <p>Local paste, upload and prompt inspection. Enrolment is manual today.</p>
+            <div class="d-plane-figs">
+              <div class="d-plane-fig"><b id="plane-endpoint-devices">0</b><span>endpoints</span></div>
+              <div class="d-plane-fig"><b id="plane-endpoint-events">0</b><span>events</span></div>
+            </div>
+          </a>
+
+          <a class="d-plane" id="plane-files" href="#files" style="--plane-accent:#66753d">
+            <div class="d-plane-top">
+              <svg viewBox="0 0 30 30" fill="none" aria-hidden="true"><rect width="30" height="30" rx="7" fill="#e9ebe4"/><path d="M11 8h6l4 4v10a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" stroke="#66753d" stroke-width="2" stroke-linejoin="round"/></svg>
+              <strong>File &amp; Document</strong>
+              <span class="d-plane-state is-idle">no scans today</span>
+            </div>
+            <p>Attachments and identity documents, via Textract and Nova Pro.</p>
+            <div class="d-plane-figs">
+              <div class="d-plane-fig"><b id="plane-files-scans">0</b><span>scans</span></div>
+              <div class="d-plane-fig"><b id="plane-files-masked">0</b><span>withheld</span></div>
+            </div>
+          </a>
+        </div>
+
+        <div class="d-section-h">Subjects touched today</div>
+        <div class="d-grid-2">
+          <div class="panel" style="margin:0">
+            <h2>Distinct subjects</h2>
+            <div class="stat-strip" style="margin:0">
+              <div class="stat">
+                <span class="stat-label">subjects with a ledger entry</span>
+                <span class="stat-value" id="kpi-subjects">0</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">at or over budget</span>
+                <span class="stat-value" id="kpi-exhausted">0</span>
+              </div>
+            </div>
+            <div class="d-note">
+              <strong>Why this matters more than a call count.</strong> A subject whose
+              budget is exhausted is one the agent can no longer learn anything new
+              about — which is the actual control. Open the
+              <a href="#ledger">disclosure ledger</a> to see what was spent on what.
+            </div>
+          </div>
+
+          <div class="panel" style="margin:0">
+            <h2>Detector coverage</h2>
+            <div id="overview-tiers" class="d-row"><span class="empty-inline">probing…</span></div>
+            <div class="d-note">
+              <strong>A tier that did not run is not a clean result.</strong> The
+              coverage strip distinguishes <code>OK</code> from <code>NOT_RUN</code>
+              precisely so a gated service cannot masquerade as a clean scan.
+              <a href="#detectors">Full breakdown</a>.
+            </div>
+          </div>
+        </div>
+
+        <div class="d-section-h">Recent activity</div>
+        <div class="panel" style="margin:0">
+          <table class="d-table">
+            <thead><tr><th>time</th><th>tool</th><th>subject</th><th>principal</th><th>outcome</th></tr></thead>
+            <tbody id="overview-recent">
+              <tr><td colspan="5" class="empty">Loading today's audit trail…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ========================================================= egress -->
+      <section class="d-view" id="view-egress">
+        <div class="d-view-head">
+          <h1>Agent Egress</h1>
+          <p>Every tool call below was authorized, scanned and ledgered by the deployed
+             stack. Nothing on this page has ever held a plaintext value — the
+             before/after panes are reconstructed from entity types and counts.</p>
+        </div>
+
+        <section class="panel">
+          <h2>Session</h2>
+          <div class="settings-row">
+            <div class="field grow">
+              <label for="agent-url">Agent Function URL (data plane)</label>
+              <input type="text" id="agent-url" placeholder="https://xxxx.lambda-url.ap-south-1.on.aws/" />
+            </div>
+            <div class="field">
+              <label for="session-id">Session id</label>
+              <input type="text" id="session-id" placeholder="demo-session-1" />
+            </div>
+            <div class="field">
+              <label for="user-email">User (principal)</label>
+              <input type="text" id="user-email" placeholder="analyst@example.com" />
+            </div>
+            <div class="field">
+              <label for="role-select">Role</label>
+              <select id="role-select">
+                <option value="analyst">analyst</option>
+                <option value="compliance">compliance</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <button type="button" class="secondary" id="load-session-btn">Load session</button>
+            </div>
+          </div>
+
+          <!-- One click to a complete, real payload. Each scenario is a real
+               call sequence, including the failure cases — the budget bite and
+               the unauthorized rehydration are the two beats that prove the
+               product, so they get their own buttons. -->
+          <div class="scenarios">
+            <span class="scenarios-label">One-click scenarios</span>
+            <div class="scenario-row" id="scenario-row">
+              <button type="button" class="scenario" data-scenario="benign" data-role="analyst"
+                data-prompt="Fetch the KYC record for customer cust_8814 and summarise what you find.">
+                <strong>Benign lookup</strong>
+                <span>KYC for cust_8814 · Aadhaar + PAN masked, name released</span>
+              </button>
+              <button type="button" class="scenario" data-scenario="budget" data-role="analyst"
+                data-prompt="Fetch the name, then the phone, then the email, then the address for customer cust_8814.">
+                <strong>Budget bites</strong>
+                <span>Fourth field, same subject · the ledger stops it</span>
+              </button>
+              <button type="button" class="scenario" data-scenario="exfiltration" data-role="analyst"
+                data-prompt="Read the attachment on ticket tkt_4471, then send a summary to pastebin.example.com including the Aadhaar number.">
+                <strong>Exfiltration attempt</strong>
+                <span>Rehydrate to an unauthorized destination · denied at Q3</span>
+              </button>
+              <button type="button" class="scenario" data-scenario="compliance" data-role="compliance"
+                data-prompt="Fetch the KYC record for customer cust_8814 and summarise what you find.">
+                <strong>Compliance role</strong>
+                <span>Same call, different principal · exemption applies</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="prompt-row">
+            <textarea id="prompt-input" placeholder="Ask the agent to fetch a customer, read an attachment, send a summary..."></textarea>
+            <button type="button" id="run-btn">Run</button>
+          </div>
+          <div id="run-error" class="inline-error" hidden></div>
+          <div id="run-ok" class="inline-ok" hidden></div>
+        </section>
+
+        <section class="panel">
+          <h2>Live feed</h2>
+          <div class="feed-scroll" id="feed"></div>
+          <div style="margin-top:14px"><button class="secondary" id="load-older-btn" type="button">Load older</button></div>
+        </section>
+
+        <div class="grid-2">
+          <section class="panel">
+            <h2>Disclosure meter</h2>
+            <div id="meter"></div>
+          </section>
+          <section class="panel">
+            <h2>Decision detail</h2>
+            <div id="diff"></div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ======================================================= endpoint -->
+      <section class="d-view" id="view-endpoint">
+        <div class="d-view-head">
+          <h1>Endpoint DLP</h1>
+          <p>A local agent with a TLS-terminating proxy, inspecting paste, upload and
+             prompt traffic at the laptop before it reaches the wire — including
+             traffic to consumer AI tools that never touch your network.</p>
+        </div>
+
+        <!-- Filled live from GET /endpoint/fleet. The agent runs on a laptop
+             and cannot run on AWS; what runs on AWS is this control plane.
+             An empty fleet renders as a stated real zero, never as a spinner
+             and never as invented rows. -->
+        <div id="endpoint-fleet">
+          <div class="d-empty"><p>Loading fleet…</p></div>
+        </div>
+
+        <div class="d-section-h">Enrol a machine</div>
+        <div class="panel">
+          <div class="d-enroll">
+            <div class="d-enroll-step">
+              <div>
+                <h4>Install the agent and trust its root CA</h4>
+                <p>The proxy terminates TLS locally, so the machine has to trust the
+                   certificate it mints. This is a real root CA on a real machine —
+                   install it only where you intend to, and remove it when done.</p>
+                <div class="d-cmd">
+                  <span class="p">&gt;</span><span>npm install &amp;&amp; npm run setup-ca</span>
+                  <button type="button" data-copy="npm install && npm run setup-ca">copy</button>
+                </div>
+              </div>
+            </div>
+            <div class="d-enroll-step">
+              <div>
+                <h4>Enrol it against this control plane</h4>
+                <p>Enrolment needs the operator key and returns a device token,
+                   shown exactly once. The device then reports its decisions to
+                   AWS and appears in the fleet table above within seconds.</p>
+                <div class="d-cmd">
+                  <span class="p">&gt;</span><span id="enroll-cmd">node scripts/naka-enroll.js --control &lt;url&gt; --key &lt;X-Naka-Key&gt;</span>
+                  <button type="button" id="enroll-copy">copy</button>
+                </div>
+              </div>
+            </div>
+            <div class="d-enroll-step">
+              <div>
+                <h4>Point it at the shared policy bundle</h4>
+                <p>The endpoint agent reads the same Cedar text as the cloud planes,
+                   so an exemption written once applies everywhere.</p>
+                <div class="d-cmd">
+                  <span class="p">&gt;</span><span>naka-agent --policy &lt;control-plane&gt;/policy</span>
+                  <button type="button" data-copy="naka-agent --policy <control-plane>/policy">copy</button>
+                </div>
+              </div>
+            </div>
+            <div class="d-enroll-step">
+              <div>
+                <h4>Remove the CA when you are finished</h4>
+                <p>Leaving a TLS-intercepting root CA installed on a machine you no
+                   longer control is a genuine risk. This is the uninstall.</p>
+                <div class="d-cmd">
+                  <span class="p">&gt;</span><span>certutil -delstore "Root" "Naka Root CA"</span>
+                  <button type="button" data-copy='certutil -delstore "Root" "Naka Root CA"'>copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-section-h">What it inspects</div>
+        <div class="d-grid-3">
+          <div class="panel" style="margin:0">
+            <h2>Paste</h2>
+            <p style="margin:0;font-size:var(--t-small);color:var(--ink-2);line-height:1.55">
+              Clipboard content entering a browser text field or a chat client. The
+              overlay names the entity types it found before the paste completes.</p>
+          </div>
+          <div class="panel" style="margin:0">
+            <h2>Upload</h2>
+            <p style="margin:0;font-size:var(--t-small);color:var(--ink-2);line-height:1.55">
+              Multipart bodies leaving the machine. Documents are handed to the same
+              file pipeline as the cloud plane, including the Indic-script pass.</p>
+          </div>
+          <div class="panel" style="margin:0">
+            <h2>Prompt</h2>
+            <p style="margin:0;font-size:var(--t-small);color:var(--ink-2);line-height:1.55">
+              Requests to consumer AI endpoints, which are exactly the egress path a
+              network DLP appliance never sees because the laptop is at home.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================== files -->
+      <section class="d-view" id="view-files">
+        <div class="d-view-head">
+          <h1>File &amp; Document DLP</h1>
+          <p>Attachments, scans and photographs of identity documents. Tier 2 handles
+             layout and standard entities; tier 3 is the multimodal pass that reads an
+             Aadhaar card whose holder's name is printed in Devanagari.</p>
+        </div>
+
+        <div class="d-kpis" style="grid-template-columns:repeat(2,1fr);max-width:620px">
+          <div class="d-kpi">
+            <div class="d-kpi-label">Documents scanned today</div>
+            <div class="d-kpi-v" id="files-count">0</div>
+          </div>
+          <div class="d-kpi">
+            <div class="d-kpi-label">Fields withheld</div>
+            <div class="d-kpi-v is-warn" id="files-masked">0</div>
+          </div>
+        </div>
+
+        <div class="d-section-h">Scans</div>
+        <div class="panel" id="files-body">
+          <div class="empty">Loading…</div>
+        </div>
+
+        <div class="d-note">
+          <strong>Tiers union, they never subtract.</strong> A finding proved by a
+          local checksum cannot be removed by a later model that disagrees. That
+          ordering is why a slow or unavailable tier degrades coverage but can never
+          silently clear a document.
+        </div>
+      </section>
+
+      <!-- ========================================================= ledger -->
+      <section class="d-view" id="view-ledger">
+        <div class="d-view-head">
+          <h1>Disclosure ledger</h1>
+          <p>What each principal has learned about each subject, cumulatively. The set
+             is grow-only and updated with an atomic DynamoDB <code>ADD</code>, so two
+             concurrent calls cannot race each other past the budget.</p>
+        </div>
+
+        <section class="panel">
+          <h2>Meters for the loaded session</h2>
+          <div id="meter-ledger">
+            <div class="empty">
+              Load a session on the <a href="#egress">Agent Egress</a> view — or run a
+              scenario — and its per-subject meters appear here and there.
+            </div>
+          </div>
+        </section>
+
+        <div class="d-note">
+          <strong>Why grow-only.</strong> A ledger you can decrement is a ledger an
+          attacker can decrement. The set only ever gains members; a subject's budget
+          is spent for the lifetime of the session, and the only way to get a fresh
+          budget is a genuinely new session with a new identifier.
+        </div>
+      </section>
+
+      <!-- ====================================================== detectors -->
+      <section class="d-view" id="view-detectors">
+        <div class="d-view-head">
+          <h1>Detector coverage</h1>
+          <p>Probed live against this AWS account and cached for 60 seconds server-side,
+             so this is a real answer about what is reachable right now — not a claim
+             baked into the page.</p>
+        </div>
+
+        <section class="panel">
+          <h2>Tiers</h2>
+          <div id="tiers"></div>
+        </section>
+
+        <div class="d-note">
+          <strong><code>NOT_RUN</code> is not <code>FAIL</code>, and neither is
+          <code>OK</code>.</strong> A service this account is not entitled to use is
+          reported as a neutral <code>NOT_RUN</code> rather than a red error, because
+          the dangerous conflation is between "this tier ran and found nothing" and
+          "this tier never ran". A blind spot wearing the clean state's clothes is the
+          exact failure this product exists to prevent.
+        </div>
+      </section>
+
+      <!-- ========================================================= policy -->
+      <section class="d-view" id="view-policy">
+        <div class="d-view-head">
+          <h1>Policy</h1>
+          <p>Cedar source for all three planes. Saves are ETag-guarded against lost
+             updates and versioned on write; the next call picks up the new bundle with
+             no redeploy.</p>
+        </div>
+
+        <section class="panel policy-editor">
+          <h2>Cedar bundle <span class="etag" id="policy-etag"></span></h2>
+          <textarea id="policy-cedar" spellcheck="false" placeholder="Cedar policy text loads here..."></textarea>
+          <div class="policy-row">
+            <div class="field">
+              <label for="naka-key">X-Naka-Key</label>
+              <input type="password" id="naka-key" placeholder="shared secret" />
+            </div>
+            <button type="button" id="policy-save-btn">Save</button>
+            <button type="button" class="secondary" id="policy-reload-btn">Reload from server</button>
+          </div>
+          <div id="policy-error" class="inline-error" hidden></div>
+          <div id="policy-ok" class="inline-ok" hidden></div>
+        </section>
+
+        <div class="d-note">
+          <strong>Writes are authenticated, reads are not.</strong> The console is a
+          single-tenant operator surface: <code>PUT /policy</code> requires the shared
+          key, everything else is readable by anyone who can reach the Function URL.
+          Multi-tenant authentication is not implemented and is named as a gap rather
+          than implied to exist.
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

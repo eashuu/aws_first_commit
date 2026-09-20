@@ -154,7 +154,22 @@ def _fetch(cfg: Config) -> PolicyBundle | None:
     if _state.bundle is not None and _state.bundle.source == "control-plane" and _state.bundle.etag:
         headers["If-None-Match"] = _state.bundle.etag
 
-    req = urllib.request.Request(f"{cfg.control_plane_url}/policy", headers=headers)
+    # rstrip is load-bearing. deploy.ps1 writes CONTROL_PLANE_URL with the
+    # trailing slash the Function URL reports, so this produced "//policy",
+    # which app_control's router does not match ("/policy" != "//policy") and
+    # which therefore fell through to _serve_static and 404'd. The 404 raised,
+    # refresh() swallowed it, and the agent silently fell back to the policy
+    # baked into the package — for every request, forever.
+    #
+    # The effect was that the console's policy editor did not work at all:
+    # PUT /policy stored the new bundle, the control plane served it, and the
+    # data plane never read it. Nothing surfaced the failure because falling
+    # back to a known-good policy is exactly what refresh() is supposed to do
+    # when a fetch fails; it just had no way to say the fetch was failing
+    # every single time. The `policy_version` on every audit row read
+    # "package-fallback", which is the tell.
+    base = (cfg.control_plane_url or "").rstrip("/")
+    req = urllib.request.Request(f"{base}/policy", headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=cfg.timeout_policy_s) as resp:
             if resp.status == 304:

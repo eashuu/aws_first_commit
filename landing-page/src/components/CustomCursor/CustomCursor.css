@@ -1,0 +1,33 @@
+/* ═══════════════════════════════════════════════════════════════
+   CustomCursor.css — Global modern trailing cursor
+   ═══════════════════════════════════════════════════════════════ */
+
+/* To guarantee native cursor is hidden everywhere, we force it */
+* {
+  cursor: none !important;
+}
+
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  pointer-events: none; /* Must not block clicks! */
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  mix-blend-mode: screen; /* Modern sleek blend effect */
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  .custom-cursor {
+    display: none !important;
+  }
+  * {
+    cursor: auto !important;
+  }
+}

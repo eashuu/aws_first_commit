@@ -1,0 +1,70 @@
+/* ═══════════════════════════════════════════════════════════════
+   tokens.css — Single source of truth for all design tokens.
+   Import this first. Nothing else should define :root variables.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  color-scheme: dark;
+
+  /* ── Backgrounds ──────────────────────────────────────────── */
+  --bg-primary:   #020203; /* Threshold Black               */
+  --bg-secondary: #0A0A0C;
+  --bg-tertiary:  #101012;
+
+  /* ── Text Scale ───────────────────────────────────────────── */
+  --text-primary:   #F5F5F7;
+  --text-secondary: #A1A1A6;
+  --text-tertiary:  #6E6E73;
+
+  /* ── Borders ──────────────────────────────────────────────── */
+  --border-light: rgba(255, 255, 255, 0.06);
+  --border-med:   rgba(255, 255, 255, 0.12);
+
+  /* ── Cyber Metallic Rose Gold ─────────────────────────────── */
+  --accent-rose:      #DEA193;
+  --accent-rose-muted:#A6766C;
+  --accent-rose-glow: rgba(234, 168, 155, 0.12);
+  --accent-gradient:  linear-gradient(135deg, #E6B2A6 0%, #B87A6E 100%);
+
+  /* ── Semantic Status Colors (Old Money Muted) ─────────────── */
+  --color-success: #6B7B65;
+  --color-warn:    #B3997A;
+  --color-danger:  #8E5A5A;
+
+  /* ── Spacing ──────────────────────────────────────────────── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* ── Radii ────────────────────────────────────────────────── */
+  --radius-sm:   8px;
+  --radius-md:  14px;
+  --radius-lg:  22px;
+  --radius-full: 9999px;
+
+  /* ── Materials (Secondary Frosted Glass) ───────────────────── */
+  --glass-bg:      rgba(255, 255, 255, 0.05);
+  --glass-blur:    blur(8px) saturate(120%);
+  --glass-sheen:   linear-gradient(to left top, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 50%),
+                   linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+  --glass-shadow:  0 4px 20px rgba(0, 0, 0, 0.4),
+                   inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+                   inset 0 0 6px 2px rgba(255, 255, 255, 0.04);
+  --glass-shadow-primary:
+                   0 4px 20px rgba(0, 0, 0, 0.4),
+                   inset 0 0 0 1px rgba(222, 161, 147, 0.30),
+                   inset 0 0 6px 2px rgba(166, 118, 108, 0.22),
+                   inset 0 0 16px 2px rgba(166, 118, 108, 0.12);
+
+  /* ── Typography ───────────────────────────────────────────── */
+  --font-sans: 'Montserrat Variable', 'Montserrat', system-ui, -apple-system, sans-serif;
+  --leading-tight:  1.1;
+  --leading-snug:   1.4;
+  --leading-normal: 1.6;
+  --leading-loose:  1.75;
+}

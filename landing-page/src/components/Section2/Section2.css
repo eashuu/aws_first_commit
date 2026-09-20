@@ -1,0 +1,271 @@
+/* ═══════════════════════════════════════════════════════════════
+   Section2.css — The Problem: The Aggregation Attack.
+   Scope: .s2-* only.
+   Shared styles (section shell, eyebrow, section-headline,
+   token) live in global.css — not here.
+   Design: hairline-divided columns, no card containers.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Headline width + fade ────────────────────────────────────── */
+.s2-headline-wide {
+  max-width: 760px;
+  margin-bottom: var(--space-7);
+}
+
+.s2-headline__fade {
+  color: var(--text-tertiary);
+}
+
+/* ── Three-column container ───────────────────────────────────── */
+.s2-columns {
+  margin-bottom: var(--space-6);
+}
+
+/* Hairline rule — full section width, rose-gold tint */
+.s2-columns-rule {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(222, 161, 147, 0.08) 0%,
+    rgba(222, 161, 147, 0.3)  30%,
+    rgba(222, 161, 147, 0.3)  70%,
+    rgba(222, 161, 147, 0.08) 100%
+  );
+}
+
+/* Three-column grid — separated by 1px hairlines via gap:0 + borders */
+.s2-columns-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+}
+
+@media (max-width: 700px) {
+  .s2-columns-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Individual call column ───────────────────────────────────── */
+.s2-call {
+  padding: var(--space-6) var(--space-5);
+  border-right: 1px solid rgba(222, 161, 147, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  transition: opacity 0.2s ease;
+  will-change: opacity;
+}
+
+/* Microinteraction: Focus shift */
+.s2-columns-grid:hover .s2-call {
+  opacity: 0.4;
+}
+
+.s2-columns-grid .s2-call:hover {
+  opacity: 1;
+}
+
+/* Base transitions for the text elements to ensure smooth morphing */
+.s2-call-fn,
+.s2-call-session,
+.s2-call-field-value,
+.s2-call-status {
+  transition: letter-spacing 0.3s cubic-bezier(0.2, 0, 0, 1), opacity 0.3s ease;
+}
+
+/* The actual spacing shifts on hover */
+.s2-columns-grid .s2-call:hover .s2-call-fn {
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+}
+
+.s2-columns-grid .s2-call:hover .s2-call-session {
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+
+.s2-columns-grid .s2-call:hover .s2-call-field-value {
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+}
+
+.s2-columns-grid .s2-call:hover .s2-call-status {
+  letter-spacing: 0.16em;
+  opacity: 0.7;
+}
+
+.s2-call:last-child {
+  border-right: none;
+}
+
+@media (max-width: 700px) {
+  .s2-call {
+    border-right: none;
+    border-bottom: 1px solid rgba(222, 161, 147, 0.12);
+  }
+  .s2-call:last-child {
+    border-bottom: none;
+  }
+}
+
+/* Column 3 — the blocked state */
+.s2-call--blocked {
+  background: rgba(222, 161, 147, 0.025);
+}
+
+/* ── Call header ──────────────────────────────────────────────── */
+.s2-call-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.s2-call-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-rose);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  border: none;
+  background:
+    var(--glass-sheen),
+    var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow-primary);
+  white-space: nowrap;
+}
+
+.s2-call-fn {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  letter-spacing: 0;
+}
+
+/* ── Session chip ─────────────────────────────────────────────── */
+.s2-call-session {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  letter-spacing: 0.04em;
+}
+
+/* ── Fields ───────────────────────────────────────────────────── */
+.s2-call-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.s2-call-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.s2-call-field-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.s2-call-field-value {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* ── Budget bar ───────────────────────────────────────────────── */
+.s2-budget-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.s2-budget-label {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  width: 36px;
+}
+
+.s2-budget-track {
+  flex: 1;
+  height: 2px;
+  background: var(--border-light);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.s2-budget-fill {
+  height: 100%;
+  border-radius: 99px;
+  /* Default: fills partially — green-ish progress */
+  background: linear-gradient(to right, rgba(100, 200, 130, 0.6), rgba(100, 200, 130, 0.9));
+}
+
+/* Full budget (column 3) — rose-gold warning fill */
+.s2-budget-fill--full {
+  background: var(--accent-gradient);
+}
+
+/* ── Status label ─────────────────────────────────────────────── */
+.s2-call-status {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.s2-call-status--ok {
+  color: rgba(100, 200, 130, 0.7);
+}
+
+.s2-call-status--blocked {
+  color: var(--accent-rose);
+}
+
+/* ── Caption ──────────────────────────────────────────────────── */
+.s2-caption {
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.s2-caption-text {
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+  line-height: var(--leading-normal);
+  max-width: 600px;
+}
+
+.s2-caption-accent {
+  color: var(--text-secondary);
+}
+
+.s2-caption-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  letter-spacing: 0.04em;
+}
+
+.s2-caption-sep {
+  color: var(--border-med);
+}

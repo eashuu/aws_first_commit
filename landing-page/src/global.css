@@ -1,0 +1,253 @@
+/* ═══════════════════════════════════════════════════════════════
+   global.css — Reset, body, typography, grain, accessibility.
+   No layout, no components. Scope: document-level only.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Reset ────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Document ─────────────────────────────────────────────────── */
+html {
+  /* Dynamic viewport: fixes the 100vh / Safari address-bar trap */
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: var(--leading-normal);
+  min-height: 100%;
+  overflow-x: hidden;
+
+  /* Sub-pixel rendering — critical for premium dark surfaces */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Typography Scale (Apple §15) ─────────────────────────────── */
+/* Tracking is size-specific. Large text: negative. Body: near 0. */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em; /* Tighten headings as they grow */
+}
+
+p {
+  line-height: var(--leading-normal);
+  letter-spacing: 0.01em;
+}
+
+/* ── Grain Texture Overlay ────────────────────────────────────── */
+/* At 2.8% opacity: invisible to the eye, but the brain perceives  */
+/* the surface as tactile. Matte glass vs flat digital black.      */
+.grain-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  background-repeat: repeat;
+}
+
+/* ── Layout Utilities ─────────────────────────────────────────── */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+}
+
+/* ── Accessibility ────────────────────────────────────────────── */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-rose);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Reduced Motion (Apple §14) ───────────────────────────────── */
+/* NOT a nuclear disable. Reduced motion = cross-fade, not removal.*/
+/* Slides, springs, and parallax become short opacity transitions.  */
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe-transform {
+    transition: opacity 200ms ease !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+/* Framer Motion respects this natively via useReducedMotion() hook. */
+/* The CSS below covers plain CSS animations as a safety net.        */
+@media (prefers-reduced-motion: reduce) {
+  .animated {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Glass Surface & Pill Primitives ─────────────────────────── */
+.glass {
+  background:
+    var(--glass-sheen),
+    var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-pill {
+  background:
+    var(--glass-sheen),
+    var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: none;
+  border-radius: var(--radius-full);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-pill--primary {
+  background:
+    var(--glass-sheen),
+    var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: none;
+  border-radius: var(--radius-full);
+  box-shadow: var(--glass-shadow-primary);
+}
+
+/* ── Reduced Transparency (Apple §14) ────────────────────────── */
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-pill,
+  .glass-pill--primary,
+  .s3-prompt,
+  .s3-entity-tag,
+  .s3-chapter-badge,
+  .s2-call-badge {
+    background: var(--bg-secondary) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Shared Landing Section Primitives
+   These classes are used across Section2, Section3, etc.
+   They live here — NOT in per-section CSS files — so they are
+   defined once and cannot drift apart between sections.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Section shell ────────────────────────────────────────────── */
+/* All content sections below the hero share this base shell.     */
+.section {
+  position: relative;
+  padding: calc(var(--space-8) * 1.5) var(--space-5);
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+/* Inner max-width wrapper — centers content, consistent across sections */
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── Shared eyebrow ───────────────────────────────────────────── */
+/* Apple §15: ultra-small text needs positive tracking.           */
+.eyebrow {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--accent-rose-muted);
+  margin-bottom: var(--space-3);
+}
+
+/* ── Shared section headline ──────────────────────────────────── */
+/* Apple §15: large text gets negative tracking.                  */
+.section-headline {
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+}
+
+/* ── Shared section subline / supporting text ─────────────────── */
+.section-subline {
+  font-size: 0.93rem;
+  color: var(--text-secondary);
+  line-height: var(--leading-normal);
+  max-width: 580px;
+  margin-bottom: var(--space-7);
+}
+
+/* ── Shared redaction token ───────────────────────────────────── */
+/* The rose-gold placeholder that represents a withheld field.    */
+/* Used in both Section2 (static) and Section3 (animated).        */
+.token {
+  display: inline-block;
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.75rem;
+  color: var(--accent-rose);
+  background: rgba(222, 161, 147, 0.07);
+  border: 1px solid rgba(222, 161, 147, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease, background 0.2s ease;
+  will-change: transform;
+}
+
+.token:hover {
+  transform: scale(1.02);
+  background: rgba(222, 161, 147, 0.12);
+  box-shadow: 0 0 12px rgba(222, 161, 147, 0.15);
+}
+
+/* ── Shared monospace code block ──────────────────────────────── */
+.code-block {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.75rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* Code syntax — keyword, string, operator, comment, highlighted value */
+.code-kw      { color: var(--accent-rose-muted); }
+.code-str     { color: #8CA9C5; }   /* muted blue — Cedar string / data */
+.code-op      { color: var(--text-tertiary); }
+.code-comment { color: var(--text-tertiary); }
+.code-warn    { color: var(--color-warn); } /* pre-redaction plaintext highlight */
+
+/* Highlighted policy line — the line that stopped the machine */
+.code-line-highlight {
+  display: block;
+  background: rgba(222, 161, 147, 0.06);
+  border-left: 2px solid var(--accent-rose);
+  margin: 0 calc(-1 * var(--space-4));
+  padding: 2px var(--space-4);
+  color: var(--text-primary);
+}

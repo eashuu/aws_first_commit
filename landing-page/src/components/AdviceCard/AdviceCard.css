@@ -1,0 +1,219 @@
+/* ═══════════════════════════════════════════════════════════════
+   AdviceCard.css — Award-winning advice component.
+   Deep space materiality + frosted glass + hairline borders.
+   All motion is in TSX (framer-motion). CSS only handles
+   static visual layers.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Shell ────────────────────────────────────────────────────── */
+.advice-card {
+  --card-radius: var(--radius-lg);
+  --card-padding: var(--space-5);
+  --card-max-w: 420px;
+
+  position: relative;
+  max-width: var(--card-max-w);
+  width: 100%;
+  padding: var(--card-padding);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+
+  /* Deep frosted glass material */
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.055) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    ),
+    rgba(10, 10, 12, 0.72);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+
+  /* Hairline border — inset so it overlaps the bg */
+  box-shadow:
+    /* Outer ambient depth */
+    0 8px 40px rgba(0, 0, 0, 0.55),
+    0 2px 8px  rgba(0, 0, 0, 0.35),
+    /* Hairline top-left sheen */
+    inset 1px 1px 0 rgba(255, 255, 255, 0.1),
+    /* Full border ring */
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+    /* Rose-gold floor-glow */
+    inset 0 -1px 0 rgba(222, 161, 147, 0.18);
+
+  cursor: default;
+  will-change: transform;
+  isolation: isolate;
+}
+
+/* ── Mouse Spotlight overlay ─────────────────────────────────── */
+.advice-card__spotlight {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  /* transition handled by framer-motion spring */
+}
+
+/* ── All content sits above the spotlight ───────────────────── */
+.advice-card > *:not(.advice-card__spotlight) {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Header row ──────────────────────────────────────────────── */
+.advice-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.advice-card__label-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ── Icon ────────────────────────────────────────────────────── */
+.advice-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--accent-rose);
+  flex-shrink: 0;
+  /* Subtle drop-shadow glow */
+  filter: drop-shadow(0 0 4px rgba(222, 161, 147, 0.55));
+}
+
+/* ── Label chip ──────────────────────────────────────────────── */
+.advice-card__label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-rose);
+  opacity: 0.85;
+}
+
+/* ── Dismiss button ──────────────────────────────────────────── */
+.advice-card__dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-tertiary);
+  opacity: 0.6;
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease;
+  flex-shrink: 0;
+}
+
+.advice-card__dismiss svg {
+  width: 12px;
+  height: 12px;
+}
+
+.advice-card__dismiss:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text-secondary);
+}
+
+.advice-card__dismiss:focus-visible {
+  outline: 2px solid var(--accent-rose);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+/* ── Title ───────────────────────────────────────────────────── */
+.advice-card__title {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-snug);
+  margin-bottom: var(--space-2);
+}
+
+/* ── Body ────────────────────────────────────────────────────── */
+.advice-card__body {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: var(--leading-normal);
+  letter-spacing: 0.005em;
+  margin-bottom: 0;
+}
+
+/* ── Expandable detail ───────────────────────────────────────── */
+.advice-card__detail {
+  overflow: hidden;
+}
+
+.advice-card__detail-text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+  line-height: var(--leading-normal);
+  letter-spacing: 0.005em;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-light);
+  margin-top: var(--space-3);
+}
+
+/* ── Expand button ───────────────────────────────────────────── */
+.advice-card__expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+  border: none;
+  background: none;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent-rose-muted);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.8;
+  transition: opacity 150ms ease, color 150ms ease;
+}
+
+.advice-card__expand-btn:hover {
+  opacity: 1;
+  color: var(--accent-rose);
+}
+
+.advice-card__expand-btn:focus-visible {
+  outline: 2px solid var(--accent-rose);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.advice-card__expand-chevron {
+  display: inline-block;
+  font-size: 10px;
+  line-height: 1;
+  transition: transform 300ms ease;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .advice-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .advice-card__spotlight {
+    display: none;
+  }
+}

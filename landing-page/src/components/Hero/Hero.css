@@ -1,0 +1,167 @@
+/* ═══════════════════════════════════════════════════════════════
+   Hero.css — Layout for the fullscreen hero split section only.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Section Shell ────────────────────────────────────────────── */
+.hero-section {
+  position: relative;
+  width: 100%;
+  min-height: 100dvh; /* Dynamic viewport: accounts for mobile address bar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  padding: var(--space-5);
+  overflow: hidden;
+}
+
+/* ── Split Grid ───────────────────────────────────────────────── */
+/* Mobile-first: stacks vertically. Desktop: two columns.         */
+.hero-split {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-7);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .hero-split {
+    flex-direction: row;
+    gap: var(--space-6);
+  }
+
+  /* Left is slightly wider (flex: 1.2) to optically balance    */
+  /* the concentrated logo mass against the wide text block.    */
+  .hero-split__left {
+    flex: 1.2;
+    display: flex;
+    justify-content: center;
+  }
+
+  .hero-split__right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+/* ── Logo Stack ───────────────────────────────────────────────── */
+.hero-logo-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.hero-mark {
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em; /* Optical centering under wide tracking */
+  text-transform: uppercase;
+  background: linear-gradient(
+    to right,
+    var(--text-primary) 0%,
+    var(--accent-rose-muted) 33%,
+    #ffffff 50%,
+    var(--text-primary) 66%,
+    var(--accent-rose-muted) 100%
+  );
+  background-size: 300% auto;
+  background-position: 0% center;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  transition: letter-spacing 0.3s cubic-bezier(0.2, 0, 0, 1), background-position 0s;
+  will-change: letter-spacing, background-position;
+}
+
+.hero-mark:hover {
+  letter-spacing: 0.55em;
+  animation: hero-sweep 1s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+@keyframes hero-sweep {
+  0% { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+
+/* ── Right Column Content ─────────────────────────────────────── */
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-6);
+  max-width: 480px;
+}
+
+@media (min-width: 768px) {
+  .hero-content {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+/* ── Description Text ─────────────────────────────────────────── */
+.hero-hook {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: var(--leading-normal);
+}
+
+.hero-desc {
+  font-size: 0.975rem;
+  color: var(--text-secondary);
+  line-height: var(--leading-loose);
+  margin-top: -12px; /* Pulls desc up against the hook for visual grouping */
+}
+
+/* ── Button Group ─────────────────────────────────────────────── */
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+@media (min-width: 768px) {
+  .hero-actions {
+    flex-direction: row;
+    width: auto;
+  }
+}
+
+/* ── Rose-Gold Divider ────────────────────────────────────────── */
+/* Mobile: horizontal rule. Desktop: vertical drawn line.         */
+.hero-divider {
+  flex-shrink: 0;
+  width: 64px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(222, 161, 147, 0)   0%,
+    rgba(222, 161, 147, 0.8) 50%,
+    rgba(222, 161, 147, 0)   100%
+  );
+}
+
+@media (min-width: 768px) {
+  .hero-divider {
+    width: 1px;
+    height: 160px;
+    background: linear-gradient(
+      to bottom,
+      rgba(222, 161, 147, 0)   0%,
+      rgba(222, 161, 147, 0.8) 50%,
+      rgba(222, 161, 147, 0)   100%
+    );
+  }
+}

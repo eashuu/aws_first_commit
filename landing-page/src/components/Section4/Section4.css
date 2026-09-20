@@ -1,0 +1,172 @@
+/* ─────────────────────────────────────────────────────────────────
+   Section 4 — Architecture topology
+   ───────────────────────────────────────────────────────────────── */
+
+/* ── Layout ─────────────────────────────────────────────────────── */
+.s4-section {
+  padding-bottom: calc(var(--space-8) * 1.5);
+}
+
+.s4-diagram {
+  margin-top: var(--space-7);
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 40px 20px;
+}
+
+.s4-svg {
+  display: block;
+  min-width: 680px; /* keep readable on smaller viewports */
+}
+
+/* ── Zone labels ─────────────────────────────────────────────────── */
+.s4-zone-lbl {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+}
+
+/* ── Node labels ─────────────────────────────────────────────────── */
+.s4-nlbl {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.025em;
+  pointer-events: none;
+  user-select: none;
+}
+
+.s4-nsub {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Edge labels ─────────────────────────────────────────────────── */
+.s4-elbl {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 8px;
+  fill: rgba(255, 255, 255, 0.28);
+  letter-spacing: 0.06em;
+  pointer-events: none;
+  user-select: none;
+  /* animation controlled below */
+  opacity: 0;
+  transition: opacity 0.35s ease var(--d, 0s);
+}
+
+/* ── Vault isolation box ────────────────────────────────────────── */
+.s4-vault-box {
+  opacity: 0;
+  transition: opacity 0.5s ease 0.9s;
+}
+
+/* ── Node entrance ──────────────────────────────────────────────── */
+.s4-node {
+  opacity: 0;
+  transition: opacity 0.3s ease var(--nd, 0s);
+}
+
+/* ── Edge animation — solid edges: stroke-dashoffset draw-on ────── */
+.s4-edge--flow,
+.s4-edge--bus,
+.s4-edge--vault {
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  opacity: 0;
+}
+
+/* ── Edge animation — dashed edges: opacity only ───────────────── */
+.s4-edge--cedar,
+.s4-edge--return {
+  opacity: 0;
+  transition: opacity 0.45s ease var(--d, 0s);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Entered state — SVG has reached viewport
+   ───────────────────────────────────────────────────────────────── */
+.s4-svg--entered .s4-node {
+  opacity: 1;
+}
+
+.s4-svg--entered .s4-edge--flow {
+  animation: s4DrawLine 0.65s cubic-bezier(0.4, 0, 0.2, 1) forwards var(--d, 0s);
+}
+
+.s4-svg--entered .s4-edge--bus {
+  animation: s4DrawLine 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards var(--d, 0s);
+}
+
+.s4-svg--entered .s4-edge--vault {
+  animation: s4DrawLine 0.70s cubic-bezier(0.4, 0, 0.2, 1) forwards var(--d, 0s);
+}
+
+.s4-svg--entered .s4-edge--cedar,
+.s4-svg--entered .s4-edge--return {
+  opacity: 1;
+}
+
+.s4-svg--entered .s4-elbl {
+  opacity: 1;
+}
+
+.s4-svg--entered .s4-vault-box {
+  opacity: 1;
+}
+
+@keyframes s4DrawLine {
+  0%   { stroke-dashoffset: 2000; opacity: 0; }
+  8%   { opacity: 1; }
+  100% { stroke-dashoffset: 0;    opacity: 1; }
+}
+
+/* ── Three key callouts ─────────────────────────────────────────── */
+.s4-callouts {
+  margin-top: var(--space-7);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+  border-top: 1px solid var(--border-light);
+  padding-top: var(--space-5);
+}
+
+.s4-callout {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.s4-callout-n {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.65rem;
+  color: var(--accent-rose-muted);
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+  padding-top: 0.15em;
+}
+
+.s4-callout-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+  margin-bottom: var(--space-2);
+  line-height: 1.4;
+}
+
+.s4-callout-body {
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  line-height: 1.65;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .s4-callouts {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+}

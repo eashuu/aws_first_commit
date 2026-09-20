@@ -1,0 +1,113 @@
+/* ═══════════════════════════════════════════════════════════════
+   Button.css — All button styles. Scope: .btn only.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Base ─────────────────────────────────────────────────────── */
+.btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 10px 24px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+  border-radius: var(--radius-full);
+  border: none;
+  outline: none;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  text-decoration: none;
+
+  /* Frosted glass material */
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+
+  /* Apple §1 / Material 3: Snappy 200ms interactions on compositor-only properties. */
+  transition:
+    transform  0.2s cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+/* ── Glass Edge Specular Highlights ──────────────────────────── */
+.btn::before,
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  border-radius: inherit;
+}
+
+/* Corner reflection — light from top-left */
+.btn::before {
+  background: linear-gradient(
+    to left top,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0)    50%
+  );
+}
+
+/* Top sheen — diffuse ambient */
+.btn::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0)    100%
+  );
+}
+
+/* ── States ───────────────────────────────────────────────────── */
+.btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow:
+    inset 0 4px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  transition-duration: 80ms; /* Snap on press, spring on release */
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent-rose);
+  outline-offset: 4px;
+}
+
+/* ── Variants ─────────────────────────────────────────────────── */
+
+/* Primary: Rose-gold inner luminance rim */
+.btn-primary {
+  box-shadow: var(--glass-shadow-primary);
+}
+
+.btn-primary:hover {
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px  rgba(222, 161, 147, 0.45),
+    inset 0 0 8px 2px rgba(166, 118, 108, 0.3),
+    inset 0 0 20px 2px rgba(166, 118, 108, 0.18);
+}
+
+/* Secondary: Pure monochrome rim */
+.btn-secondary {
+  box-shadow: var(--glass-shadow);
+}
+
+.btn-secondary:hover {
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px  rgba(255, 255, 255, 0.20),
+    inset 0 0 8px 2px rgba(255, 255, 255, 0.07);
+}

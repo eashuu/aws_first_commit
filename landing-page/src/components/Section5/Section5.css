@@ -1,0 +1,256 @@
+/* ─────────────────────────────────────────────────────────────────
+   Section 5 — Per-call nine-step breakdown
+   ───────────────────────────────────────────────────────────────── */
+
+/* ── Section shell override ─────────────────────────────────────── */
+.s5-section {
+  padding-bottom: calc(var(--space-8) * 2);
+}
+
+/* ── Timeline — the entire step list ───────────────────────────── */
+/*
+   Layout math (explicit, no hacks):
+   │ spine (1px) │ 24px gap │ [num 44px] │ 20px gap │ [content] │
+   The spine is rendered as a ::before on .s5-timeline.
+   The step number and content share a CSS grid within each step.
+   The spine sits at left: 0 on .s5-timeline.
+   Steps are padded left by SPINE_GAP (25px).
+*/
+.s5-timeline {
+  position: relative;
+  margin-top: var(--space-7);
+  padding-left: 28px; /* clears the spine track and leaves space for connectors */
+}
+
+/* ── Spine track — static bg line ───────────────────────────────── */
+.s5-spine-track {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-light);
+  border-radius: 1px;
+}
+
+/* ── Spine fill — scroll-driven rose-gold ───────────────────────── */
+/* Physical 1:1 scroll progress via scaleY.
+   Positioned absolute: top 0, left 0, width 100%, height 100%.
+   Smoothly grows as user scrolls from Step 01 to the terminal note. */
+.s5-spine-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border-radius: 1px;
+  transform-origin: top center;
+  background: linear-gradient(
+    to bottom,
+    rgba(222, 161, 147, 0.15) 0%,
+    rgba(222, 161, 147, 0.75) 50%,
+    rgba(222, 161, 147, 0.40) 100%
+  );
+}
+
+/* ── Steps container ────────────────────────────────────────────── */
+.s5-steps {
+  position: relative;
+}
+
+/* ── Single step — two-column grid ─────────────────────────────── */
+/*
+   Column 1: 48px for the step number. The number is right-aligned
+             so it reads as a tight pair with the content.
+   Column 2: remaining width for all step content.
+*/
+.s5-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  column-gap: var(--space-4);
+  padding-bottom: var(--space-7);
+  align-items: start;
+}
+
+/* Connector hairline bridging from spine track (at left: -28px) into the step */
+.s5-step::before {
+  content: '';
+  position: absolute;
+  left: -28px;
+  top: 18px;
+  width: 18px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(222, 161, 147, 0.40) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  transition: background 0.2s ease, width 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.s5-step:hover::before {
+  width: 24px;
+  background: linear-gradient(
+    to right,
+    rgba(222, 161, 147, 0.8) 0%,
+    rgba(222, 161, 147, 0.3) 100%
+  );
+}
+
+/* Step number — right-aligned so it reads as a paired label */
+.s5-step-num {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent-rose);
+  opacity: 0.55;
+  letter-spacing: -0.02em;
+  text-align: right;
+  /* Optical baseline alignment with first line of step content */
+  padding-top: 0.08em;
+}
+
+/* ── Step content ───────────────────────────────────────────────── */
+.s5-step-content {
+  border-top: 1px solid var(--border-light);
+  padding-top: var(--space-4);
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), border-color 0.2s ease;
+  will-change: transform;
+}
+
+.s5-step:hover .s5-step-content {
+  transform: translateX(4px);
+  border-color: rgba(222, 161, 147, 0.2);
+}
+
+.s5-step-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.s5-step-name {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* AWS / service badge chip */
+.s5-badge {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-light);
+  padding: 0.12em 0.55em;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.s5-step-body {
+  font-size: 0.83rem;
+  line-height: 1.72;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-4);
+  max-width: 66ch;
+}
+
+/* Code / data-shape annotation */
+.s5-code {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.7rem;
+  line-height: 1.72;
+  color: var(--text-tertiary);
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid rgba(255, 255, 255, 0.07);
+  padding: var(--space-3) var(--space-4);
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre;
+  -webkit-overflow-scrolling: touch;
+}
+
+.s5-code code {
+  font: inherit;
+}
+
+/* ── Terminal note ──────────────────────────────────────────────── */
+.s5-terminal {
+  position: relative;
+  padding-left: calc(48px + var(--space-4)); /* align with content column */
+  margin-top: var(--space-5);
+}
+
+.s5-terminal::before {
+  content: '';
+  position: absolute;
+  left: -28px;
+  top: 50%;
+  width: 20px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(222, 161, 147, 0.40) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+}
+
+.s5-terminal-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  border: 1px solid var(--border-light);
+  padding: var(--space-3) var(--space-5);
+}
+
+.s5-terminal-label {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+.s5-terminal-sep {
+  color: var(--border-med);
+}
+
+.s5-terminal-value {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.7rem;
+  color: var(--accent-rose);
+  opacity: 0.8;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .s5-timeline {
+    padding-left: 18px;
+  }
+
+  .s5-step {
+    grid-template-columns: 36px 1fr;
+    column-gap: var(--space-3);
+  }
+
+  .s5-step-num {
+    font-size: 1.4rem;
+  }
+
+  .s5-terminal {
+    padding-left: calc(36px + var(--space-3));
+  }
+
+  .s5-terminal-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+}

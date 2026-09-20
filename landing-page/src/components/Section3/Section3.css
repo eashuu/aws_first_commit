@@ -1,0 +1,489 @@
+/* ═══════════════════════════════════════════════════════════════
+   Section3.css — Full workflow timeline animation.
+   Scope: .s3-* only.
+   Shared styles (section shell, eyebrow, section-headline,
+   section-subline, token) live in global.css — NOT here.
+   Both sections use .section-inner (1100px) for consistent
+   left/right alignment across the page.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Section shell override ───────────────────────────────────── */
+/* The shared .section gives padding-bottom: var(--space-8).      */
+/* Section3 needs extra bottom padding to breathe after the footer.*/
+.s3-section {
+  padding-bottom: calc(var(--space-8) * 1.5);
+}
+
+
+/* ── Prompt Box — the entry point ────────────────────────────── */
+.s3-prompt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background:
+    var(--glass-sheen),
+    var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: var(--space-4) var(--space-6);
+  margin-bottom: var(--space-7);
+  position: relative;
+  overflow: hidden;
+
+  /* Frosted glass specular rim and ambient shadow matching .btn-secondary */
+  box-shadow: var(--glass-shadow);
+
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease, background 0.2s ease;
+  will-change: transform, box-shadow;
+}
+
+.s3-prompt:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 8px 28px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px  rgba(255, 255, 255, 0.20),
+    inset 0 0 8px 2px rgba(255, 255, 255, 0.07);
+}
+
+@media (max-width: 600px) {
+  .s3-prompt {
+    border-radius: var(--radius-lg);
+    padding: var(--space-4) var(--space-5);
+  }
+}
+
+.s3-prompt::before {
+  content: '→';
+  font-size: 0.85rem;
+  color: var(--accent-rose-muted);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.s3-prompt-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-tertiary);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.s3-prompt-text {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* ── Timeline Container ───────────────────────────────────────── */
+.s3-timeline {
+  position: relative;
+  padding-left: 28px; /* Space for the spine */
+}
+
+/* The vertical spine — drawn by JS via scaleY on a child div */
+.s3-spine-track {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-light);
+  border-radius: 1px;
+}
+
+/* The growing rose-gold fill — animated via Framer Motion */
+.s3-spine-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border-radius: 1px;
+  transform-origin: top center;
+  background: linear-gradient(
+    to bottom,
+    rgba(222, 161, 147, 0.15) 0%,
+    rgba(222, 161, 147, 0.7)  40%,
+    rgba(222, 161, 147, 0.4)  100%
+  );
+}
+
+/* ── Chapter ──────────────────────────────────────────────────── */
+.s3-chapter {
+  margin-bottom: var(--space-7);
+  position: relative;
+}
+
+/* The node-wrap is a ScrollEntry (motion.div) containing both the
+   node circle and the chapter header. It scrolls in together.     */
+.s3-chapter-node-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  position: relative;
+}
+
+/* Chapter node — the bright circle on the spine */
+.s3-chapter-node {
+  position: absolute;
+  left: -33px; /* centers on spine: -(padding-left 28 + spine center 1 + half node 6 - 2) */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--bg-primary);
+  border: 2px solid var(--accent-rose);
+  box-shadow: 0 0 8px rgba(222, 161, 147, 0.4);
+  z-index: 2;
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.s3-chapter-node-wrap:hover .s3-chapter-node {
+  transform: translateY(-50%) scale(1.3);
+  box-shadow: 0 0 16px rgba(222, 161, 147, 0.8);
+  background: var(--accent-rose);
+}
+
+/* Chapter header row */
+.s3-chapter-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.s3-chapter-badge {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  border: none;
+  background:
+    var(--glass-sheen),
+    var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow-primary);
+  color: var(--accent-rose);
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.s3-chapter-call {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+}
+
+.s3-chapter-call-fn { color: var(--text-secondary); }
+.s3-chapter-call-arg { color: var(--accent-rose-muted); }
+
+/* ── Step Row ─────────────────────────────────────────────────── */
+.s3-step {
+  position: relative; /* Required for ::before connector to anchor correctly */
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+  min-height: 32px;
+}
+
+/* Step connector — bridges from spine center (at -27px from step left) into the label area.
+   Rose-gold gradient: bright at spine end, fades toward the content. */
+.s3-step::before {
+  content: '';
+  position: absolute;
+  left: -27px;
+  top: 14px;
+  width: 22px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(222, 161, 147, 0.35) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+}
+
+.s3-step-type {
+  flex-shrink: 0;
+  width: 88px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 0;
+  text-align: right;
+  color: var(--text-tertiary);
+  padding-top: 6px; /* optical align with content */
+}
+
+/* Type-specific colors */
+.s3-step-type--auth    { color: var(--color-success); }
+.s3-step-type--deny    { color: var(--color-danger); }
+.s3-step-type--redact  { color: var(--accent-rose); }
+.s3-step-type--rehydrate { color: #8CA9C5; } /* muted blue — reversal */
+.s3-step-type--ledger  { color: var(--text-tertiary); }
+
+/* Step content */
+.s3-step-content {
+  flex: 1;
+  font-size: 0.82rem;
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+  padding-top: 4px;
+}
+
+/* ── Auth Decision Chip ───────────────────────────────────────── */
+.s3-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+.s3-chip--allow {
+  color: var(--color-success);
+  background: rgba(107, 123, 101, 0.12);
+  border: 1px solid rgba(107, 123, 101, 0.25);
+}
+
+.s3-chip--deny {
+  color: var(--color-danger);
+  background: rgba(142, 90, 90, 0.12);
+  border: 1px solid rgba(142, 90, 90, 0.25);
+}
+
+/* ── Code Response Block ──────────────────────────────────────── */
+.s3-code {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  margin-top: var(--space-2);
+  overflow-x: auto;
+}
+
+.s3-code-key    { color: var(--text-tertiary); }
+.s3-code-val    { color: var(--text-primary); }
+.s3-code-str    { color: #8CA9C5; }
+.s3-code-marked { color: var(--color-warn); } /* pre-redaction highlight */
+
+/* ── Entity Detect Row ────────────────────────────────────────── */
+.s3-entities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.s3-entity-tag {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  border: none;
+  background:
+    var(--glass-sheen),
+    var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+    inset 0 0 4px 1px rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+}
+
+/* ── Q2 Auth Field Grid ───────────────────────────────────────── */
+.s3-field-auths {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: var(--space-2);
+}
+
+.s3-field-auth-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.72rem;
+}
+
+.s3-field-auth-row span:first-child {
+  color: var(--text-tertiary);
+  width: 180px;
+  flex-shrink: 0;
+}
+
+/* ── Ledger Meter ─────────────────────────────────────────────── */
+.s3-ledger {
+  margin-top: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.s3-ledger-bar-wrap {
+  flex: 1;
+  min-width: 120px;
+}
+
+.s3-ledger-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  margin-bottom: 5px;
+}
+
+.s3-ledger-track {
+  height: 3px;
+  background: var(--border-light);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.s3-ledger-fill {
+  height: 100%;
+  border-radius: 99px;
+}
+
+.s3-ledger-fill--full {
+  background: var(--accent-gradient);
+}
+
+.s3-ledger-fill--unchanged {
+  background: rgba(142, 90, 90, 0.4); /* danger-tinted when "full and frozen" */
+}
+
+.s3-ledger-types {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.s3-ledger-type {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.64rem;
+  color: var(--text-secondary);
+  background: var(--border-light);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* ── The Redaction Collapse ───────────────────────────────────── */
+/* Apple §3: the most dramatic moment on the page.               */
+/* Two overlaid spans: plaintext exits, token arrives.           */
+.s3-collapse-wrap {
+  position: relative;
+  display: inline-block;
+  height: 1.4em;
+  vertical-align: middle;
+  min-width: 160px;
+}
+
+/* The actual redacted token */
+.s3-token {
+  display: inline-block;
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.75rem;
+  color: var(--accent-rose);
+  background: rgba(222, 161, 147, 0.07);
+  border: 1px solid rgba(222, 161, 147, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  letter-spacing: 0.02em;
+}
+
+/* ── Rehydration Step ─────────────────────────────────────────── */
+.s3-rehydrate-flow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+
+.s3-rehydrate-arrow {
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+}
+
+.s3-rehydrate-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  background: var(--border-light);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* ── Vault Note ───────────────────────────────────────────────── */
+.s3-vault-note {
+  margin-top: var(--space-3);
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+  border-left: 2px solid var(--border-light);
+  padding-left: var(--space-3);
+}
+
+/* ── Bottom Counter ───────────────────────────────────────────── */
+.s3-footer {
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  align-items: baseline;
+}
+
+.s3-footer-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.s3-footer-stat-label {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-tertiary);
+}
+
+.s3-footer-stat-val {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.s3-footer-note {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+  align-self: center;
+}

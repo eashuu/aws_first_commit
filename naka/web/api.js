@@ -68,6 +68,23 @@ export const api = {
     return asJson(resp);
   },
 
+  // Endpoint plane. Devices enrol with the operator key and then report
+  // their own decisions; this read is what turns the console's Endpoint
+  // view from an honest empty state into a live fleet.
+  async fleet() {
+    const resp = await fetch(`${CONTROL_URL}/endpoint/fleet`);
+    return asJson(resp);
+  },
+
+  async enrollDevice({ hostname, os, user, agent_version }, key) {
+    const resp = await fetch(`${CONTROL_URL}/endpoint/enroll`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(key ? { "X-Naka-Key": key } : {}) },
+      body: JSON.stringify({ hostname, os, user, agent_version }),
+    });
+    return asJson(resp);
+  },
+
   async session(id) {
     const resp = await fetch(`${CONTROL_URL}/session/${encodeURIComponent(id)}`);
     return asJson(resp);

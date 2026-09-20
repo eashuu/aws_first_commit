@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 
 import cedarpy
 
+import endpoint
 import policy
 from config import CFG
 
@@ -436,6 +437,15 @@ def _serve_static(path: str) -> dict:
     rel = (path or "/").lstrip("/") or "index.html"
     web_root = os.path.normpath(_WEB_DIR)
     full = os.path.normpath(os.path.join(web_root, rel))
+
+    # Extensionless pretty URLs: /pricing serves pricing.html. Resolved only
+    # after the containment check below would have passed for the same base,
+    # so this cannot be used to escape the web root — os.path.splitext on a
+    # traversal attempt still leaves the "..", which the check rejects.
+    if not os.path.isfile(full) and not os.path.splitext(rel)[1]:
+        candidate = full + ".html"
+        if os.path.isfile(candidate):
+            full = candidate
     # A bare startswith(web_root) is satisfied by a *sibling* directory whose
     # name merely starts with the same characters (e.g. "web-internal") —
     # the trailing separator makes this an actual containment check, not a
@@ -490,6 +500,46 @@ def lambda_handler(event: dict, context) -> dict:
         return _route_put_policy(event)
     if path == "/diag" and method == "GET":
         return _route_diag()
+
+    # ---- endpoint plane -------------------------------------------------
+    # The agent itself runs on a laptop and cannot run on AWS (see
+    # endpoint.py). These three routes are its control plane, and they are
+    # what make the console's Endpoint view show a real fleet instead of the
+    # honest empty state it showed while they did not exist.
+    if path == "/endpoint/enroll" and method == "POST":
+        key = _header(event, "X-Naka-Key")
+        if not CFG.naka_key or key != CFG.naka_key:
+            return _error(401, "BAD_KEY", "enrolling a device requires the operator X-Naka-Key header")
+        try:
+            payload = json.loads(event.get("body") or "{}")
+        except json.JSONDecodeError:
+            return _error(400, "BAD_JSON", "body must be JSON")
+        status, body = endpoint.enroll(payload, table=CFG.audit_table, ddb=_ddb_client())
+        return _response(status, body)
+
+    if path == "/endpoint/event" and method == "POST":
+        try:
+            payload = json.loads(event.get("body") or "{}")
+        except json.JSONDecodeError:
+            return _error(400, "BAD_JSON", "body must be JSON")
+        status, body = endpoint.ingest(
+            payload,
+            device_header=_header(event, "X-Naka-Device"),
+            table=CFG.audit_table,
+            ddb=_ddb_client(),
+        )
+        return _response(status, body)
+
+    if path == "/endpoint/fleet" and method == "GET":
+        try:
+            status, body = endpoint.fleet(table=CFG.audit_table, ddb=_ddb_client())
+            return _response(status, body)
+        except Exception as exc:  # noqa: BLE001
+            # Carry the real reason. A bare type name ("ClientError") sent me
+            # hunting through CloudWatch for what turned out to be a missing
+            # IAM action; the console renders this string, and an operator
+            # deserves the same clue.
+            return _error(503, "FLEET_UNAVAILABLE", f"{type(exc).__name__}: {exc}"[:400])
     if path == "/feed" and method == "GET":
         return _route_feed(event)
     if path.startswith("/session/") and method == "GET":

@@ -562,6 +562,56 @@ Nothing in the field can show this. Every other accumulation mechanism found —
 
 ---
 
+---
+
+## 7A. Security and correctness review, 19 Sep — findings and outcomes
+
+Four parallel adversarial reviews plus live testing against the deployed stack. Recorded here because several findings changed claims in this package, and because two were **overclaims in shipped code** — the failure mode doc 07 warns about and this panel reportedly checks for.
+
+### Fixed during the review
+
+| | Finding | Outcome |
+|---|---|---|
+| **C1** | **The `/demo` path never ran Cedar Q1**, while `demo.py`'s own docstring said *"REAL Q1 authorization, via the same Cedar policy text."* `/demo` is the only path that works while Bedrock is gated, so it is the path every judge hits. Deleting every `q1_*` permit from `agent.cedar` would have changed nothing. | ✅ **Fixed, not reworded.** `cedar_q2.authorize_call()` added and called from `run_scenario` before the guard, emitting a real `denied_call` beat with the deciding policy id. Verified: `_cedar_str` escaping on all three entity strings, empty `is_authorized_batch` result treated as deny, both `decision == Allow` and `result.allowed` required. Properly fail-closed. |
+| **C2** | **`merge()` subtracted findings**, falsifying "tiers union, never subtract". `rank_of` returns 0 for any type not in `_RANK_ORDER`, so ADDRESS (1) and NAME (2) absorbed unranked types. Reproduced: `merge([ADDRESS 6..45],[BANK_ACCOUNT_NUMBER 33..45]) -> [ADDRESS]`. Worse than a lost finding — `BANK_ACCOUNT_NUMBER` has no `reveal_*` permit so Cedar default-denies it, but the surviving ADDRESS *is* permitted, so the account number was released in plaintext with the budget under-counted. | ✅ **Fixed** at `detect.py:496` with `inner.type in _RANK_ORDER` added to the containment condition. Re-verified: ADDRESS⊃BANK_ACCOUNT_NUMBER and NAME⊃DATE_TIME now return both; IN_GSTIN⊃IN_PERMANENT_ACCOUNT_NUMBER still collapses, so the intended containment survived. |
+
+### Also fixed
+
+| | Finding | Outcome |
+|---|---|---|
+| **C3** | **Q3 ignored subject and budget** — `q3_rehydrate_other_internal` permitted NAME/PHONE/EMAIL/ADDRESS/DATE_TIME/PAN into `crm.internal` unconditionally, so a field just denied for being over budget could be rehydrated straight back out with the ledger untouched. | ✅ **Narrowed, not conditioned.** The budget condition could not be written: the Q3 request context is `{session: {role}}` only, so no `seen_count` and no `budget` are in scope to gate on — adding them means changing the context builder and its caller, which is not a change to ship unverified at this hour. The destination set was narrowed instead. `q3_rehydrate_other_kyc_vault_only` now pins `resource == Destination::"kyc-vault.internal"`. Verified matrix, analyst role: Aadhaar, PAN, NAME and PHONE all ALLOW to kyc-vault and **deny to both `crm.internal` and `pastebin`**. Nothing exercised `crm.internal` — no scenario, no fixture, no test — so this closed a hole without touching a live path. |
+
+> ⚠️ **Constraint to carry forward, because a future contributor will otherwise undo it in good faith.** If `crm.internal` is ever restored as a rehydration destination, it **must** come back *with* a budget condition — which means the Q3 context builder changes first, to carry `seen_count` and `budget` into scope. Restoring the destination without that condition re-opens the exfiltration path. The permit in `agent.cedar` carries this warning in a comment; this is the second copy.
+
+**Q1 was also verified to do real work rather than merely exist:** `fetch_customer` ALLOWs for `analyst` via `q1_fetch_customer` and denies for `intern`; `drop_database` denies for both; unknown tool and unknown role both deny; and the deciding policy id comes back for the audit row.
+
+### A latent blank-console bug, found by extending the id check per page
+
+The id-integrity check had only ever been run against `index.html`. Run across all seven pages of the new multi-page site, `console.html` failed on `lottie-redact` — and the cause was worse than a missing element. `motion.js` still carried the entire marketing motion layer from when `index.html` was both surfaces: `initScroll`, `initHero`, `initReveals` and the Lottie mount. Dead on the console, but **reachable** from it — and `initReveals` sets the `motion-ready` class, which hides every `.reveal` element. Called on a surface with no reveal loop running, that is a blank console.
+
+Fixed by deleting those exports rather than leaving them: `motion.js` is now only the five data-micro-motion functions `console.js` actually imports. The marketing reveal logic lives in `site.js` under a separate `.s-rise` / `.s-in` class namespace, so it cannot collide, and `console.css` adds `.d-app .reveal { opacity: 1 !important }` as a second, independent guard. The check was also extended to assert every internal `href` resolves to a file that exists, which is the other way a multi-page site fails silently.
+
+**The general lesson is worth more than the bug:** a safety check that runs on one page of a multi-page site is not a safety check. Both the id check and the href check now run per page.
+
+### Named as limitations rather than fixed
+
+- **The budget bites on the next call, not within one.** Every field in one tool result is authorized against the same pre-hop ledger snapshot, so a record returning ten identifiers releases all ten against a budget of three. Now stated in doc 11 and in the shipped UI's threat model, in the same words, so the site and the writeup cannot contradict each other.
+- **Q3 ignores subject and budget**, so a field denied for being over budget can be rehydrated back out. A one-line policy narrowing; owned by the build session.
+
+### Verified correct — worth knowing, because these are the claims most likely to be probed
+
+- **The Verhoeff implementation is correct.** Tables match the published D5 set; 540 single-digit mutations and every adjacent transposition rejected.
+- **Ledger writes are genuinely atomic** — a single `UpdateItem` with `ADD seen`, `ReturnValues=ALL_OLD`, no read-modify-write, and it **fails closed** on error.
+- **Placeholder span arithmetic survived every attempt to break it** — overlaps cluster, adjacency stays disjoint, offset-0 and end-of-string round-trip.
+- **No secrets in source.** Audit rows never carry entity values; the vault never reaches a log line.
+- **Live, on the deployed stack:** all four scenarios produce the correct decisions. Budget charges PAN → GSTIN → IFSC then masks the fourth field with the ledger held at 3. Exfiltration returns `denied_placeholder`. Compliance releases in full.
+
+### The other two services
+
+Reviewed and reported to their owning session; **not offered for judging** (see doc 11's Scope section). Two local privilege-escalation issues in the endpoint agent were verified link by link — an unvalidated state file in a directory the codebase's own comment confirms a standard user can write to, leading to SYSTEM code execution; and a CA pre-seed path where `loadCAFromDisk` checks neither `basicConstraints cA:true` nor that the key matches the cert. A third, in the server, makes a detection-engine outage return `200 {findings: []}` indistinguishable from a clean scan — its fail-open guard is dead code because the shipping scanner returns `[]` where the contract expects `null`.
+
+That last one is primarily an **instrumentation** risk rather than a production one: it makes any test of the detector report a false green, and caches that verdict for ten minutes.
+
 ## 8. Confidence and coverage
 
 - **Verbatim quotes** from `wemakedevs.org` pages were taken from raw HTML, not summaries.

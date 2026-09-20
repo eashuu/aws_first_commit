@@ -52,6 +52,20 @@ The concept is published, the policy language exists, the detection exists. Nobo
 
 Vocabulary note: the 2026 OWASP Top 10 for Agentic Applications numbers ASI01–ASI10, and the nearest anchors are ASI02 Tool Misuse and Exploitation, and ASI03. The list has no entry for cumulative sensitive-information disclosure.
 
+## Scope: what was built during the event, and what was not
+
+Stated here rather than in a footnote, because the distinction matters more than anything else on this page.
+
+**Built during the event window, 17–20 September 2026, and offered for judging:**
+
+Everything described in this document — the Cedar authorization path, the three questions asked on every tool call, the per-subject disclosure ledger in DynamoDB, the tiered detector, the normalizer, the placeholder and rehydration machinery, both Lambdas, the control plane, the console UI, the fixtures and the test suites. This is the submission.
+
+**Pre-existing, and NOT offered for judging:**
+
+A separate endpoint DLP agent that intercepts TLS to LLM domains on a developer's own machine. It shares this project's goal and now shares its name, but **it pre-dates the hackathon and was not built during the event window.** Under the rules it does not qualify, and we are not asking for it to be counted. It is named here only so that nobody discovers it in a repository and wonders why it went unmentioned.
+
+We would rather lose whatever that component might have added than have its inclusion read as passing older work off as new. If any part of this submission appears to claim otherwise, this section governs.
+
 ## What we built
 
 A Strands agent on Lambda that asks Cedar **two** questions per tool call instead of one.
@@ -111,6 +125,8 @@ The console reports this itself rather than claiming it. A `GET /diag` route pro
 
 ## What this does not do
 
+- **The budget bites on the next call, not within one.** Every field in a single tool result is authorized against the same pre-hop ledger snapshot, so a record returning ten identifiers at once will release them all against a budget of three. The accumulation is real and it is per subject — it just cannot act on fields it is deciding simultaneously. Sequential authorization within a hop is the fix and it is not in this build.
+- **Q1 on the scripted demo path asks Cedar directly, not through the Strands intervention.** Same policy set, same request shape, different caller: the demo driver has no agent loop and therefore no intervention chain. The two request shapes have to keep matching, and a comment in `authorize_call` says so. Deleting the `q1_*` permits from `agent.cedar` changes the demo's behaviour, which is the test that this is a real authorization and not a decoration.
 - **The principal is asserted, not authenticated.** `AuthType=NONE` on the Function URL is what makes the demo openable, and the entire policy model is principal-based. The production answer is JWT or AgentCore Identity.
 - **The budget is a budget over *detected* disclosure.** A missed entity is never counted, so the ceiling never binds on it. There is no eval set. Comprehend's [AI Service Card](https://docs.aws.amazon.com/ai/responsible-ai/comprehend-detectpii/overview.html) is dated November 2023, publishes name F1 ≥0.87 / phone ≥0.88 / address ≥0.91 on internal datasets, publishes **nothing** for Aadhaar or PAN, and names degraded performance on OCR text. We make no accuracy claim for Indian identifiers.
 - **Embedded images inside text-layer PDFs.** If extraction does not recurse into them, the highest-risk content passes while the audit row reads clean. This is the hole in the file story.
@@ -149,7 +165,7 @@ Five things we did not know on Thursday. Each one changed the build.
 
 ## Links
 
-- **Live demo:** `<LIVE_URL>` (ap-south-1)
+- **Live demo:** `<LIVE_URL>` (ap-south-1) — the landing page. **The console a judge should be sent to is `<LIVE_URL>/console.html`**, with hash views `#overview` `#egress` `#endpoint` `#files` `#ledger` `#detectors` `#policy`. Extensionless paths resolve too, so `/pricing` serves `pricing.html`. Deep-link the console directly in the video description rather than making anyone find it from the landing page.
 - **Repository:** `<REPO_URL>`
 - **Video (3 min):** `<VIDEO_URL>`
 - **Team:** `<TEAM>`
